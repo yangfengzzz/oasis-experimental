@@ -10,6 +10,7 @@
     "vite": "^2.0.0-beta.64"
   },
   "dependencies": {
+    "@oasis-engine/controls": "^0.4.6",
     "oasis-engine": "^0.4.0"
   }
 }
