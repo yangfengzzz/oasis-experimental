@@ -55,7 +55,7 @@ export const add = entity => {
         rotation.setValue(entity.transform.rotation[0], entity.transform.rotation[1], entity.transform.rotation[2], entity.transform.rotation[3]);
         cubeEntity.transform.rotationQuaternion = rotation;
     } else if (entity.model.type === 'sphere') {
-        renderer.mesh = PrimitiveMesh.createSphere(engine, 1);
+        renderer.mesh = PrimitiveMesh.createSphere(engine, entity.body.size[0]);
         renderer.setMaterial(mtl);
         const pos = cubeEntity.transform.position;
         pos.setValue(entity.transform.position[0], entity.transform.position[1], entity.transform.position[2]);

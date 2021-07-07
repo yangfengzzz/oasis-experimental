@@ -74,9 +74,8 @@ export const add = entity => {
           entity.body.size[1] / 2,
           entity.body.size[2] / 2
       )
-    }
-    if (entity.body.type === 'spehre') {
-      geometry = new PHYSX.PxSphereGeometry(...entity.body.size)
+    } else if (entity.body.type === 'sphere') {
+      geometry = new PHYSX.PxSphereGeometry(entity.body.size[0])
     }
     const material = physics.createMaterial(0.2, 0.2, 0.2)
     const flags = new PHYSX.PxShapeFlags(

@@ -28,12 +28,12 @@ physics.onLoad(() => {
                         rotation: [0, 0, 0.3, 0.7],
                     },
                     model: {
-                        type: 'box',
-                        size: [1, 1, 1],
+                        type: 'sphere',
+                        size: [0.5, 1, 1],
                     },
                     body: {
-                        type: 'box',
-                        size: [1, 1, 1],
+                        type: 'sphere',
+                        size: [0.5, 1, 1],
                         dynamic: true,
                     },
                 }
