@@ -61,6 +61,11 @@ const setup = () => {
 
 export const init = entities => {
   entities.forEach(entity => {
+    add(entity)
+  })
+}
+
+export const add = entity => {
     let geometry
     if (entity.body.type === 'box') {
       geometry = new PHYSX.PxBoxGeometry(
@@ -101,7 +106,6 @@ export const init = entities => {
     body.attachShape(shape)
     bodies[entity.id] = body
     scene.addActor(body, null)
-  })
 }
 
 export const update = entities => {
@@ -118,8 +122,6 @@ export const update = entities => {
     entity.transform.rotation[2] = transform.rotation.z
     entity.transform.rotation[3] = transform.rotation.w
   })
-
-  console.log("finish update!")
 }
 
   var _scriptDir = typeof document !== 'undefined' && document.currentScript ? document.currentScript.src : undefined;
