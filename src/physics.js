@@ -5,18 +5,18 @@ let scene
 let bodies = {}
 
 const PHYSX = {
-    onRuntimeInitialized: function() {
+    onRuntimeInitialized: function () {
         loaded = true
         console.log('PHYSX loaded')
         setup()
-        const entities = makeEntities()
-        init(entities);
-        for (let i = 0; i < 60; i++) {
-            update(entities);
-        }
-        console.log("End!");
+        if (cb) cb()
     }
 };
+
+const onLoad = _cb => {
+    cb = _cb
+    if (loaded) cb()
+}
 
 const setup = () => {
     const version = PHYSX.PX_PHYSICS_VERSION
@@ -28,11 +28,16 @@ const setup = () => {
         defaultErrorCallback
     )
     const triggerCallback = {
-        onContactBegin: () => {},
-        onContactEnd: () => {},
-        onContactPersist: () => {},
-        onTriggerBegin: () => {},
-        onTriggerEnd: () => {},
+        onContactBegin: () => {
+        },
+        onContactEnd: () => {
+        },
+        onContactPersist: () => {
+        },
+        onTriggerBegin: () => {
+        },
+        onTriggerEnd: () => {
+        },
     }
     const PHYSXSimulationCallbackInstance = PHYSX.PxSimulationEventCallback.implement(
         triggerCallback
@@ -115,53 +120,4 @@ const update = entities => {
     })
 
     console.log("finish update!")
-}
-
-const makeEntities = () => {
-    let ids = 0
-    const entities = []
-
-    entities.push({
-        id: ++ids,
-        transform: {
-            position: [0, 0, 0],
-            rotation: [0, 0, 0, 1],
-        },
-        model: {
-            type: 'box',
-            size: [10, 0.1, 10],
-        },
-        body: {
-            type: 'box',
-            size: [10, 0.1, 10],
-            dynamic: false,
-        },
-    })
-
-    for (let i = 0; i < 5; i++) {
-        for (let j = 0; j < 5; j++) {
-            entities.push({
-                id: ++ids,
-                transform: {
-                    position: [
-                        -2.5 + i + 0.1 * i,
-                        Math.floor(Math.random() * 6) + 1,
-                        -2.5 + j + 0.1 * j,
-                    ],
-                    rotation: [0, 0, 0.3, 0.7],
-                },
-                model: {
-                    type: 'box',
-                    size: [1, 1, 1],
-                },
-                body: {
-                    type: 'box',
-                    size: [1, 1, 1],
-                    dynamic: true,
-                },
-            })
-        }
-    }
-
-    return entities
 }

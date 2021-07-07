@@ -7,7 +7,7 @@ import {
 	WebGLEngine,
 } from "oasis-engine";
 
-const engine = new WebGLEngine("canvas");
+export const engine = new WebGLEngine("canvas");
 engine.canvas.resizeByClientSize();
 const scene = engine.sceneManager.activeScene;
 const rootEntity = scene.createRootEntity();
@@ -35,5 +35,3 @@ color.b = 0.5;
 color.a = 1.0;
 renderer.mesh = PrimitiveMesh.createCuboid(engine);
 renderer.setMaterial(mtl);
-
-engine.run();
