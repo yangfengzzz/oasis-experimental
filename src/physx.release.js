@@ -1,10 +1,9 @@
 let loaded = false
 let cb = null
-let physics
-let scene
-let bodies = {}
+export let physics
+export let scene
 
-const PHYSX = {
+export const PHYSX = {
   onRuntimeInitialized: function () {
     loaded = true
     console.log('PHYSX loaded')
@@ -59,69 +58,7 @@ const setup = () => {
   scene = physics.createScene(sceneDesc)
 }
 
-export const init = entities => {
-  entities.forEach(entity => {
-    add(entity)
-  })
-}
-
-export const add = entity => {
-    let geometry
-    if (entity.body.type === 'box') {
-      geometry = new PHYSX.PxBoxGeometry(
-          // PHYSX uses half-extents
-          entity.body.size[0] / 2,
-          entity.body.size[1] / 2,
-          entity.body.size[2] / 2
-      )
-    } else if (entity.body.type === 'sphere') {
-      geometry = new PHYSX.PxSphereGeometry(entity.body.size[0])
-    }
-    const material = physics.createMaterial(0.2, 0.2, 0.2)
-    const flags = new PHYSX.PxShapeFlags(
-        PHYSX.PxShapeFlag.eSCENE_QUERY_SHAPE.value |
-        PHYSX.PxShapeFlag.eSIMULATION_SHAPE.value
-    )
-    const shape = physics.createShape(geometry, material, false, flags)
-    const transform = {
-      translation: {
-        x: entity.transform.position[0],
-        y: entity.transform.position[1],
-        z: entity.transform.position[2],
-      },
-      rotation: {
-        w: entity.transform.rotation[3], // PHYSX uses WXYZ quaternions,
-        x: entity.transform.rotation[0],
-        y: entity.transform.rotation[1],
-        z: entity.transform.rotation[2],
-      },
-    }
-    let body
-    if (entity.body.dynamic) {
-      body = physics.createRigidDynamic(transform)
-    } else {
-      body = physics.createRigidStatic(transform)
-    }
-    body.attachShape(shape)
-    bodies[entity.id] = body
-    scene.addActor(body, null)
-}
-
-export const update = entities => {
-  scene.simulate(1 / 60, true)
-  scene.fetchResults(true)
-  entities.forEach(entity => {
-    const body = bodies[entity.id]
-    const transform = body.getGlobalPose()
-    entity.transform.position[0] = transform.translation.x
-    entity.transform.position[1] = transform.translation.y
-    entity.transform.position[2] = transform.translation.z
-    entity.transform.rotation[0] = transform.rotation.x
-    entity.transform.rotation[1] = transform.rotation.y
-    entity.transform.rotation[2] = transform.rotation.z
-    entity.transform.rotation[3] = transform.rotation.w
-  })
-}
+//----------------------------------------------------------------------------------------------------------------------
 
   var _scriptDir = typeof document !== 'undefined' && document.currentScript ? document.currentScript.src : undefined;
   if (typeof __filename !== 'undefined') _scriptDir = _scriptDir || __filename;
