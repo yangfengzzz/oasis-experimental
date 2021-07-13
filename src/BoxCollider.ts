@@ -7,26 +7,8 @@ import {Vector3} from "oasis-engine";
 import {PhysicMaterial} from "./PhysicMaterial";
 
 export class BoxCollider extends Collider {
-    private _center: Vector3 = new Vector3();
     private _size: Vector3 = new Vector3();
-
-    private _is_dirty: boolean = true;
-
-    private _pxShape: any;
     private _pxGeometry: any;
-    private flags:any = new PhysX.PxShapeFlags(
-        PhysX.PxShapeFlag.eSCENE_QUERY_SHAPE.value |
-        PhysX.PxShapeFlag.eSIMULATION_SHAPE.value
-    )
-
-    get center(): Vector3 {
-        return this._center;
-    }
-
-    set center(value: Vector3) {
-        this._center = value;
-        this._is_dirty = true;
-    }
 
     get size(): Vector3 {
         return this._size;
@@ -45,7 +27,19 @@ export class BoxCollider extends Collider {
                 this._size.y / 2,
                 this._size.z / 2
             );
-            this._pxShape = PhysicsSystem.createShape(this._pxGeometry, mat.create(), false, this.flags)
+            this._pxShape = PhysicsSystem.createShape(this._pxGeometry, mat.create(), false, this.flags);
+
+            const transform = {
+                translation: {
+                    x: this._center.x,
+                    y: this._center.y,
+                    z: this._center.z,
+                },
+                rotation: {
+                    w: 1, x: 0, y: 0, z: 0,
+                },
+            }
+            this._pxShape.setLocalPose(transform);
 
             this._is_dirty = false;
         }
