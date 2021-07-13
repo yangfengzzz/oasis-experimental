@@ -12,7 +12,6 @@ export enum CollisionDetectionMode {
 }
 
 export enum RigidbodyConstraints {
-    None,
     FreezePositionX, // eLOCK_LINEAR_X
     FreezePositionY, // eLOCK_LINEAR_Y
     FreezePositionZ, // eLOCK_LINEAR_Z
@@ -24,7 +23,7 @@ export enum RigidbodyConstraints {
     FreezeAll,
 }
 
-// detectCollisions, inertiaTensorRotation,
+// detectCollisions, inertiaTensorRotation, useGravity
 // interpolation, solverVelocityIterations, worldCenterOfMass
 export class Rigidbody {
     /** The drag of the object. */
@@ -60,14 +59,14 @@ export class Rigidbody {
      * Overrides Physics.defaultSolverIterations. Must be positive. */
     private _solverIterations: number;
 
-    /** Controls whether gravity affects this rigidbody. */
-    private _useGravity: boolean;
-    /** Controls whether physics affects the rigidbody. */
-    private _isKinematic: boolean;
     /** The Rigidbody's collision detection mode. */
     private _collisionDetectionMode: CollisionDetectionMode;
+    /** Controls whether physics affects the rigidbody. */
+    private _isKinematic: boolean;
+
     /** Controls which degrees of freedom are allowed for the simulation of this Rigidbody. */
     private _constraints: RigidbodyConstraints;
+    /** Controls whether physics will change the rotation of the object. */
     private _freezeRotation: boolean;
 
     private _isDynamic: boolean;
@@ -225,37 +224,97 @@ export class Rigidbody {
         }
     }
 
-    get isKinematic(): boolean {
-        return this._isKinematic;
-    }
-
-    //eKINEMATIC
-    set isKinematic(value: boolean) {
-        this._isKinematic = value;
-    }
-
     get collisionDetectionMode(): CollisionDetectionMode {
         return this._collisionDetectionMode;
     }
 
     set collisionDetectionMode(value: CollisionDetectionMode) {
         this._collisionDetectionMode = value;
+        if (this.isDynamic) {
+            switch (value) {
+                case CollisionDetectionMode.Continuous:
+                    this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_CCD, true);
+                    break;
+                case CollisionDetectionMode.ContinuousDynamic:
+                    this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_CCD_FRICTION, true);
+                    break;
+                case CollisionDetectionMode.ContinuousSpeculative:
+                    this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_SPECULATIVE_CCD, true);
+                    break;
+                case CollisionDetectionMode.Discrete:
+                    this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_CCD, false);
+                    this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_CCD_FRICTION, false);
+                    this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_SPECULATIVE_CCD, false);
+                    break;
+            }
+        }
     }
 
-    get useGravity(): boolean {
-        return this._useGravity;
+    get isKinematic(): boolean {
+        return this._isKinematic;
     }
 
-    set useGravity(value: boolean) {
-        this._useGravity = value;
+    set isKinematic(value: boolean) {
+        this._isKinematic = value;
+        if (this.isDynamic) {
+            if (value) {
+                this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eKINEMATIC, true);
+            } else {
+                this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eKINEMATIC, false);
+            }
+        }
     }
 
     get constraints(): RigidbodyConstraints {
         return this._constraints;
     }
 
-    set constraints(value: RigidbodyConstraints) {
-        this._constraints = value;
+    setConstraints(flag: RigidbodyConstraints, value: boolean) {
+        if (value)
+            this._constraints = this._constraints | flag;
+        else
+            this._constraints = this._constraints & (~flag);
+
+        if (this.isDynamic) {
+            switch (flag) {
+                case RigidbodyConstraints.FreezePositionX:
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_X, value);
+                    break;
+                case RigidbodyConstraints.FreezePositionY:
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
+                    break;
+                case RigidbodyConstraints.FreezePositionZ:
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
+                    break;
+                case RigidbodyConstraints.FreezeRotationX:
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_X, value);
+                    break;
+                case RigidbodyConstraints.FreezeRotationY:
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Y, value);
+                    break;
+                case RigidbodyConstraints.FreezeRotationZ:
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Z, value);
+                    break;
+                case RigidbodyConstraints.FreezeAll:
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_X, value);
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_X, value);
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Y, value);
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Z, value);
+                    break;
+                case RigidbodyConstraints.FreezePosition:
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_X, value);
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
+                    break;
+                case RigidbodyConstraints.FreezeRotation:
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_X, value);
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Y, value);
+                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Z, value);
+                    break;
+            }
+        }
     }
 
     get freezeRotation(): boolean {
@@ -264,6 +323,7 @@ export class Rigidbody {
 
     set freezeRotation(value: boolean) {
         this._freezeRotation = value;
+        this.setConstraints(RigidbodyConstraints.FreezeRotation, value);
     }
 
     get isDynamic(): boolean {
