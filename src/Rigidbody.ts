@@ -93,6 +93,9 @@ export class Rigidbody {
     //setAngularDamping
     set angularDrag(value: number) {
         this._angularDrag = value;
+        if (this.isDynamic) {
+            this._PxRigidActor.setAngularDamping(value);
+        }
     }
 
     get velocity(): Vector3 {
@@ -102,6 +105,10 @@ export class Rigidbody {
     //setLinearVelocity
     set velocity(value: Vector3) {
         this._velocity = value;
+        if (this.isDynamic) {
+            const vel = {x: value.x, y: value.y, z: value.z};
+            this._PxRigidActor.setLinearVelocity(vel, true);
+        }
     }
 
     get angularVelocity(): Vector3 {
@@ -111,22 +118,17 @@ export class Rigidbody {
     //setAngularVelocity
     set angularVelocity(value: Vector3) {
         this._angularVelocity = value;
+        if (this.isDynamic) {
+            this._PxRigidActor.setAngularVelocity({x: value.x, y: value.y, z: value.z}, true);
+        }
     }
 
     get position(): Vector3 {
         return this._position;
     }
 
-    set position(value: Vector3) {
-        this._position = value;
-    }
-
     get rotation(): Quaternion {
         return this._rotation;
-    }
-
-    set rotation(value: Quaternion) {
-        this._rotation = value;
     }
 
     get mass(): number {
@@ -136,6 +138,9 @@ export class Rigidbody {
     // setMass
     set mass(value: number) {
         this._mass = value;
+        if (this.isDynamic) {
+            this._PxRigidActor.setMass(value);
+        }
     }
 
     get centerOfMass(): Vector3 {
@@ -145,6 +150,19 @@ export class Rigidbody {
     // setCMassLocalPose
     set centerOfMass(value: Vector3) {
         this._centerOfMass = value;
+        if (this.isDynamic) {
+            const transform = {
+                translation: {
+                    x: value.x,
+                    y: value.y,
+                    z: value.z,
+                },
+                rotation: {
+                    w: 1, x: 0, y: 0, z: 0,
+                },
+            }
+            this._PxRigidActor.setCMassLocalPose(value);
+        }
     }
 
     get inertiaTensor(): Vector3 {
@@ -154,42 +172,57 @@ export class Rigidbody {
     // setMassSpaceInertiaTensor
     set inertiaTensor(value: Vector3) {
         this._inertiaTensor = value;
+        if (this.isDynamic) {
+            this._PxRigidActor.setMassSpaceInertiaTensor({x: value.x, y: value.y, z: value.z});
+        }
     }
 
     get maxAngularVelocity(): number {
         return this._maxAngularVelocity;
     }
 
-    // setMaxAngularVelocity(undefined)
+    // setMaxAngularVelocity
     set maxAngularVelocity(value: number) {
         this._maxAngularVelocity = value;
+        if (this.isDynamic) {
+            this._PxRigidActor.setMaxAngularVelocity(value);
+        }
     }
 
     get maxDepenetrationVelocity(): number {
         return this._maxDepenetrationVelocity;
     }
 
-    // setMaxDepenetrationVelocity(undefined)
+    // setMaxDepenetrationVelocity
     set maxDepenetrationVelocity(value: number) {
         this._maxDepenetrationVelocity = value;
+        if (this.isDynamic) {
+            this._PxRigidActor.setMaxDepenetrationVelocity(value);
+        }
     }
 
     get sleepThreshold(): number {
         return this._sleepThreshold;
     }
 
-    //setSleepThreshold(dynamic only)
+    //setSleepThreshold
     set sleepThreshold(value: number) {
         this._sleepThreshold = value;
+        if (this.isDynamic) {
+            this._PxRigidActor.setSleepThreshold(value);
+        }
     }
 
     get solverIterations(): number {
         return this._solverIterations;
     }
 
-    //setSolverIterationCounts(undefined)
+    //setSolverIterationCounts
     set solverIterations(value: number) {
         this._solverIterations = value;
+        if (this.isDynamic) {
+            this._PxRigidActor.setSolverIterationCounts(value, 1);
+        }
     }
 
     get isKinematic(): boolean {
