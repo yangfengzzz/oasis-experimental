@@ -38,9 +38,9 @@ export class Rigidbody {
     private _angularVelocity: Vector3;
 
     /** The position of the rigidbody. */
-    private _position: Vector3;
+    private _position: Vector3 = new Vector3();
     /** The rotation of the Rigidbody. */
-    private _rotation: Quaternion;
+    private _rotation: Quaternion = new Quaternion();
 
     /** The mass of the rigidbody. */
     private _mass: number;
@@ -70,6 +70,8 @@ export class Rigidbody {
     private _constraints: RigidbodyConstraints;
     private _freezeRotation: boolean;
 
+    private _isDynamic: boolean;
+
     private _PxRigidActor: any;
 
     get drag(): number {
@@ -79,6 +81,9 @@ export class Rigidbody {
     // setLinearDamping
     set drag(value: number) {
         this._drag = value;
+        if (this.isDynamic) {
+            this._PxRigidActor.setLinearDamping(value);
+        }
     }
 
     get angularDrag(): number {
@@ -228,6 +233,10 @@ export class Rigidbody {
         this._freezeRotation = value;
     }
 
+    get isDynamic(): boolean {
+        return this._isDynamic;
+    }
+
     //----------------------------------------------------------------------------------
     // AddExplosionForce, AddRelativeTorque, ClosestPointOnBounds,
     // MovePosition, MoveRotation, ResetCenterOfMass, ResetInertiaTensor
@@ -283,7 +292,16 @@ export class Rigidbody {
 
     }
 
-    create(isDynamic: boolean): any {
+    init(isDynamic: boolean, position?: Vector3, rotation?: Quaternion) {
+        this._isDynamic = isDynamic
+        if (position != undefined) {
+            this._position = position;
+        }
+
+        if (rotation != undefined) {
+            this._rotation = rotation;
+        }
+
         const transform = {
             translation: {
                 x: this._position.x,
@@ -303,7 +321,9 @@ export class Rigidbody {
         } else {
             this._PxRigidActor = PhysicsSystem.createRigidStatic(transform)
         }
+    }
 
+    get(): any {
         return this._PxRigidActor;
     }
 }

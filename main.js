@@ -52,12 +52,11 @@ export const add_physics = entity => {
     }
 
     let rigid_body = new Rigidbody();
-    rigid_body.position = entity.transform.position;
-    rigid_body.rotation = entity.transform.rotation;
-    let body = rigid_body.create(entity.body.dynamic);
-    body.attachShape(shape.create())
-    bodies[entity.id] = body
-    PhysicsScene.addActor(body, null)
+    rigid_body.init(entity.body.dynamic, entity.transform.position, entity.transform.rotation);
+    rigid_body.drag = 1.0;
+    rigid_body.get().attachShape(shape.create())
+    bodies[entity.id] = rigid_body.get()
+    PhysicsScene.addActor(rigid_body.get(), null)
 }
 
 export const update_physics = entities => {
