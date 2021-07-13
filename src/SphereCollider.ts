@@ -6,15 +6,15 @@ import {Collider} from "./Collider";
 import {Vector3} from "oasis-engine";
 import {PhysicMaterial} from "./PhysicMaterial";
 
-export class BoxCollider extends Collider {
+export class SphereCollider extends Collider {
     private _center: Vector3 = new Vector3();
-    private _size: Vector3 = new Vector3();
+    private _radius: number = 0.0;
 
     private _is_dirty: boolean = true;
 
     private _pxShape: any;
     private _pxGeometry: any;
-    private flags:any = new PhysX.PxShapeFlags(
+    private flags: any = new PhysX.PxShapeFlags(
         PhysX.PxShapeFlag.eSCENE_QUERY_SHAPE.value |
         PhysX.PxShapeFlag.eSIMULATION_SHAPE.value
     )
@@ -28,25 +28,19 @@ export class BoxCollider extends Collider {
         this._is_dirty = true;
     }
 
-    get size(): Vector3 {
-        return this._size;
+    get radius(): number {
+        return this._radius;
     }
 
-    set size(value: Vector3) {
-        this._size = value;
+    set radius(value: number) {
+        this._radius = value;
         this._is_dirty = true;
     }
 
     create(mat: PhysicMaterial): any {
         if (this._is_dirty) {
-            this._pxGeometry = new PhysX.PxBoxGeometry(
-                // PHYSX uses half-extents
-                this._size.x / 2,
-                this._size.y / 2,
-                this._size.z / 2
-            );
+            this._pxGeometry = new PhysX.PxSphereGeometry(this._radius);
             this._pxShape = PhysicsSystem.createShape(this._pxGeometry, mat.create(), false, this.flags)
-
             this._is_dirty = false;
         }
 

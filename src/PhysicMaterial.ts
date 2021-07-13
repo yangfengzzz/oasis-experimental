@@ -153,7 +153,7 @@ export class PhysicMaterial {
         this._is_dirty = true;
     }
 
-    get internal(): any {
+    create(): any {
         if (this._is_dirty) {
             this._pxMaterial = PhysicsSystem.createMaterial(this._staticFriction, this._dynamicFriction, this._bounciness);
             this._pxMaterial.setFrictionCombineMode(this._frictionCombine);

@@ -7,6 +7,9 @@ import {
 } from "./src/physx.release";
 import {makeEntities} from './src/entities'
 import {PhysicCombineMode, PhysicMaterial} from "./src/PhysicMaterial";
+import {SphereCollider} from "./src/SphereCollider";
+import {BoxCollider} from "./src/BoxCollider";
+import {Vector3} from "oasis-engine";
 
 let bodies = {}
 const entities = makeEntities()
@@ -18,26 +21,20 @@ export const init_physics = entities => {
 }
 
 export const add_physics = entity => {
-    let geometry
+    const mat = new PhysicMaterial(0.1, 0.2, 0.5);
+
+    let shape
+    let raw_shape;
     if (entity.body.type === 'box') {
-        geometry = new PhysX.PxBoxGeometry(
-            // PHYSX uses half-extents
-            entity.body.size[0] / 2,
-            entity.body.size[1] / 2,
-            entity.body.size[2] / 2
-        )
+        shape = new BoxCollider();
+        shape.size = new Vector3(entity.body.size[0], entity.body.size[1], entity.body.size[2]);
+        raw_shape = shape.create(mat);
     } else if (entity.body.type === 'sphere') {
-        geometry = new PhysX.PxSphereGeometry(entity.body.size[0])
+        shape = new SphereCollider();
+        shape.radius = entity.body.size[0];
+        raw_shape = shape.create(mat);
     }
 
-    const mat = new PhysicMaterial(0.1, 0.2, 0.5);
-    console.log("lalala")
-    const flags = new PhysX.PxShapeFlags(
-        PhysX.PxShapeFlag.eSCENE_QUERY_SHAPE.value |
-        PhysX.PxShapeFlag.eSIMULATION_SHAPE.value
-    )
-
-    const shape = PhysicsSystem.createShape(geometry, mat.internal, false, flags)
     const transform = {
         translation: {
             x: entity.transform.position[0],
@@ -58,7 +55,7 @@ export const add_physics = entity => {
     } else {
         body = PhysicsSystem.createRigidStatic(transform)
     }
-    body.attachShape(shape)
+    body.attachShape(raw_shape)
     bodies[entity.id] = body
     PhysicsScene.addActor(body, null)
 }
