@@ -9,6 +9,7 @@ import {SphereCollider} from "./src/SphereCollider";
 import {BoxCollider} from "./src/BoxCollider";
 import {Quaternion, Vector3} from "oasis-engine";
 import {PhysicCombineMode} from "./src/PhysicMaterial";
+import {Rigidbody} from "./src/Rigidbody";
 
 let bodies = {}
 const entities = makeEntities()
@@ -50,12 +51,10 @@ export const add_physics = entity => {
         },
     }
 
-    let body
-    if (entity.body.dynamic) {
-        body = PhysicsSystem.createRigidDynamic(transform)
-    } else {
-        body = PhysicsSystem.createRigidStatic(transform)
-    }
+    let rigid_body = new Rigidbody();
+    rigid_body.position = entity.transform.position;
+    rigid_body.rotation = entity.transform.rotation;
+    let body = rigid_body.create(entity.body.dynamic);
     body.attachShape(shape.create())
     bodies[entity.id] = body
     PhysicsScene.addActor(body, null)
