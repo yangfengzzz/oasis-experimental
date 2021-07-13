@@ -4,7 +4,6 @@ import {
 } from "./physx.release";
 import {Collider} from "./Collider";
 import {Vector3} from "oasis-engine";
-import {PhysicMaterial} from "./PhysicMaterial";
 
 export class BoxCollider extends Collider {
     private _size: Vector3 = new Vector3();

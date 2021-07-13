@@ -3,7 +3,6 @@ import {
     physics as PhysicsSystem,
 } from "./physx.release";
 import {Collider} from "./Collider";
-import {PhysicMaterial} from "./PhysicMaterial";
 
 export class SphereCollider extends Collider {
     private _radius: number = 0.0;

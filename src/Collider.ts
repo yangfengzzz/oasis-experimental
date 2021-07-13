@@ -2,7 +2,6 @@ import {Component, Vector3} from "oasis-engine";
 import {PhysicMaterial} from "./PhysicMaterial";
 import {
     PHYSX as PhysX,
-    physics as PhysicsSystem,
 } from "./physx.release";
 
 export class Collider {

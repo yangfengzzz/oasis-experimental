@@ -8,6 +8,7 @@ import {makeEntities} from './src/entities'
 import {SphereCollider} from "./src/SphereCollider";
 import {BoxCollider} from "./src/BoxCollider";
 import {Quaternion, Vector3} from "oasis-engine";
+import {PhysicCombineMode} from "./src/PhysicMaterial";
 
 let bodies = {}
 const entities = makeEntities()
@@ -25,13 +26,14 @@ export const add_physics = entity => {
         shape.size = entity.body.size;
         shape.material.staticFriction = 0.1;
         shape.material.dynamicFriction = 0.2;
-        shape.material.bounciness = 0.5;
+        shape.material.bounciness = 0.1;
     } else if (entity.body.type === 'sphere') {
         shape = new SphereCollider();
         shape.radius = entity.body.size.x;
         shape.material.staticFriction = 0.1;
         shape.material.dynamicFriction = 0.2;
-        shape.material.bounciness = 0.5;
+        shape.material.bounciness = 2;
+        shape.material.bounceCombine = PhysicCombineMode.Minimum;
     }
 
     const transform = {
