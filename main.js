@@ -27,6 +27,7 @@ export const add_physics = entity => {
         shape.material.staticFriction = 0.1;
         shape.material.dynamicFriction = 0.2;
         shape.material.bounciness = 0.1;
+        shape.init();
     } else if (entity.body.type === 'sphere') {
         shape = new SphereCollider();
         shape.radius = entity.body.size.x;
@@ -34,29 +35,17 @@ export const add_physics = entity => {
         shape.material.dynamicFriction = 0.2;
         shape.material.bounciness = 2;
         shape.material.bounceCombine = PhysicCombineMode.Minimum;
-    }
-
-    const transform = {
-        translation: {
-            x: entity.transform.position.x,
-            y: entity.transform.position.y,
-            z: entity.transform.position.z,
-        },
-        rotation: {
-            w: entity.transform.rotation.w, // PHYSX uses WXYZ quaternions,
-            x: entity.transform.rotation.x,
-            y: entity.transform.rotation.y,
-            z: entity.transform.rotation.z,
-        },
+        shape.init();
     }
 
     let rigid_body = new Rigidbody();
     rigid_body.init(entity.body.dynamic, entity.transform.position, entity.transform.rotation);
     rigid_body.freezeRotation = false;
-    rigid_body.get().attachShape(shape.create())
+    rigid_body.attachShape(shape);
+
     bodies[entity.id] = rigid_body.get()
     PhysicsScene.addActor(rigid_body.get(), null)
-    rigid_body.addTorque(new Vector3(0, 800, 0));
+    rigid_body.addForce(new Vector3(0, 300, 0));
 }
 
 export const update_physics = entities => {

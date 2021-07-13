@@ -34,4 +34,8 @@ export class Collider {
         this._material = value;
         this._is_dirty = true;
     }
+
+    get(): any {
+        return this._pxShape;
+    }
 }

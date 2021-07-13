@@ -18,7 +18,7 @@ export class BoxCollider extends Collider {
         this._is_dirty = true;
     }
 
-    create(): any {
+    init() {
         if (this._is_dirty) {
             this._pxGeometry = new PhysX.PxBoxGeometry(
                 // PHYSX uses half-extents
@@ -42,7 +42,5 @@ export class BoxCollider extends Collider {
 
             this._is_dirty = false;
         }
-
-        return this._pxShape;
     }
 }

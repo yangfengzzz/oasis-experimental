@@ -3,6 +3,7 @@ import {
     physics as PhysicsSystem,
 } from "./physx.release";
 import {Quaternion, Vector3} from "oasis-engine";
+import {Collider} from "./Collider";
 
 export enum CollisionDetectionMode {
     Discrete,
@@ -408,6 +409,11 @@ export class Rigidbody {
         if (this._isDynamic) {
             return this._PxRigidActor.wakeUp();
         }
+    }
+
+    //----------------------------------------------------------------------------------
+    attachShape(shape: Collider) {
+        this._PxRigidActor.attachShape(shape.get());
     }
 
     init(isDynamic: boolean, position?: Vector3, rotation?: Quaternion) {

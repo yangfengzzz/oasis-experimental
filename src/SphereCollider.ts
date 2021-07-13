@@ -17,7 +17,7 @@ export class SphereCollider extends Collider {
         this._is_dirty = true;
     }
 
-    create(): any {
+    init() {
         if (this._is_dirty) {
             this._pxGeometry = new PhysX.PxSphereGeometry(this._radius);
             this._pxShape = PhysicsSystem.createShape(this._pxGeometry, this._material.create(), false, this._flags);
@@ -36,7 +36,5 @@ export class SphereCollider extends Collider {
 
             this._is_dirty = false;
         }
-
-        return this._pxShape;
     }
 }
