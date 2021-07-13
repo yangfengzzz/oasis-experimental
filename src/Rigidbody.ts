@@ -388,6 +388,14 @@ export class Rigidbody {
         }
     }
 
+    getGlobalPose(): { translation: Vector3, rotation: Quaternion } {
+        const transform = this._PxRigidActor.getGlobalPose();
+        return {
+            translation: new Vector3(transform.translation.x, transform.translation.y, transform.translation.z),
+            rotation: new Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w)
+        };
+    }
+
     //isSleeping(undefined)
     isSleeping(): boolean | undefined {
         if (this._isDynamic) {

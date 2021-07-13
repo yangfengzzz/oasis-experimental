@@ -42,8 +42,8 @@ export const add_physics = entity => {
     rigid_body.init(entity.body.dynamic, entity.transform.position, entity.transform.rotation);
     rigid_body.freezeRotation = false;
     rigid_body.attachShape(shape);
+    bodies[entity.id] = rigid_body;
 
-    bodies[entity.id] = rigid_body.get()
     PhysicsScene.addActor(rigid_body.get(), null)
     rigid_body.addForce(new Vector3(0, 300, 0));
 }
@@ -54,13 +54,8 @@ export const update_physics = entities => {
     entities.forEach(entity => {
         const body = bodies[entity.id]
         const transform = body.getGlobalPose()
-        entity.transform.position.x = transform.translation.x
-        entity.transform.position.y = transform.translation.y
-        entity.transform.position.z = transform.translation.z
-        entity.transform.rotation.x = transform.rotation.x
-        entity.transform.rotation.y = transform.rotation.y
-        entity.transform.rotation.z = transform.rotation.z
-        entity.transform.rotation.w = transform.rotation.w
+        entity.transform.position = transform.translation;
+        entity.transform.rotation = transform.rotation;
     })
 }
 
