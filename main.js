@@ -1,15 +1,14 @@
 import * as renderer from "./src/renderer";
 import {
-    PHYSX as PhysX,
     scene as PhysicsScene,
     physics as PhysicsSystem,
     onLoad as PhysicsOnLoad
 } from "./src/physx.release";
 import {makeEntities} from './src/entities'
-import {PhysicCombineMode, PhysicMaterial} from "./src/PhysicMaterial";
+import {PhysicMaterial} from "./src/PhysicMaterial";
 import {SphereCollider} from "./src/SphereCollider";
 import {BoxCollider} from "./src/BoxCollider";
-import {Vector3} from "oasis-engine";
+import {Quaternion, Vector3} from "oasis-engine";
 
 let bodies = {}
 const entities = makeEntities()
@@ -27,25 +26,25 @@ export const add_physics = entity => {
     let raw_shape;
     if (entity.body.type === 'box') {
         shape = new BoxCollider();
-        shape.size = new Vector3(entity.body.size[0], entity.body.size[1], entity.body.size[2]);
+        shape.size = entity.body.size;
         raw_shape = shape.create(mat);
     } else if (entity.body.type === 'sphere') {
         shape = new SphereCollider();
-        shape.radius = entity.body.size[0];
+        shape.radius = entity.body.size.x;
         raw_shape = shape.create(mat);
     }
 
     const transform = {
         translation: {
-            x: entity.transform.position[0],
-            y: entity.transform.position[1],
-            z: entity.transform.position[2],
+            x: entity.transform.position.x,
+            y: entity.transform.position.y,
+            z: entity.transform.position.z,
         },
         rotation: {
-            w: entity.transform.rotation[3], // PHYSX uses WXYZ quaternions,
-            x: entity.transform.rotation[0],
-            y: entity.transform.rotation[1],
-            z: entity.transform.rotation[2],
+            w: entity.transform.rotation.w, // PHYSX uses WXYZ quaternions,
+            x: entity.transform.rotation.x,
+            y: entity.transform.rotation.y,
+            z: entity.transform.rotation.z,
         },
     }
 
@@ -66,13 +65,13 @@ export const update_physics = entities => {
     entities.forEach(entity => {
         const body = bodies[entity.id]
         const transform = body.getGlobalPose()
-        entity.transform.position[0] = transform.translation.x
-        entity.transform.position[1] = transform.translation.y
-        entity.transform.position[2] = transform.translation.z
-        entity.transform.rotation[0] = transform.rotation.x
-        entity.transform.rotation[1] = transform.rotation.y
-        entity.transform.rotation[2] = transform.rotation.z
-        entity.transform.rotation[3] = transform.rotation.w
+        entity.transform.position.x = transform.translation.x
+        entity.transform.position.y = transform.translation.y
+        entity.transform.position.z = transform.translation.z
+        entity.transform.rotation.x = transform.rotation.x
+        entity.transform.rotation.y = transform.rotation.y
+        entity.transform.rotation.z = transform.rotation.z
+        entity.transform.rotation.w = transform.rotation.w
     })
 }
 
@@ -94,20 +93,20 @@ PhysicsOnLoad(() => {
                 const entity = {
                     id: ++entities.length,
                     transform: {
-                        position: [
+                        position: new Vector3(
                             Math.floor(Math.random() * 6) - 2.5,
                             5,
                             Math.floor(Math.random() * 6) - 2.5,
-                        ],
-                        rotation: [0, 0, 0.3, 0.7],
+                        ),
+                        rotation: new Quaternion(0, 0, 0.3, 0.7),
                     },
                     model: {
                         type: 'sphere',
-                        size: [0.5, 1, 1],
+                        size: new Vector3(0.5, 1, 1),
                     },
                     body: {
                         type: 'sphere',
-                        size: [0.5, 1, 1],
+                        size: new Vector3(0.5, 1, 1),
                         dynamic: true,
                     },
                 }
