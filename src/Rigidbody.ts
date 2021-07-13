@@ -333,56 +333,81 @@ export class Rigidbody {
     //----------------------------------------------------------------------------------
     // AddExplosionForce, AddRelativeTorque, ClosestPointOnBounds,
     // MovePosition, MoveRotation, ResetCenterOfMass, ResetInertiaTensor
-    // SweepTest, SweepTestAll
+    // SweepTest, SweepTestAll, setDensity
 
-    // addForce(undefined)
+    // addForce must called after add into scene;
     addForce(force: Vector3) {
+        if (this._isDynamic) {
+            this._PxRigidActor.addForce({x: force.x, y: force.y, z: force.z});
+        }
+    }
 
+    // addTorque must called after add into scene;
+    addTorque(torque: Vector3) {
+        if (this._isDynamic) {
+            this._PxRigidActor.addTorque({x: torque.x, y: torque.y, z: torque.z});
+        }
     }
 
     // addForceAtPos
-    addForceAtPosition(force: Vector3) {
-
+    addForceAtPosition(force: Vector3, pos: Vector3) {
+        if (this._isDynamic) {
+            this._PxRigidActor.addForceAtPos(
+                {x: force.x, y: force.y, z: force.z},
+                {x: pos.x, y: pos.y, z: pos.z});
+        }
     }
 
-    // addLocalForceAtLocalPos
-    addRelativeForce(force: Vector3) {
-
-    }
-
-    // addTorque
-    addTorque(torque: Vector3) {
-
+    // addForceAtLocalPos
+    addRelativeForce(force: Vector3, pos: Vector3) {
+        if (this._isDynamic) {
+            this._PxRigidActor.addForceAtLocalPos(
+                {x: force.x, y: force.y, z: force.z},
+                {x: pos.x, y: pos.y, z: pos.z});
+        }
     }
 
     //getVelocityAtPos(undefined)
-    getPointVelocity(): Vector3 {
-        return new Vector3();
+    getPointVelocity(pos: Vector3): Vector3 | undefined {
+        if (this._isDynamic) {
+            const vel = this._PxRigidActor.getVelocityAtPos({x: pos.x, y: pos.y, z: pos.z})
+            return new Vector3(vel.x, vel.y, vel.z);
+        } else {
+            return undefined;
+        }
     }
 
     //getLocalVelocityAtLocalPos(undefined)
-    getRelativePointVelocity(): Vector3 {
-        return new Vector3();
+    getRelativePointVelocity(pos: Vector3): Vector3 | undefined {
+        if (this._isDynamic) {
+            const vel = this._PxRigidActor.getLocalVelocityAtLocalPos({x: pos.x, y: pos.y, z: pos.z})
+            return new Vector3(vel.x, vel.y, vel.z);
+        } else {
+            return undefined;
+        }
     }
 
     //isSleeping(undefined)
-    isSleeping(): boolean {
-        return true;
+    isSleeping(): boolean | undefined {
+        if (this._isDynamic) {
+            return this._PxRigidActor.isSleeping();
+        } else {
+            return undefined;
+        }
     }
 
-    //updateMassAndInertia(undefined)
-    setDensity() {
-
-    }
-
-    //putToSleep(undefined)
+    //putToSleep
     sleep() {
-
+        if (this._isDynamic) {
+            return this._PxRigidActor.putToSleep();
+        }
     }
 
-    //wakeUp(undefined)
+    //wakeUp
     wakeUp() {
-
+        if (this._isDynamic) {
+            return this._PxRigidActor.wakeUp();
+        }
     }
 
     init(isDynamic: boolean, position?: Vector3, rotation?: Quaternion) {

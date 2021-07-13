@@ -56,6 +56,7 @@ export const add_physics = entity => {
     rigid_body.get().attachShape(shape.create())
     bodies[entity.id] = rigid_body.get()
     PhysicsScene.addActor(rigid_body.get(), null)
+    rigid_body.addTorque(new Vector3(0, 800, 0));
 }
 
 export const update_physics = entities => {
