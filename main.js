@@ -6,6 +6,7 @@ import {
     onLoad as PhysicsOnLoad
 } from "./src/physx.release";
 import {makeEntities} from './src/entities'
+import {PhysicCombineMode, PhysicMaterial} from "./src/PhysicMaterial";
 
 let bodies = {}
 const entities = makeEntities()
@@ -29,14 +30,14 @@ export const add_physics = entity => {
         geometry = new PhysX.PxSphereGeometry(entity.body.size[0])
     }
 
-    const material = PhysicsSystem.createMaterial(0.8, 0.8, 0.8)
+    const mat = new PhysicMaterial(0.1, 0.2, 0.5);
     console.log("lalala")
     const flags = new PhysX.PxShapeFlags(
         PhysX.PxShapeFlag.eSCENE_QUERY_SHAPE.value |
         PhysX.PxShapeFlag.eSIMULATION_SHAPE.value
     )
 
-    const shape = PhysicsSystem.createShape(geometry, material, false, flags)
+    const shape = PhysicsSystem.createShape(geometry, mat.internal, false, flags)
     const transform = {
         translation: {
             x: entity.transform.position[0],
