@@ -5,7 +5,6 @@ import {
     onLoad as PhysicsOnLoad
 } from "./src/physx.release";
 import {makeEntities} from './src/entities'
-import {PhysicMaterial} from "./src/PhysicMaterial";
 import {SphereCollider} from "./src/SphereCollider";
 import {BoxCollider} from "./src/BoxCollider";
 import {Quaternion, Vector3} from "oasis-engine";
@@ -20,18 +19,19 @@ export const init_physics = entities => {
 }
 
 export const add_physics = entity => {
-    const mat = new PhysicMaterial(0.1, 0.2, 0.5);
-
     let shape
-    let raw_shape;
     if (entity.body.type === 'box') {
         shape = new BoxCollider();
         shape.size = entity.body.size;
-        raw_shape = shape.create(mat);
+        shape.material.staticFriction = 0.1;
+        shape.material.dynamicFriction = 0.2;
+        shape.material.bounciness = 0.5;
     } else if (entity.body.type === 'sphere') {
         shape = new SphereCollider();
         shape.radius = entity.body.size.x;
-        raw_shape = shape.create(mat);
+        shape.material.staticFriction = 0.1;
+        shape.material.dynamicFriction = 0.2;
+        shape.material.bounciness = 0.5;
     }
 
     const transform = {
@@ -54,7 +54,7 @@ export const add_physics = entity => {
     } else {
         body = PhysicsSystem.createRigidStatic(transform)
     }
-    body.attachShape(raw_shape)
+    body.attachShape(shape.create())
     bodies[entity.id] = body
     PhysicsScene.addActor(body, null)
 }

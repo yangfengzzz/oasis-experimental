@@ -3,7 +3,6 @@ import {
     physics as PhysicsSystem,
 } from "./physx.release";
 import {Collider} from "./Collider";
-import {Vector3} from "oasis-engine";
 import {PhysicMaterial} from "./PhysicMaterial";
 
 export class SphereCollider extends Collider {
@@ -19,10 +18,10 @@ export class SphereCollider extends Collider {
         this._is_dirty = true;
     }
 
-    create(mat: PhysicMaterial): any {
+    create(): any {
         if (this._is_dirty) {
             this._pxGeometry = new PhysX.PxSphereGeometry(this._radius);
-            this._pxShape = PhysicsSystem.createShape(this._pxGeometry, mat.create(), false, this.flags);
+            this._pxShape = PhysicsSystem.createShape(this._pxGeometry, this._material.create(), false, this._flags);
 
             const transform = {
                 translation: {

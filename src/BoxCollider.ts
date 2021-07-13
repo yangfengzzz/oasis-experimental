@@ -19,7 +19,7 @@ export class BoxCollider extends Collider {
         this._is_dirty = true;
     }
 
-    create(mat: PhysicMaterial): any {
+    create(): any {
         if (this._is_dirty) {
             this._pxGeometry = new PhysX.PxBoxGeometry(
                 // PHYSX uses half-extents
@@ -27,7 +27,7 @@ export class BoxCollider extends Collider {
                 this._size.y / 2,
                 this._size.z / 2
             );
-            this._pxShape = PhysicsSystem.createShape(this._pxGeometry, mat.create(), false, this.flags);
+            this._pxShape = PhysicsSystem.createShape(this._pxGeometry, this._material.create(), false, this._flags);
 
             const transform = {
                 translation: {

@@ -10,12 +10,12 @@ export class Collider {
     protected _is_dirty: boolean = true;
 
     protected _pxShape: any;
-    protected flags: any = new PhysX.PxShapeFlags(
+    protected _flags: any = new PhysX.PxShapeFlags(
         PhysX.PxShapeFlag.eSCENE_QUERY_SHAPE.value |
         PhysX.PxShapeFlag.eSIMULATION_SHAPE.value
     )
 
-    protected _material: PhysicMaterial;
+    protected _material: PhysicMaterial = new PhysicMaterial(0.1, 0.1, 0.1);
 
     get center(): Vector3 {
         return this._center;
@@ -23,6 +23,16 @@ export class Collider {
 
     set center(value: Vector3) {
         this._center = value;
+        this._is_dirty = true;
+    }
+
+    get material(): PhysicMaterial {
+        this._is_dirty = true;
+        return this._material;
+    }
+
+    set material(value: PhysicMaterial) {
+        this._material = value;
         this._is_dirty = true;
     }
 }
