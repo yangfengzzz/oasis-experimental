@@ -4,7 +4,7 @@ import {
     PHYSX as PhysX,
 } from "./physx.release";
 
-export class Collider {
+export class Collider extends Component {
     protected _group_id: number;
 
     protected _center: Vector3 = new Vector3();

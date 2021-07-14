@@ -48,7 +48,6 @@ export class PhysicManager {
         },
     }
 
-    // @ts-ignore
     _physicObjectsMap: any = {};
     _PxScene: any;
 

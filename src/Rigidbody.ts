@@ -2,7 +2,7 @@ import {
     PHYSX as PhysX,
     physics as PhysicsSystem,
 } from "./physx.release";
-import {Quaternion, Vector3} from "oasis-engine";
+import {Component, Quaternion, Vector3} from "oasis-engine";
 import {Collider} from "./Collider";
 
 export enum CollisionDetectionMode {
@@ -26,7 +26,7 @@ export enum RigidbodyConstraints {
 
 // detectCollisions, inertiaTensorRotation, useGravity
 // interpolation, solverVelocityIterations, worldCenterOfMass
-export class Rigidbody {
+export class Rigidbody extends Component {
     private _collider: Collider;
 
     /** The drag of the object. */
