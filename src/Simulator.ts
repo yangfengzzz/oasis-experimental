@@ -10,7 +10,7 @@ import {BoxCollider} from "./BoxCollider";
 import {Rigidbody} from "./Rigidbody";
 import {SphereCollider} from "./SphereCollider";
 import {PhysicCombineMode} from "./PhysicMaterial";
-import {PhysicManager} from "./physicManager";
+import {PhysicManager} from "./PhysicManager";
 
 export const engine = new WebGLEngine("canvas");
 engine.canvas.resizeByClientSize();
