@@ -1,7 +1,5 @@
 import * as renderer from "./src/renderer";
 import {
-    PHYSX as PhysX,
-    physics as PhysicsSystem,
     onLoad as PhysicsOnLoad,
 } from "./src/physx.release";
 import {makeEntities} from './src/entities'
@@ -48,13 +46,12 @@ export const add_physics = entity => {
     rigid_body.attachShape(shape);
     bodies[entity.id] = rigid_body;
 
-    PhysicsScene.get().addActor(rigid_body.get(), null)
+    PhysicsScene.addActor(rigid_body);
     rigid_body.addForce(new Vector3(0, 300, 0));
 }
 
 export const update_physics = entities => {
-    PhysicsScene.get().simulate(1 / 60, true)
-    PhysicsScene.get().fetchResults(true)
+    PhysicsScene.simulateAndFetchResult();
     entities.forEach(entity => {
         const body = bodies[entity.id]
         const transform = body.getGlobalPose()

@@ -2,6 +2,7 @@ import {
     PHYSX as PhysX,
     physics as PhysicsSystem,
 } from "./physx.release";
+import {Rigidbody} from "./Rigidbody";
 
 export class PhysicManager {
     triggerCallback = {
@@ -23,6 +24,15 @@ export class PhysicManager {
     }
 
     _PxScene: any;
+
+    addActor(actor:Rigidbody) {
+        this._PxScene.addActor(actor.get(), null);
+    }
+
+    simulateAndFetchResult() {
+        this._PxScene.simulate(1 / 60, true)
+        this._PxScene.fetchResults(true)
+    }
 
     init() {
         const PHYSXSimulationCallbackInstance = PhysX.PxSimulationEventCallback.implement(
