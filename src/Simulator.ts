@@ -38,11 +38,11 @@ const physic_scene = new PhysicManager();
 export function init() {
     physic_scene.init();
 
-    addBox(false, new Vector3(10, 0.1, 10), new Vector3, new Quaternion, physic_scene);
+    addPlane(new Vector3(10, 0.1, 10), new Vector3, new Quaternion, physic_scene);
 
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
-            addBox(true, new Vector3(1, 1, 1), new Vector3(
+            addBox(new Vector3(1, 1, 1), new Vector3(
                 -2.5 + i + 0.1 * i,
                 Math.floor(Math.random() * 6) + 1,
                 -2.5 + j + 0.1 * j,
@@ -54,7 +54,7 @@ export function init() {
 window.addEventListener("keydown", (event) => {
     switch (event.key) {
         case 'Enter':
-            addSphere(true, 0.5, new Vector3(
+            addSphere(0.5, new Vector3(
                 Math.floor(Math.random() * 6) - 2.5,
                 5,
                 Math.floor(Math.random() * 6) - 2.5,
@@ -65,8 +65,8 @@ window.addEventListener("keydown", (event) => {
 
 export function update() {
     physic_scene.simulateAndFetchResult();
-    for (let i = 0; i < entity_id; i++) {
-        const transform = physic_scene._physicObjectsMap[i].getGlobalPose();
+    for (let i = 1; i < entity_id; i++) {
+        const transform = physic_scene._physicObjectsMap[i].entity.getComponent(Rigidbody).getGlobalPose();
         physic_scene._physicObjectsMap[i].entity.transform.position = transform.translation;
         physic_scene._physicObjectsMap[i].entity.transform.rotationQuaternion = transform.rotation;
     }
@@ -75,7 +75,32 @@ export function update() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-function addBox(dynamic: boolean, size: Vector3, position: Vector3, rotation: Quaternion, scene: PhysicManager) {
+function addPlane(size: Vector3, position: Vector3, rotation: Quaternion, scene: PhysicManager) {
+    const mtl = new BlinnPhongMaterial(engine);
+    const color = mtl.baseColor;
+    color.r = Math.random();
+    color.g = Math.random();
+    color.b = Math.random();
+    color.a = 1.0;
+    const cubeEntity = rootEntity.createChild();
+    const renderer = cubeEntity.addComponent(MeshRenderer);
+
+    renderer.mesh = PrimitiveMesh.createCuboid(engine, size.x, size.y, size.z);
+    renderer.setMaterial(mtl);
+    cubeEntity.transform.position = position;
+    cubeEntity.transform.rotationQuaternion = rotation;
+
+    const box_collider = cubeEntity.addComponent(BoxCollider);
+    box_collider.size = size;
+    box_collider.material.staticFriction = 0.1;
+    box_collider.material.dynamicFriction = 0.2;
+    box_collider.material.bounciness = 0.1;
+    box_collider.init(entity_id++);
+
+    scene.addStaticActor(box_collider);
+}
+
+function addBox(size: Vector3, position: Vector3, rotation: Quaternion, scene: PhysicManager) {
     const mtl = new BlinnPhongMaterial(engine);
     const color = mtl.baseColor;
     color.r = Math.random();
@@ -97,15 +122,15 @@ function addBox(dynamic: boolean, size: Vector3, position: Vector3, rotation: Qu
     box_collider.material.bounciness = 0.1;
     box_collider.init(entity_id++);
     const rigid_body = cubeEntity.addComponent(Rigidbody);
-    rigid_body.init(dynamic, position, rotation);
+    rigid_body.init(position, rotation);
     rigid_body.freezeRotation = false;
     rigid_body.attachShape(box_collider);
 
-    scene.addActor(rigid_body);
+    scene.addDynamicActor(rigid_body);
     rigid_body.addForce(new Vector3(0, 300, 0));
 }
 
-function addSphere(dynamic: boolean, radius: number, position: Vector3, rotation: Quaternion, scene: PhysicManager) {
+function addSphere(radius: number, position: Vector3, rotation: Quaternion, scene: PhysicManager) {
     const mtl = new BlinnPhongMaterial(engine);
     const color = mtl.baseColor;
     color.r = Math.random();
@@ -130,10 +155,10 @@ function addSphere(dynamic: boolean, radius: number, position: Vector3, rotation
     sphere_collider.material.bounceCombine = PhysicCombineMode.Minimum;
     sphere_collider.init(entity_id++);
     const rigid_body = cubeEntity.addComponent(Rigidbody);
-    rigid_body.init(dynamic, position, rotation);
+    rigid_body.init(position, rotation);
     rigid_body.freezeRotation = false;
     rigid_body.attachShape(sphere_collider);
 
-    scene.addActor(rigid_body);
+    scene.addDynamicActor(rigid_body);
     rigid_body.addForce(new Vector3(0, 300, 0));
 }

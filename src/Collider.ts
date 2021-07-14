@@ -2,6 +2,7 @@ import {Component, Vector3} from "oasis-engine";
 import {PhysicMaterial} from "./PhysicMaterial";
 import {
     PHYSX as PhysX,
+    physics as PhysicsSystem,
 } from "./physx.release";
 
 export class Collider extends Component {
@@ -17,6 +18,8 @@ export class Collider extends Component {
     )
 
     protected _material: PhysicMaterial = new PhysicMaterial(0.1, 0.1, 0.1);
+
+    protected _PxRigidStatic: any;
 
     get center(): Vector3 {
         return this._center;
@@ -39,6 +42,29 @@ export class Collider extends Component {
 
     get group_id(): number {
         return this._group_id;
+    }
+
+    attachInternalActor() {
+        const transform = {
+            translation: {
+                x: this.entity.transform.position.x,
+                y: this.entity.transform.position.y,
+                z: this.entity.transform.position.z,
+            },
+            rotation: {
+                w: this.entity.transform.rotationQuaternion.w, // PHYSX uses WXYZ quaternions,
+                x: this.entity.transform.rotationQuaternion.x,
+                y: this.entity.transform.rotationQuaternion.y,
+                z: this.entity.transform.rotationQuaternion.z,
+            },
+        }
+
+        this._PxRigidStatic = PhysicsSystem.createRigidStatic(transform)
+        this._PxRigidStatic.attachShape(this._pxShape);
+    }
+
+    get staticActor(): any {
+        return this._PxRigidStatic;
     }
 
     get(): any {

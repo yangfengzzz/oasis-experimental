@@ -72,8 +72,6 @@ export class Rigidbody extends Component {
     /** Controls whether physics will change the rotation of the object. */
     private _freezeRotation: boolean;
 
-    private _isDynamic: boolean;
-
     private _PxRigidActor: any;
 
     get drag(): number {
@@ -83,9 +81,8 @@ export class Rigidbody extends Component {
     // setLinearDamping
     set drag(value: number) {
         this._drag = value;
-        if (this.isDynamic) {
-            this._PxRigidActor.setLinearDamping(value);
-        }
+        this._PxRigidActor.setLinearDamping(value);
+
     }
 
     get angularDrag(): number {
@@ -95,9 +92,7 @@ export class Rigidbody extends Component {
     //setAngularDamping
     set angularDrag(value: number) {
         this._angularDrag = value;
-        if (this.isDynamic) {
-            this._PxRigidActor.setAngularDamping(value);
-        }
+        this._PxRigidActor.setAngularDamping(value);
     }
 
     get velocity(): Vector3 {
@@ -107,10 +102,8 @@ export class Rigidbody extends Component {
     //setLinearVelocity
     set velocity(value: Vector3) {
         this._velocity = value;
-        if (this.isDynamic) {
-            const vel = {x: value.x, y: value.y, z: value.z};
-            this._PxRigidActor.setLinearVelocity(vel, true);
-        }
+        const vel = {x: value.x, y: value.y, z: value.z};
+        this._PxRigidActor.setLinearVelocity(vel, true);
     }
 
     get angularVelocity(): Vector3 {
@@ -120,9 +113,7 @@ export class Rigidbody extends Component {
     //setAngularVelocity
     set angularVelocity(value: Vector3) {
         this._angularVelocity = value;
-        if (this.isDynamic) {
-            this._PxRigidActor.setAngularVelocity({x: value.x, y: value.y, z: value.z}, true);
-        }
+        this._PxRigidActor.setAngularVelocity({x: value.x, y: value.y, z: value.z}, true);
     }
 
     get position(): Vector3 {
@@ -140,9 +131,7 @@ export class Rigidbody extends Component {
     // setMass
     set mass(value: number) {
         this._mass = value;
-        if (this.isDynamic) {
-            this._PxRigidActor.setMass(value);
-        }
+        this._PxRigidActor.setMass(value);
     }
 
     get centerOfMass(): Vector3 {
@@ -152,19 +141,17 @@ export class Rigidbody extends Component {
     // setCMassLocalPose
     set centerOfMass(value: Vector3) {
         this._centerOfMass = value;
-        if (this.isDynamic) {
-            const transform = {
-                translation: {
-                    x: value.x,
-                    y: value.y,
-                    z: value.z,
-                },
-                rotation: {
-                    w: 1, x: 0, y: 0, z: 0,
-                },
-            }
-            this._PxRigidActor.setCMassLocalPose(value);
+        const transform = {
+            translation: {
+                x: value.x,
+                y: value.y,
+                z: value.z,
+            },
+            rotation: {
+                w: 1, x: 0, y: 0, z: 0,
+            },
         }
+        this._PxRigidActor.setCMassLocalPose(value);
     }
 
     get inertiaTensor(): Vector3 {
@@ -174,9 +161,7 @@ export class Rigidbody extends Component {
     // setMassSpaceInertiaTensor
     set inertiaTensor(value: Vector3) {
         this._inertiaTensor = value;
-        if (this.isDynamic) {
-            this._PxRigidActor.setMassSpaceInertiaTensor({x: value.x, y: value.y, z: value.z});
-        }
+        this._PxRigidActor.setMassSpaceInertiaTensor({x: value.x, y: value.y, z: value.z});
     }
 
     get maxAngularVelocity(): number {
@@ -186,9 +171,7 @@ export class Rigidbody extends Component {
     // setMaxAngularVelocity
     set maxAngularVelocity(value: number) {
         this._maxAngularVelocity = value;
-        if (this.isDynamic) {
-            this._PxRigidActor.setMaxAngularVelocity(value);
-        }
+        this._PxRigidActor.setMaxAngularVelocity(value);
     }
 
     get maxDepenetrationVelocity(): number {
@@ -198,9 +181,7 @@ export class Rigidbody extends Component {
     // setMaxDepenetrationVelocity
     set maxDepenetrationVelocity(value: number) {
         this._maxDepenetrationVelocity = value;
-        if (this.isDynamic) {
-            this._PxRigidActor.setMaxDepenetrationVelocity(value);
-        }
+        this._PxRigidActor.setMaxDepenetrationVelocity(value);
     }
 
     get sleepThreshold(): number {
@@ -210,9 +191,7 @@ export class Rigidbody extends Component {
     //setSleepThreshold
     set sleepThreshold(value: number) {
         this._sleepThreshold = value;
-        if (this.isDynamic) {
-            this._PxRigidActor.setSleepThreshold(value);
-        }
+        this._PxRigidActor.setSleepThreshold(value);
     }
 
     get solverIterations(): number {
@@ -222,9 +201,7 @@ export class Rigidbody extends Component {
     //setSolverIterationCounts
     set solverIterations(value: number) {
         this._solverIterations = value;
-        if (this.isDynamic) {
-            this._PxRigidActor.setSolverIterationCounts(value, 1);
-        }
+        this._PxRigidActor.setSolverIterationCounts(value, 1);
     }
 
     get collisionDetectionMode(): CollisionDetectionMode {
@@ -233,23 +210,21 @@ export class Rigidbody extends Component {
 
     set collisionDetectionMode(value: CollisionDetectionMode) {
         this._collisionDetectionMode = value;
-        if (this.isDynamic) {
-            switch (value) {
-                case CollisionDetectionMode.Continuous:
-                    this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_CCD, true);
-                    break;
-                case CollisionDetectionMode.ContinuousDynamic:
-                    this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_CCD_FRICTION, true);
-                    break;
-                case CollisionDetectionMode.ContinuousSpeculative:
-                    this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_SPECULATIVE_CCD, true);
-                    break;
-                case CollisionDetectionMode.Discrete:
-                    this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_CCD, false);
-                    this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_CCD_FRICTION, false);
-                    this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_SPECULATIVE_CCD, false);
-                    break;
-            }
+        switch (value) {
+            case CollisionDetectionMode.Continuous:
+                this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_CCD, true);
+                break;
+            case CollisionDetectionMode.ContinuousDynamic:
+                this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_CCD_FRICTION, true);
+                break;
+            case CollisionDetectionMode.ContinuousSpeculative:
+                this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_SPECULATIVE_CCD, true);
+                break;
+            case CollisionDetectionMode.Discrete:
+                this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_CCD, false);
+                this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_CCD_FRICTION, false);
+                this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eENABLE_SPECULATIVE_CCD, false);
+                break;
         }
     }
 
@@ -259,12 +234,10 @@ export class Rigidbody extends Component {
 
     set isKinematic(value: boolean) {
         this._isKinematic = value;
-        if (this.isDynamic) {
-            if (value) {
-                this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eKINEMATIC, true);
-            } else {
-                this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eKINEMATIC, false);
-            }
+        if (value) {
+            this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eKINEMATIC, true);
+        } else {
+            this._PxRigidActor.setRigidBodyFlag(PhysX.PxRigidBodyFlag.eKINEMATIC, false);
         }
     }
 
@@ -278,45 +251,43 @@ export class Rigidbody extends Component {
         else
             this._constraints = this._constraints & (~flag);
 
-        if (this.isDynamic) {
-            switch (flag) {
-                case RigidbodyConstraints.FreezePositionX:
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_X, value);
-                    break;
-                case RigidbodyConstraints.FreezePositionY:
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
-                    break;
-                case RigidbodyConstraints.FreezePositionZ:
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
-                    break;
-                case RigidbodyConstraints.FreezeRotationX:
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_X, value);
-                    break;
-                case RigidbodyConstraints.FreezeRotationY:
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Y, value);
-                    break;
-                case RigidbodyConstraints.FreezeRotationZ:
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Z, value);
-                    break;
-                case RigidbodyConstraints.FreezeAll:
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_X, value);
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_X, value);
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Y, value);
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Z, value);
-                    break;
-                case RigidbodyConstraints.FreezePosition:
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_X, value);
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
-                    break;
-                case RigidbodyConstraints.FreezeRotation:
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_X, value);
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Y, value);
-                    this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Z, value);
-                    break;
-            }
+        switch (flag) {
+            case RigidbodyConstraints.FreezePositionX:
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_X, value);
+                break;
+            case RigidbodyConstraints.FreezePositionY:
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
+                break;
+            case RigidbodyConstraints.FreezePositionZ:
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
+                break;
+            case RigidbodyConstraints.FreezeRotationX:
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_X, value);
+                break;
+            case RigidbodyConstraints.FreezeRotationY:
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Y, value);
+                break;
+            case RigidbodyConstraints.FreezeRotationZ:
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Z, value);
+                break;
+            case RigidbodyConstraints.FreezeAll:
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_X, value);
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_X, value);
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Y, value);
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Z, value);
+                break;
+            case RigidbodyConstraints.FreezePosition:
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_X, value);
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_LINEAR_Y, value);
+                break;
+            case RigidbodyConstraints.FreezeRotation:
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_X, value);
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Y, value);
+                this._PxRigidActor.setRigidDynamicLockFlag(PhysX.PxRigidDynamicLockFlag.eLOCK_ANGULAR_Z, value);
+                break;
         }
     }
 
@@ -329,10 +300,6 @@ export class Rigidbody extends Component {
         this.setConstraints(RigidbodyConstraints.FreezeRotation, value);
     }
 
-    get isDynamic(): boolean {
-        return this._isDynamic;
-    }
-
     //----------------------------------------------------------------------------------
     // AddExplosionForce, AddRelativeTorque, ClosestPointOnBounds,
     // MovePosition, MoveRotation, ResetCenterOfMass, ResetInertiaTensor
@@ -340,54 +307,38 @@ export class Rigidbody extends Component {
 
     // addForce must called after add into scene;
     addForce(force: Vector3) {
-        if (this._isDynamic) {
-            this._PxRigidActor.addForce({x: force.x, y: force.y, z: force.z});
-        }
+        this._PxRigidActor.addForce({x: force.x, y: force.y, z: force.z});
     }
 
     // addTorque must called after add into scene;
     addTorque(torque: Vector3) {
-        if (this._isDynamic) {
-            this._PxRigidActor.addTorque({x: torque.x, y: torque.y, z: torque.z});
-        }
+        this._PxRigidActor.addTorque({x: torque.x, y: torque.y, z: torque.z});
     }
 
     // addForceAtPos
     addForceAtPosition(force: Vector3, pos: Vector3) {
-        if (this._isDynamic) {
-            this._PxRigidActor.addForceAtPos(
-                {x: force.x, y: force.y, z: force.z},
-                {x: pos.x, y: pos.y, z: pos.z});
-        }
+        this._PxRigidActor.addForceAtPos(
+            {x: force.x, y: force.y, z: force.z},
+            {x: pos.x, y: pos.y, z: pos.z});
     }
 
     // addForceAtLocalPos
     addRelativeForce(force: Vector3, pos: Vector3) {
-        if (this._isDynamic) {
-            this._PxRigidActor.addForceAtLocalPos(
-                {x: force.x, y: force.y, z: force.z},
-                {x: pos.x, y: pos.y, z: pos.z});
-        }
+        this._PxRigidActor.addForceAtLocalPos(
+            {x: force.x, y: force.y, z: force.z},
+            {x: pos.x, y: pos.y, z: pos.z});
     }
 
-    //getVelocityAtPos(undefined)
-    getPointVelocity(pos: Vector3): Vector3 | undefined {
-        if (this._isDynamic) {
-            const vel = this._PxRigidActor.getVelocityAtPos({x: pos.x, y: pos.y, z: pos.z})
-            return new Vector3(vel.x, vel.y, vel.z);
-        } else {
-            return undefined;
-        }
+    //getVelocityAtPos
+    getPointVelocity(pos: Vector3): Vector3 {
+        const vel = this._PxRigidActor.getVelocityAtPos({x: pos.x, y: pos.y, z: pos.z})
+        return new Vector3(vel.x, vel.y, vel.z);
     }
 
-    //getLocalVelocityAtLocalPos(undefined)
-    getRelativePointVelocity(pos: Vector3): Vector3 | undefined {
-        if (this._isDynamic) {
-            const vel = this._PxRigidActor.getLocalVelocityAtLocalPos({x: pos.x, y: pos.y, z: pos.z})
-            return new Vector3(vel.x, vel.y, vel.z);
-        } else {
-            return undefined;
-        }
+    //getLocalVelocityAtLocalPos
+    getRelativePointVelocity(pos: Vector3): Vector3 {
+        const vel = this._PxRigidActor.getLocalVelocityAtLocalPos({x: pos.x, y: pos.y, z: pos.z})
+        return new Vector3(vel.x, vel.y, vel.z);
     }
 
     getGlobalPose(): { translation: Vector3, rotation: Quaternion } {
@@ -398,27 +349,21 @@ export class Rigidbody extends Component {
         };
     }
 
-    //isSleeping(undefined)
-    isSleeping(): boolean | undefined {
-        if (this._isDynamic) {
-            return this._PxRigidActor.isSleeping();
-        } else {
-            return undefined;
-        }
+    //isSleeping
+    isSleeping(): boolean {
+        return this._PxRigidActor.isSleeping();
     }
 
     //putToSleep
     sleep() {
-        if (this._isDynamic) {
-            return this._PxRigidActor.putToSleep();
-        }
+        return this._PxRigidActor.putToSleep();
+
     }
 
     //wakeUp
     wakeUp() {
-        if (this._isDynamic) {
-            return this._PxRigidActor.wakeUp();
-        }
+        return this._PxRigidActor.wakeUp();
+
     }
 
     //----------------------------------------------------------------------------------
@@ -431,8 +376,7 @@ export class Rigidbody extends Component {
         this._PxRigidActor.attachShape(shape.get());
     }
 
-    init(isDynamic: boolean, position?: Vector3, rotation?: Quaternion) {
-        this._isDynamic = isDynamic
+    init(position?: Vector3, rotation?: Quaternion) {
         if (position != undefined) {
             this._position = position;
         }
@@ -455,13 +399,8 @@ export class Rigidbody extends Component {
             },
         }
 
-        if (isDynamic) {
-            //rigidbody
-            this._PxRigidActor = PhysicsSystem.createRigidDynamic(transform)
-        } else {
-            //trigger
-            this._PxRigidActor = PhysicsSystem.createRigidStatic(transform)
-        }
+        this._PxRigidActor = PhysicsSystem.createRigidDynamic(transform)
+
     }
 
     get(): any {
