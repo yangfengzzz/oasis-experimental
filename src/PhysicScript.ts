@@ -1,27 +1,29 @@
 import {Script} from "oasis-engine";
+import {Collider} from "./Collider";
+import {Collision} from "./Collision";
 
 export class PhysicScript extends Script {
-    onCollisionEnter(): void {
+    onCollisionEnter(other: Collision): void {
         console.log("onCollisionEnter");
     }
 
-    onCollisionExit(): void {
+    onCollisionExit(other: Collision): void {
         console.log("onCollisionExit");
     }
 
-    onCollisionStay(): void {
+    onCollisionStay(other: Collision): void {
         console.log("onCollisionStay");
     }
 
-    onTriggerEnter(): void {
+    onTriggerEnter(other: Collider): void {
         console.log("onTriggerEnter");
     }
 
-    onTriggerExit(): void {
+    onTriggerExit(other: Collider): void {
         console.log("onTriggerExit");
     }
 
-    onTriggerStay(): void {
+    onTriggerStay(other: Collider): void {
         console.log("onTriggerStay");
     }
 }

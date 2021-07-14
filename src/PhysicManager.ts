@@ -4,6 +4,7 @@ import {
 } from "./physx.release";
 import {Rigidbody} from "./Rigidbody";
 import {PhysicScript} from "./PhysicScript";
+import {Collision} from "./Collision";
 
 export class PhysicManager {
     triggerCallback = {
@@ -12,7 +13,7 @@ export class PhysicManager {
             this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
             if (script.length > 0) {
                 script.forEach(value => {
-                    value.onCollisionEnter();
+                    value.onCollisionEnter(new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0].collider));
                 })
             }
 
@@ -20,7 +21,7 @@ export class PhysicManager {
             this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
             if (script.length > 0) {
                 script.forEach(value => {
-                    value.onCollisionEnter();
+                    value.onCollisionEnter(new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0].collider));
                 })
             }
         },
@@ -29,7 +30,7 @@ export class PhysicManager {
             this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
             if (script.length > 0) {
                 script.forEach(value => {
-                    value.onCollisionExit();
+                    value.onCollisionExit(new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0].collider));
                 })
             }
 
@@ -37,7 +38,7 @@ export class PhysicManager {
             this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
             if (script.length > 0) {
                 script.forEach(value => {
-                    value.onCollisionExit();
+                    value.onCollisionExit(new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0].collider));
                 })
             }
         },
@@ -46,7 +47,7 @@ export class PhysicManager {
             this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
             if (script.length > 0) {
                 script.forEach(value => {
-                    value.onCollisionStay();
+                    value.onCollisionStay(new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0].collider));
                 })
             }
 
@@ -54,7 +55,7 @@ export class PhysicManager {
             this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
             if (script.length > 0) {
                 script.forEach(value => {
-                    value.onCollisionStay();
+                    value.onCollisionStay(new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0].collider));
                 })
             }
         },
@@ -63,7 +64,7 @@ export class PhysicManager {
             this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
             if (script.length > 0) {
                 script.forEach(value => {
-                    value.onTriggerEnter();
+                    value.onTriggerEnter(this._physicObjectsMap[obj1.getQueryFilterData().word0].collider);
                 })
             }
 
@@ -71,7 +72,7 @@ export class PhysicManager {
             this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
             if (script.length > 0) {
                 script.forEach(value => {
-                    value.onTriggerEnter();
+                    value.onTriggerEnter(this._physicObjectsMap[obj2.getQueryFilterData().word0].collider);
                 })
             }
         },
@@ -80,7 +81,7 @@ export class PhysicManager {
             this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
             if (script.length > 0) {
                 script.forEach(value => {
-                    value.onTriggerExit();
+                    value.onTriggerExit(this._physicObjectsMap[obj1.getQueryFilterData().word0].collider);
                 })
             }
 
@@ -88,12 +89,13 @@ export class PhysicManager {
             this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
             if (script.length > 0) {
                 script.forEach(value => {
-                    value.onTriggerExit();
+                    value.onTriggerExit(this._physicObjectsMap[obj2.getQueryFilterData().word0].collider);
                 })
             }
         },
     }
 
+    //------------------------------------------------------------------------------------------------------------------
     _physicObjectsMap: any = {};
     _PxScene: any;
 
