@@ -1,7 +1,8 @@
 import * as renderer from "./src/renderer";
 import {
-    scene as PhysicsScene,
-    onLoad as PhysicsOnLoad
+    PHYSX as PhysX,
+    physics as PhysicsSystem,
+    onLoad as PhysicsOnLoad,
 } from "./src/physx.release";
 import {makeEntities} from './src/entities'
 import {SphereCollider} from "./src/SphereCollider";
@@ -13,7 +14,38 @@ import {Rigidbody} from "./src/Rigidbody";
 let bodies = {}
 const entities = makeEntities()
 
+export let PhysicsScene;
+const createScene = () => {
+    const triggerCallback = {
+        onContactBegin: (obj1, obj2) => {
+            console.log("onContactBegin", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+        },
+        onContactEnd: (obj1, obj2) => {
+            console.log("onContactEnd", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+        },
+        onContactPersist: (obj1, obj2) => {
+            // console.log("onContactPersist", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+        },
+        onTriggerBegin: (obj1, obj2) => {
+            console.log("onTriggerBegin", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+        },
+        onTriggerEnd: (obj1, obj2) => {
+            console.log("onTriggerEnd", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+        },
+    }
+    const PHYSXSimulationCallbackInstance = PhysX.PxSimulationEventCallback.implement(
+        triggerCallback
+    )
+    const sceneDesc = PhysX.getDefaultSceneDesc(
+        PhysicsSystem.getTolerancesScale(),
+        0,
+        PHYSXSimulationCallbackInstance
+    )
+    PhysicsScene = PhysicsSystem.createScene(sceneDesc)
+}
+
 export const init_physics = entities => {
+    createScene();
     entities.forEach(entity => {
         add_physics(entity)
     })

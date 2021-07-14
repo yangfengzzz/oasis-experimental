@@ -1,7 +1,6 @@
 let loaded = false
 let cb = null
 export let physics
-export let scene
 
 export const PHYSX = {
   onRuntimeInitialized: function () {
@@ -35,33 +34,6 @@ const setup = () => {
       null
   )
   PHYSX.PxInitExtensions(physics, null)
-
-  const triggerCallback = {
-    onContactBegin: (obj1, obj2) => {
-      console.log("onContactBegin", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
-    },
-    onContactEnd: (obj1, obj2) => {
-      console.log("onContactEnd", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
-    },
-    onContactPersist: (obj1, obj2) => {
-      // console.log("onContactPersist", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
-    },
-    onTriggerBegin: (obj1, obj2) => {
-      console.log("onTriggerBegin", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
-    },
-    onTriggerEnd: (obj1, obj2) => {
-      console.log("onTriggerEnd", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
-    },
-  }
-  const PHYSXSimulationCallbackInstance = PHYSX.PxSimulationEventCallback.implement(
-      triggerCallback
-  )
-  const sceneDesc = PHYSX.getDefaultSceneDesc(
-      physics.getTolerancesScale(),
-      0,
-      PHYSXSimulationCallbackInstance
-  )
-  scene = physics.createScene(sceneDesc)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
