@@ -22,6 +22,8 @@ export class SphereCollider extends Collider {
             this._pxGeometry = new PhysX.PxSphereGeometry(this._radius);
             this._pxShape = PhysicsSystem.createShape(this._pxGeometry, this._material.create(), false, this._flags);
 
+            const data = new PhysX.PxFilterData(23, 0, 0, 0);
+            this._pxShape.setQueryFilterData(data);
             const transform = {
                 translation: {
                     x: this._center.x,

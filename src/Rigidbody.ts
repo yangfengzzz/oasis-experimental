@@ -449,8 +449,10 @@ export class Rigidbody {
         }
 
         if (isDynamic) {
+            //rigidbody
             this._PxRigidActor = PhysicsSystem.createRigidDynamic(transform)
         } else {
+            //trigger
             this._PxRigidActor = PhysicsSystem.createRigidStatic(transform)
         }
     }

@@ -26,21 +26,6 @@ const setup = () => {
       allocator,
       defaultErrorCallback
   )
-  const triggerCallback = {
-    onContactBegin: () => {
-    },
-    onContactEnd: () => {
-    },
-    onContactPersist: () => {
-    },
-    onTriggerBegin: () => {
-    },
-    onTriggerEnd: () => {
-    },
-  }
-  const PHYSXSimulationCallbackInstance = PHYSX.PxSimulationEventCallback.implement(
-      triggerCallback
-  )
 
   physics = PHYSX.PxCreatePhysics(
       version,
@@ -50,6 +35,27 @@ const setup = () => {
       null
   )
   PHYSX.PxInitExtensions(physics, null)
+
+  const triggerCallback = {
+    onContactBegin: (obj1, obj2) => {
+      console.log("onContactBegin", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+    },
+    onContactEnd: (obj1, obj2) => {
+      console.log("onContactEnd", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+    },
+    onContactPersist: (obj1, obj2) => {
+      // console.log("onContactPersist", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+    },
+    onTriggerBegin: (obj1, obj2) => {
+      console.log("onTriggerBegin", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+    },
+    onTriggerEnd: (obj1, obj2) => {
+      console.log("onTriggerEnd", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+    },
+  }
+  const PHYSXSimulationCallbackInstance = PHYSX.PxSimulationEventCallback.implement(
+      triggerCallback
+  )
   const sceneDesc = PHYSX.getDefaultSceneDesc(
       physics.getTolerancesScale(),
       0,
