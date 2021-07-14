@@ -10,42 +10,14 @@ import {BoxCollider} from "./src/BoxCollider";
 import {Quaternion, Vector3} from "oasis-engine";
 import {PhysicCombineMode} from "./src/PhysicMaterial";
 import {Rigidbody} from "./src/Rigidbody";
+import {PhysicManager} from "./src/physicManager";
 
 let bodies = {}
 const entities = makeEntities()
-
-export let PhysicsScene;
-const createScene = () => {
-    const triggerCallback = {
-        onContactBegin: (obj1, obj2) => {
-            console.log("onContactBegin", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
-        },
-        onContactEnd: (obj1, obj2) => {
-            console.log("onContactEnd", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
-        },
-        onContactPersist: (obj1, obj2) => {
-            // console.log("onContactPersist", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
-        },
-        onTriggerBegin: (obj1, obj2) => {
-            console.log("onTriggerBegin", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
-        },
-        onTriggerEnd: (obj1, obj2) => {
-            console.log("onTriggerEnd", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
-        },
-    }
-    const PHYSXSimulationCallbackInstance = PhysX.PxSimulationEventCallback.implement(
-        triggerCallback
-    )
-    const sceneDesc = PhysX.getDefaultSceneDesc(
-        PhysicsSystem.getTolerancesScale(),
-        0,
-        PHYSXSimulationCallbackInstance
-    )
-    PhysicsScene = PhysicsSystem.createScene(sceneDesc)
-}
+let PhysicsScene = new PhysicManager();
 
 export const init_physics = entities => {
-    createScene();
+    PhysicsScene.init();
     entities.forEach(entity => {
         add_physics(entity)
     })
@@ -76,13 +48,13 @@ export const add_physics = entity => {
     rigid_body.attachShape(shape);
     bodies[entity.id] = rigid_body;
 
-    PhysicsScene.addActor(rigid_body.get(), null)
+    PhysicsScene.get().addActor(rigid_body.get(), null)
     rigid_body.addForce(new Vector3(0, 300, 0));
 }
 
 export const update_physics = entities => {
-    PhysicsScene.simulate(1 / 60, true)
-    PhysicsScene.fetchResults(true)
+    PhysicsScene.get().simulate(1 / 60, true)
+    PhysicsScene.get().fetchResults(true)
     entities.forEach(entity => {
         const body = bodies[entity.id]
         const transform = body.getGlobalPose()
