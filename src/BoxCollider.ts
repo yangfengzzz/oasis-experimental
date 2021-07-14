@@ -18,7 +18,7 @@ export class BoxCollider extends Collider {
         this._is_dirty = true;
     }
 
-    init() {
+    init(group_id: number) {
         if (this._is_dirty) {
             this._pxGeometry = new PhysX.PxBoxGeometry(
                 // PHYSX uses half-extents
@@ -28,7 +28,8 @@ export class BoxCollider extends Collider {
             );
             this._pxShape = PhysicsSystem.createShape(this._pxGeometry, this._material.create(), false, this._flags);
 
-            const data = new PhysX.PxFilterData(32, 0, 0, 0);
+            this._group_id = group_id;
+            const data = new PhysX.PxFilterData(group_id, 0, 0, 0);
             this._pxShape.setQueryFilterData(data);
 
             const transform = {

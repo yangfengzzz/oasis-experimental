@@ -27,6 +27,8 @@ export enum RigidbodyConstraints {
 // detectCollisions, inertiaTensorRotation, useGravity
 // interpolation, solverVelocityIterations, worldCenterOfMass
 export class Rigidbody {
+    private _collider: Collider;
+
     /** The drag of the object. */
     private _drag: number;
     /** The angular drag of the object. */
@@ -420,7 +422,12 @@ export class Rigidbody {
     }
 
     //----------------------------------------------------------------------------------
+    get collider(): Collider {
+        return this._collider;
+    }
+
     attachShape(shape: Collider) {
+        this._collider = shape;
         this._PxRigidActor.attachShape(shape.get());
     }
 

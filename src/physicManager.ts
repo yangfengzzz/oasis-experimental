@@ -7,25 +7,56 @@ import {Rigidbody} from "./Rigidbody";
 export class PhysicManager {
     triggerCallback = {
         onContactBegin: (obj1, obj2) => {
-            console.log("onContactBegin", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+            if (this._physicObjectsMap[obj1.getQueryFilterData().word0] != undefined
+                && this._physicObjectsMap[obj2.getQueryFilterData().word0] != undefined) {
+                console.log("onContactBegin");
+            } else {
+                console.log("onContactBegin unknown!");
+            }
         },
         onContactEnd: (obj1, obj2) => {
-            console.log("onContactEnd", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+            if (this._physicObjectsMap[obj1.getQueryFilterData().word0] != undefined
+                && this._physicObjectsMap[obj2.getQueryFilterData().word0] != undefined) {
+                console.log("onContactEnd");
+            } else {
+                console.log("onContactEnd unknown!");
+            }
         },
         onContactPersist: (obj1, obj2) => {
-            // console.log("onContactPersist", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+            if (this._physicObjectsMap[obj1.getQueryFilterData().word0] != undefined
+                && this._physicObjectsMap[obj2.getQueryFilterData().word0] != undefined) {
+                console.log("onContactPersist");
+            } else {
+                console.log("onContactPersist unknown!");
+            }
         },
         onTriggerBegin: (obj1, obj2) => {
-            console.log("onTriggerBegin", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+            if (this._physicObjectsMap[obj1.getQueryFilterData().word0] != undefined
+                && this._physicObjectsMap[obj2.getQueryFilterData().word0] != undefined) {
+                console.log("onTriggerBegin");
+            } else {
+                console.log("onTriggerBegin unknown!");
+            }
         },
         onTriggerEnd: (obj1, obj2) => {
-            console.log("onTriggerEnd", obj1.getQueryFilterData().word0, "with ", obj2.getQueryFilterData().word0)
+            if (this._physicObjectsMap[obj1.getQueryFilterData().word0] != undefined
+                && this._physicObjectsMap[obj2.getQueryFilterData().word0] != undefined) {
+                console.log("onTriggerEnd");
+            } else {
+                console.log("onTriggerEnd unknown!");
+            }
         },
     }
 
+    // @ts-ignore
+    _physicObjectsMap: any = {};
     _PxScene: any;
 
-    addActor(actor:Rigidbody) {
+    addActor(actor: Rigidbody) {
+        this._physicObjectsMap[actor.collider.group_id] = actor.collider;
+        if (this._physicObjectsMap[1] == undefined) {
+            console.log("find noting");
+        }
         this._PxScene.addActor(actor.get(), null);
     }
 
@@ -46,7 +77,7 @@ export class PhysicManager {
         this._PxScene = PhysicsSystem.createScene(sceneDesc)
     }
 
-    get():any {
+    get(): any {
         return this._PxScene;
     }
 }

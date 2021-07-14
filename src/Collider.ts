@@ -5,6 +5,8 @@ import {
 } from "./physx.release";
 
 export class Collider {
+    protected _group_id: number;
+
     protected _center: Vector3 = new Vector3();
     protected _is_dirty: boolean = true;
 
@@ -33,6 +35,10 @@ export class Collider {
     set material(value: PhysicMaterial) {
         this._material = value;
         this._is_dirty = true;
+    }
+
+    get group_id(): number {
+        return this._group_id;
     }
 
     get(): any {

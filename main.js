@@ -29,7 +29,7 @@ export const add_physics = entity => {
         shape.material.staticFriction = 0.1;
         shape.material.dynamicFriction = 0.2;
         shape.material.bounciness = 0.1;
-        shape.init();
+        shape.init(entity.id);
     } else if (entity.body.type === 'sphere') {
         shape = new SphereCollider();
         shape.radius = entity.body.size.x;
@@ -37,7 +37,7 @@ export const add_physics = entity => {
         shape.material.dynamicFriction = 0.2;
         shape.material.bounciness = 2;
         shape.material.bounceCombine = PhysicCombineMode.Minimum;
-        shape.init();
+        shape.init(entity.id);
     }
 
     let rigid_body = new Rigidbody();
