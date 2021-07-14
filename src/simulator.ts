@@ -31,10 +31,13 @@ scene.ambientLight.diffuseIntensity = 1.2;
 
 //----------------------------------------------------------------------------------------------------------------------
 let entity_id: number = 0;
+const physic_scene = new PhysicManager();
 
-// init cube
-export const init = scene => {
-    addBox(false, new Vector3(10, 0.1, 10), new Vector3, new Quaternion, scene);
+//init scene
+export function init() {
+    physic_scene.init();
+
+    addBox(false, new Vector3(10, 0.1, 10), new Vector3, new Quaternion, physic_scene);
 
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
@@ -42,12 +45,36 @@ export const init = scene => {
                 -2.5 + i + 0.1 * i,
                 Math.floor(Math.random() * 6) + 1,
                 -2.5 + j + 0.1 * j,
-            ), new Quaternion(0, 0, 0.3, 0.7), scene);
+            ), new Quaternion(0, 0, 0.3, 0.7), physic_scene);
         }
     }
 }
 
-export function addBox(dynamic: boolean, size: Vector3, position: Vector3, rotation: Quaternion, scene: PhysicManager) {
+window.addEventListener("keydown", (event) => {
+    switch (event.key) {
+        case 'Enter':
+            addSphere(true, 0.5, new Vector3(
+                Math.floor(Math.random() * 6) - 2.5,
+                5,
+                Math.floor(Math.random() * 6) - 2.5,
+            ), new Quaternion(0, 0, 0.3, 0.7), physic_scene);
+            break;
+    }
+})
+
+export function update() {
+    physic_scene.simulateAndFetchResult();
+    for (let i = 0; i < entity_id; i++) {
+        const transform = physic_scene._physicObjectsMap[i].getGlobalPose();
+        physic_scene._physicObjectsMap[i].entity.transform.position = transform.translation;
+        physic_scene._physicObjectsMap[i].entity.transform.rotationQuaternion = transform.rotation;
+    }
+
+    engine.update();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+function addBox(dynamic: boolean, size: Vector3, position: Vector3, rotation: Quaternion, scene: PhysicManager) {
     const mtl = new BlinnPhongMaterial(engine);
     const color = mtl.baseColor;
     color.r = Math.random();
@@ -77,7 +104,7 @@ export function addBox(dynamic: boolean, size: Vector3, position: Vector3, rotat
     rigid_body.addForce(new Vector3(0, 300, 0));
 }
 
-export function addSphere(dynamic: boolean, radius: number, position: Vector3, rotation: Quaternion, scene: PhysicManager) {
+function addSphere(dynamic: boolean, radius: number, position: Vector3, rotation: Quaternion, scene: PhysicManager) {
     const mtl = new BlinnPhongMaterial(engine);
     const color = mtl.baseColor;
     color.r = Math.random();
@@ -106,15 +133,4 @@ export function addSphere(dynamic: boolean, radius: number, position: Vector3, r
 
     scene.addActor(rigid_body);
     rigid_body.addForce(new Vector3(0, 300, 0));
-}
-
-export const update = (scene: PhysicManager) => {
-    scene.simulateAndFetchResult();
-    for (let i = 0; i < entity_id; i++) {
-        const transform = scene._physicObjectsMap[i].getGlobalPose();
-        scene._physicObjectsMap[i].entity.transform.position = transform.translation;
-        scene._physicObjectsMap[i].entity.transform.rotationQuaternion = transform.rotation;
-    }
-
-    engine.update();
 }
