@@ -52,10 +52,7 @@ export class PhysicManager {
     _PxScene: any;
 
     addActor(actor: Rigidbody) {
-        this._physicObjectsMap[actor.collider.group_id] = actor.collider;
-        if (this._physicObjectsMap[1] == undefined) {
-            console.log("find noting");
-        }
+        this._physicObjectsMap[actor.collider.group_id] = actor;
         this._PxScene.addActor(actor.get(), null);
     }
 
