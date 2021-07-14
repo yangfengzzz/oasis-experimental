@@ -101,4 +101,6 @@ export const update = (entities, scene) => {
         mesh.transform.position = transform.translation;
         mesh.transform.rotationQuaternion = transform.rotation;
     })
+
+    engine.update();
 }

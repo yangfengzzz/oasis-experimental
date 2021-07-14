@@ -1,4 +1,4 @@
-import * as renderer from "./src/simulator";
+import * as simulator from "./src/simulator";
 import {
     onLoad as PhysicsOnLoad,
 } from "./src/physx.release";
@@ -7,13 +7,11 @@ import {makeEntities} from './src/entities'
 import {Quaternion, Vector3} from "oasis-engine";
 
 const entities = makeEntities()
-let PhysicsScene = new PhysicManager();
+const physic_scene = new PhysicManager();
 
 //----------------------------------------------------------------------------------------------------------------------
 const update = () => {
-    renderer.update(entities, PhysicsScene)
-    renderer.engine.update()
-
+    simulator.update(entities, physic_scene)
     requestAnimationFrame(update)
 }
 
@@ -42,14 +40,14 @@ PhysicsOnLoad(() => {
                     },
                 }
                 // add_physics(entity)
-                renderer.add(entity, PhysicsScene)
+                simulator.add(entity, physic_scene)
                 entities.push(entity)
                 break;
         }
     })
 
-    PhysicsScene.init();
-    renderer.init(entities, PhysicsScene)
+    physic_scene.init();
+    simulator.init(entities, physic_scene)
 
     update()
 })
