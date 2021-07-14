@@ -9,86 +9,82 @@ import {Collision} from "./Collision";
 export class PhysicManager {
     triggerCallback = {
         onContactBegin: (obj1, obj2) => {
-            let script: PhysicScript[] = [];
-            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
-            if (script.length > 0) {
-                script.forEach(value => {
-                    value.onCollisionEnter(new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0].collider));
+            let scripts: PhysicScript[] = [];
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            if (scripts.length > 0) {
+                scripts.forEach(value => {
+                    let collision = new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0].collider);
+                    collision.rigidbody = this._physicObjectsMap[obj2.getQueryFilterData().word0];
+                    value.onCollisionEnter(collision);
                 })
             }
 
-            script = [];
-            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
-            if (script.length > 0) {
-                script.forEach(value => {
-                    value.onCollisionEnter(new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0].collider));
+            scripts = [];
+            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            if (scripts.length > 0) {
+                scripts.forEach(value => {
+                    let collision = new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0].collider);
+                    collision.rigidbody = this._physicObjectsMap[obj1.getQueryFilterData().word0];
+                    value.onCollisionEnter(collision);
                 })
             }
         },
         onContactEnd: (obj1, obj2) => {
-            let script: PhysicScript[] = [];
-            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
-            if (script.length > 0) {
-                script.forEach(value => {
-                    value.onCollisionExit(new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0].collider));
+            let scripts: PhysicScript[] = [];
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            if (scripts.length > 0) {
+                scripts.forEach(value => {
+                    let collision = new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0].collider);
+                    collision.rigidbody = this._physicObjectsMap[obj2.getQueryFilterData().word0];
+                    value.onCollisionExit(collision);
                 })
             }
 
-            script = [];
-            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
-            if (script.length > 0) {
-                script.forEach(value => {
-                    value.onCollisionExit(new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0].collider));
+            scripts = [];
+            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            if (scripts.length > 0) {
+                scripts.forEach(value => {
+                    let collision = new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0].collider);
+                    collision.rigidbody = this._physicObjectsMap[obj1.getQueryFilterData().word0];
+                    value.onCollisionExit(collision);
                 })
             }
         },
         onContactPersist: (obj1, obj2) => {
-            let script: PhysicScript[] = [];
-            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
-            if (script.length > 0) {
-                script.forEach(value => {
-                    value.onCollisionStay(new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0].collider));
+            let scripts: PhysicScript[] = [];
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            if (scripts.length > 0) {
+                scripts.forEach(value => {
+                    let collision = new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0].collider);
+                    collision.rigidbody = this._physicObjectsMap[obj2.getQueryFilterData().word0];
+                    value.onCollisionStay(collision);
                 })
             }
 
-            script = [];
-            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
-            if (script.length > 0) {
-                script.forEach(value => {
-                    value.onCollisionStay(new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0].collider));
+            scripts = [];
+            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            if (scripts.length > 0) {
+                scripts.forEach(value => {
+                    let collision = new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0].collider);
+                    collision.rigidbody = this._physicObjectsMap[obj1.getQueryFilterData().word0];
+                    value.onCollisionStay(collision);
                 })
             }
         },
         onTriggerBegin: (obj1, obj2) => {
-            let script: PhysicScript[] = [];
-            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
-            if (script.length > 0) {
-                script.forEach(value => {
-                    value.onTriggerEnter(this._physicObjectsMap[obj1.getQueryFilterData().word0].collider);
-                })
-            }
-
-            script = [];
-            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
-            if (script.length > 0) {
-                script.forEach(value => {
+            let scripts: PhysicScript[] = [];
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            if (scripts.length > 0) {
+                scripts.forEach(value => {
                     value.onTriggerEnter(this._physicObjectsMap[obj2.getQueryFilterData().word0].collider);
                 })
             }
         },
         onTriggerEnd: (obj1, obj2) => {
-            let script: PhysicScript[] = [];
-            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
-            if (script.length > 0) {
-                script.forEach(value => {
-                    value.onTriggerExit(this._physicObjectsMap[obj1.getQueryFilterData().word0].collider);
-                })
-            }
-
-            script = [];
-            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
-            if (script.length > 0) {
-                script.forEach(value => {
+            let scripts: PhysicScript[] = [];
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            if (scripts.length > 0) {
+                scripts.forEach(value => {
                     value.onTriggerExit(this._physicObjectsMap[obj2.getQueryFilterData().word0].collider);
                 })
             }
