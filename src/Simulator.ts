@@ -11,6 +11,7 @@ import {Rigidbody} from "./Rigidbody";
 import {SphereCollider} from "./SphereCollider";
 import {PhysicCombineMode} from "./PhysicMaterial";
 import {PhysicManager} from "./PhysicManager";
+import {PhysicScript} from "./PhysicScript";
 
 export const engine = new WebGLEngine("canvas");
 engine.canvas.resizeByClientSize();
@@ -113,6 +114,8 @@ function addSphere(dynamic: boolean, radius: number, position: Vector3, rotation
     color.a = 1.0;
     const cubeEntity = rootEntity.createChild();
     const renderer = cubeEntity.addComponent(MeshRenderer);
+
+    cubeEntity.addComponent(PhysicScript);
 
     renderer.mesh = PrimitiveMesh.createSphere(engine, radius);
     renderer.setMaterial(mtl);

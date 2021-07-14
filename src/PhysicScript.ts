@@ -1,7 +1,27 @@
 import {Script} from "oasis-engine";
 
 export class PhysicScript extends Script {
-    onColliderEnter(): void {}
+    onCollisionEnter(): void {
+        console.log("onCollisionEnter");
+    }
 
-    onColliderExit(): void {}
+    onCollisionExit(): void {
+        console.log("onCollisionExit");
+    }
+
+    onCollisionStay(): void {
+        console.log("onCollisionStay");
+    }
+
+    onTriggerEnter(): void {
+        console.log("onTriggerEnter");
+    }
+
+    onTriggerExit(): void {
+        console.log("onTriggerExit");
+    }
+
+    onTriggerStay(): void {
+        console.log("onTriggerStay");
+    }
 }

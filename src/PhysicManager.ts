@@ -3,47 +3,93 @@ import {
     physics as PhysicsSystem,
 } from "./physx.release";
 import {Rigidbody} from "./Rigidbody";
+import {PhysicScript} from "./PhysicScript";
 
 export class PhysicManager {
     triggerCallback = {
         onContactBegin: (obj1, obj2) => {
-            if (this._physicObjectsMap[obj1.getQueryFilterData().word0] != undefined
-                && this._physicObjectsMap[obj2.getQueryFilterData().word0] != undefined) {
-                console.log("onContactBegin");
-            } else {
-                console.log("onContactBegin unknown!");
+            let script: PhysicScript[] = [];
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
+            if (script.length > 0) {
+                script.forEach(value => {
+                    value.onCollisionEnter();
+                })
+            }
+
+            script = [];
+            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
+            if (script.length > 0) {
+                script.forEach(value => {
+                    value.onCollisionEnter();
+                })
             }
         },
         onContactEnd: (obj1, obj2) => {
-            if (this._physicObjectsMap[obj1.getQueryFilterData().word0] != undefined
-                && this._physicObjectsMap[obj2.getQueryFilterData().word0] != undefined) {
-                console.log("onContactEnd");
-            } else {
-                console.log("onContactEnd unknown!");
+            let script: PhysicScript[] = [];
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
+            if (script.length > 0) {
+                script.forEach(value => {
+                    value.onCollisionExit();
+                })
+            }
+
+            script = [];
+            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
+            if (script.length > 0) {
+                script.forEach(value => {
+                    value.onCollisionExit();
+                })
             }
         },
         onContactPersist: (obj1, obj2) => {
-            if (this._physicObjectsMap[obj1.getQueryFilterData().word0] != undefined
-                && this._physicObjectsMap[obj2.getQueryFilterData().word0] != undefined) {
-                console.log("onContactPersist");
-            } else {
-                console.log("onContactPersist unknown!");
+            let script: PhysicScript[] = [];
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
+            if (script.length > 0) {
+                script.forEach(value => {
+                    value.onCollisionStay();
+                })
+            }
+
+            script = [];
+            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
+            if (script.length > 0) {
+                script.forEach(value => {
+                    value.onCollisionStay();
+                })
             }
         },
         onTriggerBegin: (obj1, obj2) => {
-            if (this._physicObjectsMap[obj1.getQueryFilterData().word0] != undefined
-                && this._physicObjectsMap[obj2.getQueryFilterData().word0] != undefined) {
-                console.log("onTriggerBegin");
-            } else {
-                console.log("onTriggerBegin unknown!");
+            let script: PhysicScript[] = [];
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
+            if (script.length > 0) {
+                script.forEach(value => {
+                    value.onTriggerEnter();
+                })
+            }
+
+            script = [];
+            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
+            if (script.length > 0) {
+                script.forEach(value => {
+                    value.onTriggerEnter();
+                })
             }
         },
         onTriggerEnd: (obj1, obj2) => {
-            if (this._physicObjectsMap[obj1.getQueryFilterData().word0] != undefined
-                && this._physicObjectsMap[obj2.getQueryFilterData().word0] != undefined) {
-                console.log("onTriggerEnd");
-            } else {
-                console.log("onTriggerEnd unknown!");
+            let script: PhysicScript[] = [];
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
+            if (script.length > 0) {
+                script.forEach(value => {
+                    value.onTriggerExit();
+                })
+            }
+
+            script = [];
+            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, script);
+            if (script.length > 0) {
+                script.forEach(value => {
+                    value.onTriggerExit();
+                })
             }
         },
     }
