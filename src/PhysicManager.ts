@@ -114,7 +114,7 @@ export class PhysicManager {
 
     raycast(origin: Vector3, direction: Vector3, maxDistance: number, hit: RaycastHit): boolean {
         const pxRaycastHit: any = new PhysX.PxRaycastHit();
-        const result = this._PxScene.raycastAny({x: origin.x, y: origin.y, z: origin.z}, {
+        const result = this._PxScene.raycastSingle({x: origin.x, y: origin.y, z: origin.z}, {
             x: direction.x,
             y: direction.y,
             z: direction.z
@@ -125,12 +125,8 @@ export class PhysicManager {
         }
 
         hit.distance = pxRaycastHit.distance;
-        hit.point.x = pxRaycastHit.position.x;
-        hit.point.y = pxRaycastHit.position.y;
-        hit.point.z = pxRaycastHit.position.z;
-        hit.normal.x = pxRaycastHit.normal.x;
-        hit.normal.y = pxRaycastHit.normal.y;
-        hit.normal.z = pxRaycastHit.normal.z;
+        hit.point = new Vector3(pxRaycastHit.position.x, pxRaycastHit.position.y, pxRaycastHit.position.z);
+        hit.normal = new Vector3(pxRaycastHit.normal.x, pxRaycastHit.normal.y, pxRaycastHit.normal.z);
         hit.collider = this._physicObjectsMap[pxRaycastHit.getShape().getQueryFilterData().word0];
 
         return result;

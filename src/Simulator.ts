@@ -12,6 +12,8 @@ import {PhysicCombineMode} from "./PhysicMaterial";
 import {Rigidbody} from "./Rigidbody";
 import {PhysicManager} from "./PhysicManager";
 import {PhysicScript} from "./PhysicScript";
+import {Ray, Vector2} from "@oasis-engine/math";
+import {RaycastHit} from "./RaycastHit";
 
 export const engine = new WebGLEngine("canvas");
 engine.canvas.resizeByClientSize();
@@ -60,6 +62,25 @@ window.addEventListener("keydown", (event) => {
                 Math.floor(Math.random() * 6) - 2.5,
             ), new Quaternion(0, 0, 0.3, 0.7), physic_scene);
             break;
+    }
+})
+
+window.addEventListener("mousedown", (event) => {
+    const ray = new Ray();
+    cameraEntity.getComponent(Camera).screenPointToRay(
+        new Vector2(event.clientX * window.devicePixelRatio, event.clientY * window.devicePixelRatio), ray)
+
+    const hit = new RaycastHit;
+    const result = physic_scene.raycast(ray.origin, ray.direction.normalize(), 2147, hit);
+
+    if (result) {
+        const mtl = new BlinnPhongMaterial(engine);
+        const color = mtl.baseColor;
+        color.r = Math.random();
+        color.g = Math.random();
+        color.b = Math.random();
+        color.a = 1.0;
+        hit.collider.entity.getComponent(MeshRenderer).setMaterial(mtl);
     }
 })
 
