@@ -10,6 +10,13 @@ import {Vector3} from "oasis-engine";
 import {RaycastHit} from "./RaycastHit";
 import {CharacterController} from "./CharacterController";
 
+export enum QueryFlag {
+    STATIC = (1 << 0),
+    DYNAMIC = (1 << 1),
+    ANY_HIT = (1 << 4),
+    NO_BLOCK = (1 << 5),
+}
+
 export class PhysicManager {
     triggerCallback = {
         onContactBegin: (obj1, obj2) => {
@@ -117,13 +124,16 @@ export class PhysicManager {
         }, maxDistance);
     }
 
-    raycast(origin: Vector3, direction: Vector3, maxDistance: number, hit: RaycastHit): boolean {
+    raycast(origin: Vector3, direction: Vector3, maxDistance: number, hit: RaycastHit,
+            flag: QueryFlag = QueryFlag.DYNAMIC | QueryFlag.STATIC): boolean {
         const pxRaycastHit: any = new PhysX.PxRaycastHit();
+        const filterData: any = new PhysX.PxQueryFilterData();
+        filterData.flags = new PhysX.PxQueryFlags(flag);
         const result = this._PxScene.raycastSingle({x: origin.x, y: origin.y, z: origin.z}, {
             x: direction.x,
             y: direction.y,
             z: direction.z
-        }, maxDistance, pxRaycastHit);
+        }, maxDistance, pxRaycastHit, filterData);
 
         if (result == false) {
             return;

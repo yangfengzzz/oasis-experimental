@@ -6,12 +6,12 @@ import {
     WebGLEngine,
 } from "oasis-engine";
 import {OrbitControl} from "@oasis-engine/controls";
-import {Collider, ColliderFlag} from "./Collider";
+import {ColliderFlag} from "./Collider";
 import {BoxCollider} from "./BoxCollider";
 import {SphereCollider} from "./SphereCollider";
 import {PhysicCombineMode} from "./PhysicMaterial";
 import {Rigidbody} from "./Rigidbody";
-import {PhysicManager} from "./PhysicManager";
+import {PhysicManager, QueryFlag} from "./PhysicManager";
 import {PhysicScript} from "./PhysicScript";
 import {Ray, Vector2} from "@oasis-engine/math";
 import {RaycastHit} from "./RaycastHit";
@@ -77,7 +77,7 @@ window.addEventListener("mousedown", (event) => {
         new Vector2(event.pageX * window.devicePixelRatio, event.pageY * window.devicePixelRatio), ray)
 
     const hit = new RaycastHit;
-    const result = physic_scene.raycast(ray.origin, ray.direction, 2147000, hit);
+    const result = physic_scene.raycast(ray.origin, ray.direction, 2147000, hit, QueryFlag.DYNAMIC);
 
     if (result) {
         const mtl = new BlinnPhongMaterial(engine);
