@@ -68,10 +68,10 @@ window.addEventListener("keydown", (event) => {
 window.addEventListener("mousedown", (event) => {
     const ray = new Ray();
     cameraEntity.getComponent(Camera).screenPointToRay(
-        new Vector2(event.clientX * window.devicePixelRatio, event.clientY * window.devicePixelRatio), ray)
+        new Vector2(event.pageX * window.devicePixelRatio, event.pageY * window.devicePixelRatio), ray)
 
     const hit = new RaycastHit;
-    const result = physic_scene.raycast(ray.origin, ray.direction.normalize(), 2147, hit);
+    const result = physic_scene.raycast(ray.origin, ray.direction, 2147000, hit);
 
     if (result) {
         const mtl = new BlinnPhongMaterial(engine);
