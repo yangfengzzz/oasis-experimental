@@ -45,7 +45,7 @@ export function init() {
 
     addPlane(new Vector3(30, 0.1, 30), new Vector3, new Quaternion, physic_scene);
 
-    player = addPlayer(new Vector3(1, 10, 1), new Vector3, new Quaternion, physic_scene);
+    player = addPlayer(new Vector3(1, 5, 1), new Vector3(0, 2.5, 0), new Quaternion, physic_scene);
 
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
@@ -142,8 +142,8 @@ function addPlane(size: Vector3, position: Vector3, rotation: Quaternion, scene:
 
     const box_collider = cubeEntity.addComponent(BoxCollider);
     box_collider.size = size;
-    box_collider.material.staticFriction = 0.1;
-    box_collider.material.dynamicFriction = 0.2;
+    box_collider.material.staticFriction = 1;
+    box_collider.material.dynamicFriction = 2;
     box_collider.material.bounciness = 0.1;
     box_collider.init(entity_id++);
     box_collider.setFlag(ColliderFlag.SIMULATION_SHAPE, true);
@@ -204,8 +204,8 @@ function addBox(size: Vector3, position: Vector3, rotation: Quaternion, scene: P
 
     const box_collider = cubeEntity.addComponent(BoxCollider);
     box_collider.size = size;
-    box_collider.material.staticFriction = 0.1;
-    box_collider.material.dynamicFriction = 0.2;
+    box_collider.material.staticFriction = 1;
+    box_collider.material.dynamicFriction = 2;
     box_collider.material.bounciness = 0.1;
     box_collider.init(entity_id++);
     box_collider.setFlag(ColliderFlag.SIMULATION_SHAPE, true);

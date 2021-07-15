@@ -13,22 +13,18 @@ export class CharacterController extends Component {
             switch (event.code) {
                 case 'KeyW': {
                     this.position.x -= 0.3;
-                    console.log("move forward!")
                     break;
                 }
                 case 'KeyS': {
                     this.position.x += 0.3;
-                    console.log("move backward!")
                     break;
                 }
                 case 'KeyA': {
                     this.position.z += 0.3;
-                    console.log("move left!")
                     break;
                 }
                 case 'KeyD': {
                     this.position.z -= 0.3;
-                    console.log("move right!")
                     break;
                 }
             }
