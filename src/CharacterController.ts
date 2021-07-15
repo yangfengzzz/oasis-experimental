@@ -1,8 +1,7 @@
 import {
     PHYSX as PhysX,
-    physics as PhysicsSystem,
 } from "./physx.release";
-import {Component, Vector3} from "oasis-engine";
+import {Component, Entity, Vector3} from "oasis-engine";
 import {PhysicManager} from "./PhysicManager";
 import {PhysicMaterial} from "./PhysicMaterial";
 
@@ -22,7 +21,7 @@ export class CharacterController extends Component {
         this.entity.transform.position = this.position;
     }
 
-    init(scene: PhysicManager, group_id: number) {
+    init(scene: PhysicManager, camera: Entity, group_id: number) {
         this._PxControllerManager = PhysX.PxCreateControllerManager(scene.get(), false);
 
         this._group_id = group_id;
@@ -38,22 +37,31 @@ export class CharacterController extends Component {
         this.position = new Vector3(this.entity.transform.position.x,
             this.entity.transform.position.y, this.entity.transform.position.z);
         window.addEventListener("keypress", (event) => {
+            let forward = new Vector3();
+            Vector3.subtract(this.entity.transform.position, camera.transform.position, forward);
+            forward.y = 0;
+            forward = forward.normalize();
+            let cross = new Vector3(forward.z, 0, -forward.x);
+
             switch (event.code) {
                 case 'KeyW': {
-                    this.position.x -= 0.3;
+                    Vector3.add(this.position, forward, this.position);
                     break;
                 }
                 case 'KeyS': {
-                    this.position.x += 0.3;
+                    Vector3.subtract(this.position, forward, this.position);
                     break;
                 }
                 case 'KeyA': {
-                    this.position.z += 0.3;
+                    Vector3.add(this.position, cross, this.position);
                     break;
                 }
                 case 'KeyD': {
-                    this.position.z -= 0.3;
+                    Vector3.subtract(this.position, cross, this.position);
                     break;
+                }
+                case 'Space' : {
+                    console.log("hhh")
                 }
             }
         })

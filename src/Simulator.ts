@@ -167,7 +167,7 @@ function addPlayer(size: Vector3, position: Vector3, rotation: Quaternion, scene
     cubeEntity.transform.rotationQuaternion = rotation;
 
     const controller = cubeEntity.addComponent(CharacterController);
-    controller.init(scene, entity_id++);
+    controller.init(scene, cameraEntity, entity_id++);
     scene.addController(controller);
 
     return cubeEntity;
