@@ -37,6 +37,7 @@ scene.ambientLight.diffuseIntensity = 1.2;
 //----------------------------------------------------------------------------------------------------------------------
 let entity_id: number = 0;
 const physic_scene = new PhysicManager();
+let player: Entity;
 
 //init scene
 export function init() {
@@ -44,7 +45,7 @@ export function init() {
 
     addPlane(new Vector3(50, 0.1, 50), new Vector3, new Quaternion, physic_scene);
 
-    addPlayer(new Vector3(1, 10, 1), new Vector3, new Quaternion, physic_scene);
+    player = addPlayer(new Vector3(1, 10, 1), new Vector3, new Quaternion, physic_scene);
 
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
@@ -100,14 +101,13 @@ window.addEventListener("mousedown", (event) => {
 let isFirstFrame: boolean = true;
 
 export function update() {
-    if(isFirstFrame)
-    {
+    if (isFirstFrame) {
         //Run the first frame's collision detection
         physic_scene.collide(1 / 60);
         isFirstFrame = false;
     }
-    //update the kinematice target pose in parallel with collision running
-    // updateKinematics(timeStep);
+
+    player.getComponent(CharacterController).update();
     physic_scene.fetchCollision(true);
     physic_scene.advance();
     physic_scene.fetchResults(true);
@@ -181,7 +181,7 @@ function addPlayer(size: Vector3, position: Vector3, rotation: Quaternion, scene
 
     scene.addDynamicActor(rigid_body);
     rigid_body.addForce(new Vector3(0, 300, 0));
-
+    rigid_body.isKinematic = true;
     cubeEntity.addComponent(CharacterController).init(rigid_body);
 
     return cubeEntity;
