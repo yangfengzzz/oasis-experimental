@@ -10,7 +10,7 @@ import {Collider, ColliderFlag} from "./Collider";
 import {BoxCollider} from "./BoxCollider";
 import {SphereCollider} from "./SphereCollider";
 import {PhysicCombineMode} from "./PhysicMaterial";
-import {CollisionDetectionMode, Rigidbody} from "./Rigidbody";
+import {Rigidbody} from "./Rigidbody";
 import {PhysicManager} from "./PhysicManager";
 import {PhysicScript} from "./PhysicScript";
 import {Ray, Vector2} from "@oasis-engine/math";
@@ -161,27 +161,14 @@ function addPlayer(size: Vector3, position: Vector3, rotation: Quaternion, scene
     const cubeEntity = rootEntity.createChild();
     const renderer = cubeEntity.addComponent(MeshRenderer);
 
-    renderer.mesh = PrimitiveMesh.createCuboid(engine, size.x, size.y, size.z);
+    renderer.mesh = PrimitiveMesh.createCylinder(engine, 1, 1, 10);
     renderer.setMaterial(mtl);
     cubeEntity.transform.position = position;
     cubeEntity.transform.rotationQuaternion = rotation;
 
-    const box_collider = cubeEntity.addComponent(BoxCollider);
-    box_collider.size = size;
-    box_collider.material.staticFriction = 0.1;
-    box_collider.material.dynamicFriction = 0.2;
-    box_collider.material.bounciness = 0.1;
-    box_collider.init(entity_id++);
-    box_collider.setFlag(ColliderFlag.SIMULATION_SHAPE, true);
-    const rigid_body = cubeEntity.addComponent(Rigidbody);
-    rigid_body.init(position, rotation);
-    rigid_body.freezeRotation = false;
-    rigid_body.attachShape(box_collider);
-
-    scene.addDynamicActor(rigid_body);
-    rigid_body.isKinematic = true;
-    rigid_body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-    cubeEntity.addComponent(CharacterController).init(rigid_body);
+    const controller = cubeEntity.addComponent(CharacterController);
+    controller.initManager(scene);
+    controller.createCapsuleController();
 
     return cubeEntity;
 }
