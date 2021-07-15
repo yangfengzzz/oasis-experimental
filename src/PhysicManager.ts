@@ -6,6 +6,8 @@ import {Rigidbody} from "./Rigidbody";
 import {PhysicScript} from "./PhysicScript";
 import {Collision} from "./Collision";
 import {Collider} from "./Collider";
+import {Vector3} from "oasis-engine";
+import {RaycastHit} from "./RaycastHit";
 
 export class PhysicManager {
     triggerCallback = {
@@ -86,8 +88,70 @@ export class PhysicManager {
         },
     }
 
+    raycastCallback = {
+        processTouches: (obj) => {
+            const hit = new RaycastHit;
+            hit.distance = obj.distance;
+            hit.point.x = obj.position.x;
+            hit.point.y = obj.position.y;
+            hit.point.z = obj.position.z;
+            hit.normal.x = obj.normal.x;
+            hit.normal.y = obj.normal.y;
+            hit.normal.z = obj.normal.z;
+            hit.collider = this._physicObjectsMap[obj.getShape().getQueryFilterData().word0];
+            this._hits.push(hit);
+        }
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    raycastTest(origin: Vector3, direction: Vector3, maxDistance: number): boolean {
+        return this._PxScene.raycastAny({x: origin.x, y: origin.y, z: origin.z}, {
+            x: direction.x,
+            y: direction.y,
+            z: direction.z
+        }, maxDistance);
+    }
+
+    raycast(origin: Vector3, direction: Vector3, maxDistance: number, hit: RaycastHit): boolean {
+        const pxRaycastHit: any = new PhysX.PxRaycastHit();
+        const result = this._PxScene.raycastAny({x: origin.x, y: origin.y, z: origin.z}, {
+            x: direction.x,
+            y: direction.y,
+            z: direction.z
+        }, maxDistance, pxRaycastHit);
+
+        if (result == false) {
+            return;
+        }
+
+        hit.distance = pxRaycastHit.distance;
+        hit.point.x = pxRaycastHit.position.x;
+        hit.point.y = pxRaycastHit.position.y;
+        hit.point.z = pxRaycastHit.position.z;
+        hit.normal.x = pxRaycastHit.normal.x;
+        hit.normal.y = pxRaycastHit.normal.y;
+        hit.normal.z = pxRaycastHit.normal.z;
+        hit.collider = this._physicObjectsMap[pxRaycastHit.getShape().getQueryFilterData().word0];
+
+        return result;
+    }
+
+    raycastAll(origin: Vector3, direction: Vector3, maxDistance: number): boolean {
+        const PHYSXRaycastCallbackInstance = PhysX.PxRaycastCallback.implement(
+            this.raycastCallback
+        )
+        this._hits = [];
+        return this._PxScene.raycast({x: origin.x, y: origin.y, z: origin.z}, {
+            x: direction.x,
+            y: direction.y,
+            z: direction.z
+        }, maxDistance, PHYSXRaycastCallbackInstance);
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     _physicObjectsMap: any = {};
+    _hits: RaycastHit[] = [];
+
     _PxScene: any;
 
     addDynamicActor(actor: Rigidbody) {

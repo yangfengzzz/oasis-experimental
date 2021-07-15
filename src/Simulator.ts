@@ -7,9 +7,9 @@ import {
 } from "oasis-engine";
 import {OrbitControl} from "@oasis-engine/controls";
 import {BoxCollider} from "./BoxCollider";
-import {Rigidbody} from "./Rigidbody";
 import {SphereCollider} from "./SphereCollider";
 import {PhysicCombineMode} from "./PhysicMaterial";
+import {Rigidbody} from "./Rigidbody";
 import {PhysicManager} from "./PhysicManager";
 import {PhysicScript} from "./PhysicScript";
 
