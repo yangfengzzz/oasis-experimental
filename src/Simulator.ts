@@ -44,8 +44,7 @@ export function init() {
 
     addPlane(new Vector3(50, 0.1, 50), new Vector3, new Quaternion, physic_scene);
 
-    const player = addBox(new Vector3(1, 10, 1), new Vector3, new Quaternion, physic_scene);
-    player.addComponent(CharacterController).init();
+    addPlayer(new Vector3(1, 10, 1), new Vector3, new Quaternion, physic_scene);
 
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
@@ -133,6 +132,41 @@ function addPlane(size: Vector3, position: Vector3, rotation: Quaternion, scene:
     box_collider.init(entity_id++);
     box_collider.setFlag(ColliderFlag.SIMULATION_SHAPE, true);
     scene.addStaticActor(box_collider);
+
+    return cubeEntity;
+}
+
+function addPlayer(size: Vector3, position: Vector3, rotation: Quaternion, scene: PhysicManager): Entity {
+    const mtl = new BlinnPhongMaterial(engine);
+    const color = mtl.baseColor;
+    color.r = Math.random();
+    color.g = Math.random();
+    color.b = Math.random();
+    color.a = 1.0;
+    const cubeEntity = rootEntity.createChild();
+    const renderer = cubeEntity.addComponent(MeshRenderer);
+
+    renderer.mesh = PrimitiveMesh.createCuboid(engine, size.x, size.y, size.z);
+    renderer.setMaterial(mtl);
+    cubeEntity.transform.position = position;
+    cubeEntity.transform.rotationQuaternion = rotation;
+
+    const box_collider = cubeEntity.addComponent(BoxCollider);
+    box_collider.size = size;
+    box_collider.material.staticFriction = 0.1;
+    box_collider.material.dynamicFriction = 0.2;
+    box_collider.material.bounciness = 0.1;
+    box_collider.init(entity_id++);
+    box_collider.setFlag(ColliderFlag.SIMULATION_SHAPE, true);
+    const rigid_body = cubeEntity.addComponent(Rigidbody);
+    rigid_body.init(position, rotation);
+    rigid_body.freezeRotation = false;
+    rigid_body.attachShape(box_collider);
+
+    scene.addDynamicActor(rigid_body);
+    rigid_body.addForce(new Vector3(0, 300, 0));
+
+    cubeEntity.addComponent(CharacterController).init(rigid_body);
 
     return cubeEntity;
 }

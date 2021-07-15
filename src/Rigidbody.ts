@@ -349,6 +349,40 @@ export class Rigidbody extends Component {
         };
     }
 
+    MovePosition(value: Vector3) {
+        const transform = {
+            translation: {
+                x: value.x,
+                y: value.y,
+                z: value.z,
+            },
+            rotation: {
+                w: this.entity.transform.rotationQuaternion.w, // PHYSX uses WXYZ quaternions,
+                x: this.entity.transform.rotationQuaternion.x,
+                y: this.entity.transform.rotationQuaternion.y,
+                z: this.entity.transform.rotationQuaternion.z,
+            },
+        }
+        this._PxRigidActor.setKinematicTarget(transform);
+    }
+
+    MoveRotation(value: Quaternion) {
+        const transform = {
+            translation: {
+                x: this.entity.transform.position.x,
+                y: this.entity.transform.position.y,
+                z: this.entity.transform.position.z,
+            },
+            rotation: {
+                w: value.w, // PHYSX uses WXYZ quaternions,
+                x: value.x,
+                y: value.y,
+                z: value.z,
+            },
+        }
+        this._PxRigidActor.setKinematicTarget(transform);
+    }
+
     //isSleeping
     isSleeping(): boolean {
         return this._PxRigidActor.isSleeping();
