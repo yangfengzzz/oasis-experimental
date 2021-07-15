@@ -79,14 +79,14 @@ window.addEventListener("mousedown", (event) => {
     const hit = new RaycastHit;
     const result = physic_scene.raycast(ray.origin, ray.direction, 2147000, hit);
 
-    if (result && hit.collider.entity.getComponent(Collider).group_id != 0) {
+    if (result) {
         const mtl = new BlinnPhongMaterial(engine);
         const color = mtl.baseColor;
         color.r = Math.random();
         color.g = Math.random();
         color.b = Math.random();
         color.a = 1.0;
-        hit.collider.entity.getComponent(MeshRenderer).setMaterial(mtl);
+        hit.entity.getComponent(MeshRenderer).setMaterial(mtl);
         //
         // if (click) {
         //     physic_scene.gravity = new Vector3(0, 1, 0);
@@ -115,10 +115,10 @@ export function update() {
     //Run the deferred collision detection for the next frame. This will run in parallel with render.
     physic_scene.collide();
 
-    for (let i = 1; i < entity_id; i++) {
-        const transform = physic_scene.physicObjectsMap[i].entity.getComponent(Rigidbody).getGlobalPose();
-        physic_scene.physicObjectsMap[i].entity.transform.position = transform.translation;
-        physic_scene.physicObjectsMap[i].entity.transform.rotationQuaternion = transform.rotation;
+    for (let i = 2; i < entity_id; i++) {
+        const transform = physic_scene.physicObjectsMap[i].getComponent(Rigidbody).getGlobalPose();
+        physic_scene.physicObjectsMap[i].transform.position = transform.translation;
+        physic_scene.physicObjectsMap[i].transform.rotationQuaternion = transform.rotation;
     }
     engine.update();
 }
@@ -167,8 +167,8 @@ function addPlayer(size: Vector3, position: Vector3, rotation: Quaternion, scene
     cubeEntity.transform.rotationQuaternion = rotation;
 
     const controller = cubeEntity.addComponent(CharacterController);
-    controller.initManager(scene);
-    controller.createCapsuleController();
+    controller.init(scene, entity_id++);
+    scene.addController(controller);
 
     return cubeEntity;
 }

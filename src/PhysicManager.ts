@@ -8,81 +8,82 @@ import {Collision} from "./Collision";
 import {Collider} from "./Collider";
 import {Vector3} from "oasis-engine";
 import {RaycastHit} from "./RaycastHit";
+import {CharacterController} from "./CharacterController";
 
 export class PhysicManager {
     triggerCallback = {
         onContactBegin: (obj1, obj2) => {
             let scripts: PhysicScript[] = [];
-            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].getComponents(PhysicScript, scripts);
             if (scripts.length > 0) {
                 scripts.forEach(value => {
-                    let collision = new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0]);
+                    let collision = new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0].getComponent(Collider));
                     value.onCollisionEnter(collision);
                 })
             }
 
             scripts = [];
-            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            this._physicObjectsMap[obj2.getQueryFilterData().word0].getComponents(PhysicScript, scripts);
             if (scripts.length > 0) {
                 scripts.forEach(value => {
-                    let collision = new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0]);
+                    let collision = new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0].getComponent(Collider));
                     value.onCollisionEnter(collision);
                 })
             }
         },
         onContactEnd: (obj1, obj2) => {
             let scripts: PhysicScript[] = [];
-            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].getComponents(PhysicScript, scripts);
             if (scripts.length > 0) {
                 scripts.forEach(value => {
-                    let collision = new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0]);
+                    let collision = new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0].getComponent(Collider));
                     value.onCollisionExit(collision);
                 })
             }
 
             scripts = [];
-            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            this._physicObjectsMap[obj2.getQueryFilterData().word0].getComponents(PhysicScript, scripts);
             if (scripts.length > 0) {
                 scripts.forEach(value => {
-                    let collision = new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0]);
+                    let collision = new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0].getComponent(Collider));
                     value.onCollisionExit(collision);
                 })
             }
         },
         onContactPersist: (obj1, obj2) => {
             let scripts: PhysicScript[] = [];
-            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].getComponents(PhysicScript, scripts);
             if (scripts.length > 0) {
                 scripts.forEach(value => {
-                    let collision = new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0]);
+                    let collision = new Collision(this._physicObjectsMap[obj2.getQueryFilterData().word0].getComponent(Collider));
                     value.onCollisionStay(collision);
                 })
             }
 
             scripts = [];
-            this._physicObjectsMap[obj2.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            this._physicObjectsMap[obj2.getQueryFilterData().word0].getComponents(PhysicScript, scripts);
             if (scripts.length > 0) {
                 scripts.forEach(value => {
-                    let collision = new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0]);
+                    let collision = new Collision(this._physicObjectsMap[obj1.getQueryFilterData().word0].getComponent(Collider));
                     value.onCollisionStay(collision);
                 })
             }
         },
         onTriggerBegin: (obj1, obj2) => {
             let scripts: PhysicScript[] = [];
-            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].getComponents(PhysicScript, scripts);
             if (scripts.length > 0) {
                 scripts.forEach(value => {
-                    value.onTriggerEnter(this._physicObjectsMap[obj2.getQueryFilterData().word0]);
+                    value.onTriggerEnter(this._physicObjectsMap[obj2.getQueryFilterData().word0].getComponent(Collider));
                 })
             }
         },
         onTriggerEnd: (obj1, obj2) => {
             let scripts: PhysicScript[] = [];
-            this._physicObjectsMap[obj1.getQueryFilterData().word0].entity.getComponents(PhysicScript, scripts);
+            this._physicObjectsMap[obj1.getQueryFilterData().word0].getComponents(PhysicScript, scripts);
             if (scripts.length > 0) {
                 scripts.forEach(value => {
-                    value.onTriggerExit(this._physicObjectsMap[obj2.getQueryFilterData().word0]);
+                    value.onTriggerExit(this._physicObjectsMap[obj2.getQueryFilterData().word0].getComponent(Collider));
                 })
             }
         },
@@ -98,7 +99,7 @@ export class PhysicManager {
             hit.normal.x = obj.normal.x;
             hit.normal.y = obj.normal.y;
             hit.normal.z = obj.normal.z;
-            hit.collider = this._physicObjectsMap[obj.getShape().getQueryFilterData().word0];
+            hit.collider = this._physicObjectsMap[obj.getShape().getQueryFilterData().word0].getComponent(Collider);
             this._hits.push(hit);
         }
     }
@@ -131,7 +132,7 @@ export class PhysicManager {
         hit.distance = pxRaycastHit.distance;
         hit.point = new Vector3(pxRaycastHit.position.x, pxRaycastHit.position.y, pxRaycastHit.position.z);
         hit.normal = new Vector3(pxRaycastHit.normal.x, pxRaycastHit.normal.y, pxRaycastHit.normal.z);
-        hit.collider = this._physicObjectsMap[pxRaycastHit.getShape().getQueryFilterData().word0];
+        hit.entity = this._physicObjectsMap[pxRaycastHit.getShape().getQueryFilterData().word0];
 
         return result;
     }
@@ -171,13 +172,17 @@ export class PhysicManager {
     private _PxScene: any;
 
     addDynamicActor(actor: Rigidbody) {
-        this._physicObjectsMap[actor.collider.group_id] = actor.collider;
+        this._physicObjectsMap[actor.collider.group_id] = actor.entity;
         this._PxScene.addActor(actor.get(), null);
     }
 
     addStaticActor(actor: Collider) {
-        this._physicObjectsMap[actor.group_id] = actor;
+        this._physicObjectsMap[actor.group_id] = actor.entity;
         this._PxScene.addActor(actor.staticActor, null);
+    }
+
+    addController(controller: CharacterController) {
+        this._physicObjectsMap[controller.group_id] = controller.entity;
     }
 
     //------------------------------------------------------------------------------------------------------------------
