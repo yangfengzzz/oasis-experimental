@@ -6,11 +6,11 @@ import {
     WebGLEngine,
 } from "oasis-engine";
 import {OrbitControl} from "@oasis-engine/controls";
-import {ColliderFlag} from "./Collider";
+import {Collider, ColliderFlag} from "./Collider";
 import {BoxCollider} from "./BoxCollider";
 import {SphereCollider} from "./SphereCollider";
 import {PhysicCombineMode} from "./PhysicMaterial";
-import {Rigidbody} from "./Rigidbody";
+import {CollisionDetectionMode, Rigidbody} from "./Rigidbody";
 import {PhysicManager} from "./PhysicManager";
 import {PhysicScript} from "./PhysicScript";
 import {Ray, Vector2} from "@oasis-engine/math";
@@ -79,7 +79,7 @@ window.addEventListener("mousedown", (event) => {
     const hit = new RaycastHit;
     const result = physic_scene.raycast(ray.origin, ray.direction, 2147000, hit);
 
-    if (result) {
+    if (result && hit.collider.entity.getComponent(Collider).group_id != 0) {
         const mtl = new BlinnPhongMaterial(engine);
         const color = mtl.baseColor;
         color.r = Math.random();
@@ -103,24 +103,23 @@ let isFirstFrame: boolean = true;
 export function update() {
     if (isFirstFrame) {
         //Run the first frame's collision detection
-        physic_scene.collide(1 / 60);
+        physic_scene.collide();
         isFirstFrame = false;
     }
 
     player.getComponent(CharacterController).update();
-    physic_scene.fetchCollision(true);
+    physic_scene.fetchCollision();
     physic_scene.advance();
-    physic_scene.fetchResults(true);
+    physic_scene.fetchResults();
 
     //Run the deferred collision detection for the next frame. This will run in parallel with render.
-    physic_scene.collide(1 / 60);
+    physic_scene.collide();
 
     for (let i = 1; i < entity_id; i++) {
         const transform = physic_scene.physicObjectsMap[i].entity.getComponent(Rigidbody).getGlobalPose();
         physic_scene.physicObjectsMap[i].entity.transform.position = transform.translation;
         physic_scene.physicObjectsMap[i].entity.transform.rotationQuaternion = transform.rotation;
     }
-
     engine.update();
 }
 
@@ -128,9 +127,9 @@ export function update() {
 function addPlane(size: Vector3, position: Vector3, rotation: Quaternion, scene: PhysicManager): Entity {
     const mtl = new BlinnPhongMaterial(engine);
     const color = mtl.baseColor;
-    color.r = Math.random();
-    color.g = Math.random();
-    color.b = Math.random();
+    color.r = 0.03179807202597362;
+    color.g = 0.3939682161541871;
+    color.b = 0.41177952549087604;
     color.a = 1.0;
     const cubeEntity = rootEntity.createChild();
     const renderer = cubeEntity.addComponent(MeshRenderer);
@@ -180,8 +179,8 @@ function addPlayer(size: Vector3, position: Vector3, rotation: Quaternion, scene
     rigid_body.attachShape(box_collider);
 
     scene.addDynamicActor(rigid_body);
-    rigid_body.addForce(new Vector3(0, 300, 0));
     rigid_body.isKinematic = true;
+    rigid_body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
     cubeEntity.addComponent(CharacterController).init(rigid_body);
 
     return cubeEntity;

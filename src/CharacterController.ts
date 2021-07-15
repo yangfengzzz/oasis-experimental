@@ -1,4 +1,4 @@
-import {Component, Quaternion, Vector3} from "oasis-engine";
+import {Component, Vector3} from "oasis-engine";
 import {Rigidbody} from "./Rigidbody";
 
 export class CharacterController extends Component {
@@ -33,6 +33,5 @@ export class CharacterController extends Component {
 
     update() {
         this.body.MovePosition(this.position);
-        this.entity.transform.position = this.position;
     }
 }
