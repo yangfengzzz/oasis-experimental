@@ -43,7 +43,7 @@ let player: Entity;
 export function init() {
     physic_scene.init();
 
-    addPlane(new Vector3(50, 0.1, 50), new Vector3, new Quaternion, physic_scene);
+    addPlane(new Vector3(30, 0.1, 30), new Vector3, new Quaternion, physic_scene);
 
     player = addPlayer(new Vector3(1, 10, 1), new Vector3, new Quaternion, physic_scene);
 
@@ -87,14 +87,14 @@ window.addEventListener("mousedown", (event) => {
         color.b = Math.random();
         color.a = 1.0;
         hit.collider.entity.getComponent(MeshRenderer).setMaterial(mtl);
-
-        if (click) {
-            physic_scene.gravity = new Vector3(0, 1, 0);
-            click = !click;
-        } else {
-            physic_scene.gravity = new Vector3(0, -9.81, 0);
-            click = !click;
-        }
+        //
+        // if (click) {
+        //     physic_scene.gravity = new Vector3(0, 1, 0);
+        //     click = !click;
+        // } else {
+        //     physic_scene.gravity = new Vector3(0, -9.81, 0);
+        //     click = !click;
+        // }
     }
 })
 
