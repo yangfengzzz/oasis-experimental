@@ -97,8 +97,24 @@ window.addEventListener("mousedown", (event) => {
     }
 })
 
+let isFirstFrame: boolean = true;
+
 export function update() {
-    physic_scene.simulateAndFetchResult();
+    if(isFirstFrame)
+    {
+        //Run the first frame's collision detection
+        physic_scene.collide(1 / 60);
+        isFirstFrame = false;
+    }
+    //update the kinematice target pose in parallel with collision running
+    // updateKinematics(timeStep);
+    physic_scene.fetchCollision(true);
+    physic_scene.advance();
+    physic_scene.fetchResults(true);
+
+    //Run the deferred collision detection for the next frame. This will run in parallel with render.
+    physic_scene.collide(1 / 60);
+
     for (let i = 1; i < entity_id; i++) {
         const transform = physic_scene.physicObjectsMap[i].entity.getComponent(Rigidbody).getGlobalPose();
         physic_scene.physicObjectsMap[i].entity.transform.position = transform.translation;

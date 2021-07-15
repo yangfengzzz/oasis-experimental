@@ -180,9 +180,25 @@ export class PhysicManager {
         this._PxScene.addActor(actor.staticActor, null);
     }
 
-    simulateAndFetchResult() {
-        this._PxScene.simulate(1 / 60, true)
-        this._PxScene.fetchResults(true)
+    //------------------------------------------------------------------------------------------------------------------
+    simulate(elapsedTime: number = 1 / 60, controlSimulation: boolean = true) {
+        this._PxScene.simulate(elapsedTime, controlSimulation);
+    }
+
+    fetchResults(block: boolean = true) {
+        this._PxScene.fetchResults(block);
+    }
+
+    advance() {
+        this._PxScene.advance();
+    }
+
+    fetchCollision(block: boolean = true) {
+        this._PxScene.fetchCollision(block);
+    }
+
+    collide(elapsedTime: number = 1 / 60) {
+        this._PxScene.collide(elapsedTime);
     }
 
     init() {
