@@ -1,6 +1,6 @@
 import {
     BlinnPhongMaterial,
-    Camera,
+    Camera, Entity,
     MeshRenderer,
     PrimitiveMesh, Quaternion, Vector3,
     WebGLEngine,
@@ -15,6 +15,7 @@ import {PhysicManager} from "./PhysicManager";
 import {PhysicScript} from "./PhysicScript";
 import {Ray, Vector2} from "@oasis-engine/math";
 import {RaycastHit} from "./RaycastHit";
+import {CharacterController} from "./CharacterController";
 
 export const engine = new WebGLEngine("canvas");
 engine.canvas.resizeByClientSize();
@@ -41,7 +42,10 @@ const physic_scene = new PhysicManager();
 export function init() {
     physic_scene.init();
 
-    addPlane(new Vector3(10, 0.1, 10), new Vector3, new Quaternion, physic_scene);
+    addPlane(new Vector3(50, 0.1, 50), new Vector3, new Quaternion, physic_scene);
+
+    const player = addBox(new Vector3(1, 10, 1), new Vector3, new Quaternion, physic_scene);
+    player.addComponent(CharacterController).init();
 
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
@@ -66,7 +70,7 @@ window.addEventListener("keydown", (event) => {
     }
 })
 
-let click:boolean = true;
+let click: boolean = true;
 window.addEventListener("mousedown", (event) => {
     const ray = new Ray();
     cameraEntity.getComponent(Camera).screenPointToRay(
@@ -85,10 +89,10 @@ window.addEventListener("mousedown", (event) => {
         hit.collider.entity.getComponent(MeshRenderer).setMaterial(mtl);
 
         if (click) {
-            physic_scene.gravity = new Vector3(0, 2, 0);
+            physic_scene.gravity = new Vector3(0, 1, 0);
             click = !click;
         } else {
-            physic_scene.gravity = new Vector3(0, -2, 0);
+            physic_scene.gravity = new Vector3(0, -9.81, 0);
             click = !click;
         }
     }
@@ -106,7 +110,7 @@ export function update() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-function addPlane(size: Vector3, position: Vector3, rotation: Quaternion, scene: PhysicManager) {
+function addPlane(size: Vector3, position: Vector3, rotation: Quaternion, scene: PhysicManager): Entity {
     const mtl = new BlinnPhongMaterial(engine);
     const color = mtl.baseColor;
     color.r = Math.random();
@@ -129,9 +133,11 @@ function addPlane(size: Vector3, position: Vector3, rotation: Quaternion, scene:
     box_collider.init(entity_id++);
     box_collider.setFlag(ColliderFlag.SIMULATION_SHAPE, true);
     scene.addStaticActor(box_collider);
+
+    return cubeEntity;
 }
 
-function addBox(size: Vector3, position: Vector3, rotation: Quaternion, scene: PhysicManager) {
+function addBox(size: Vector3, position: Vector3, rotation: Quaternion, scene: PhysicManager): Entity {
     const mtl = new BlinnPhongMaterial(engine);
     const color = mtl.baseColor;
     color.r = Math.random();
@@ -160,9 +166,11 @@ function addBox(size: Vector3, position: Vector3, rotation: Quaternion, scene: P
 
     scene.addDynamicActor(rigid_body);
     rigid_body.addForce(new Vector3(0, 300, 0));
+
+    return cubeEntity;
 }
 
-function addSphere(radius: number, position: Vector3, rotation: Quaternion, scene: PhysicManager) {
+function addSphere(radius: number, position: Vector3, rotation: Quaternion, scene: PhysicManager): Entity {
     const mtl = new BlinnPhongMaterial(engine);
     const color = mtl.baseColor;
     color.r = Math.random();
@@ -193,4 +201,6 @@ function addSphere(radius: number, position: Vector3, rotation: Quaternion, scen
 
     scene.addDynamicActor(rigid_body);
     rigid_body.addForce(new Vector3(0, 300, 0));
+
+    return cubeEntity;
 }
