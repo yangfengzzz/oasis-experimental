@@ -103,6 +103,10 @@ export class PhysicManager {
         }
     }
 
+    get physicObjectsMap(): any {
+        return this._physicObjectsMap;
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     raycastTest(origin: Vector3, direction: Vector3, maxDistance: number): boolean {
         return this._PxScene.raycastAny({x: origin.x, y: origin.y, z: origin.z}, {
@@ -144,11 +148,27 @@ export class PhysicManager {
         }, maxDistance, PHYSXRaycastCallbackInstance);
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    _physicObjectsMap: any = {};
-    _hits: RaycastHit[] = [];
+    get hits(): RaycastHit[] {
+        return this._hits;
+    }
 
-    _PxScene: any;
+    //------------------------------------------------------------------------------------------------------------------
+    get gravity(): Vector3 {
+        return this._gravity;
+    }
+
+    set gravity(value: Vector3) {
+        this._gravity = value;
+        this._PxScene.setGravity({x: value.x, y: value.y, z: value.z});
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    private _physicObjectsMap: any = {};
+    private _hits: RaycastHit[] = [];
+
+    private _gravity: Vector3 = new Vector3(0, -9.81, 0);
+
+    private _PxScene: any;
 
     addDynamicActor(actor: Rigidbody) {
         this._physicObjectsMap[actor.collider.group_id] = actor.collider;

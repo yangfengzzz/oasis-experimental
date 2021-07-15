@@ -66,6 +66,7 @@ window.addEventListener("keydown", (event) => {
     }
 })
 
+let click:boolean = true;
 window.addEventListener("mousedown", (event) => {
     const ray = new Ray();
     cameraEntity.getComponent(Camera).screenPointToRay(
@@ -82,15 +83,23 @@ window.addEventListener("mousedown", (event) => {
         color.b = Math.random();
         color.a = 1.0;
         hit.collider.entity.getComponent(MeshRenderer).setMaterial(mtl);
+
+        if (click) {
+            physic_scene.gravity = new Vector3(0, 2, 0);
+            click = !click;
+        } else {
+            physic_scene.gravity = new Vector3(0, -2, 0);
+            click = !click;
+        }
     }
 })
 
 export function update() {
     physic_scene.simulateAndFetchResult();
     for (let i = 1; i < entity_id; i++) {
-        const transform = physic_scene._physicObjectsMap[i].entity.getComponent(Rigidbody).getGlobalPose();
-        physic_scene._physicObjectsMap[i].entity.transform.position = transform.translation;
-        physic_scene._physicObjectsMap[i].entity.transform.rotationQuaternion = transform.rotation;
+        const transform = physic_scene.physicObjectsMap[i].entity.getComponent(Rigidbody).getGlobalPose();
+        physic_scene.physicObjectsMap[i].entity.transform.position = transform.translation;
+        physic_scene.physicObjectsMap[i].entity.transform.rotationQuaternion = transform.rotation;
     }
 
     engine.update();
@@ -143,6 +152,7 @@ function addBox(size: Vector3, position: Vector3, rotation: Quaternion, scene: P
     box_collider.material.dynamicFriction = 0.2;
     box_collider.material.bounciness = 0.1;
     box_collider.init(entity_id++);
+    box_collider.setFlag(ColliderFlag.SIMULATION_SHAPE, true);
     const rigid_body = cubeEntity.addComponent(Rigidbody);
     rigid_body.init(position, rotation);
     rigid_body.freezeRotation = false;
