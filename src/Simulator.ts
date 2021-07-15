@@ -6,6 +6,7 @@ import {
     WebGLEngine,
 } from "oasis-engine";
 import {OrbitControl} from "@oasis-engine/controls";
+import {ColliderFlag} from "./Collider";
 import {BoxCollider} from "./BoxCollider";
 import {SphereCollider} from "./SphereCollider";
 import {PhysicCombineMode} from "./PhysicMaterial";
@@ -117,7 +118,7 @@ function addPlane(size: Vector3, position: Vector3, rotation: Quaternion, scene:
     box_collider.material.dynamicFriction = 0.2;
     box_collider.material.bounciness = 0.1;
     box_collider.init(entity_id++);
-
+    box_collider.setFlag(ColliderFlag.SIMULATION_SHAPE, true);
     scene.addStaticActor(box_collider);
 }
 

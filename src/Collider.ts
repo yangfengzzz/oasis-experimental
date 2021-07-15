@@ -5,6 +5,12 @@ import {
     physics as PhysicsSystem,
 } from "./physx.release";
 
+export enum ColliderFlag {
+    SIMULATION_SHAPE,
+    SCENE_QUERY_SHAPE,
+    TRIGGER_SHAPE,
+}
+
 export class Collider extends Component {
     protected _group_id: number;
 
@@ -44,7 +50,25 @@ export class Collider extends Component {
         return this._group_id;
     }
 
-    attachInternalActor() {
+    isTrigger(value: boolean) {
+        this._pxShape.setFlag(PhysX.PxShapeFlag.eSIMULATION_SHAPE, !value);
+    }
+
+    setFlag(flag: ColliderFlag, value: boolean) {
+        switch (flag) {
+            case ColliderFlag.SCENE_QUERY_SHAPE:
+                this._pxShape.setFlag(PhysX.PxShapeFlag.eSCENE_QUERY_SHAPE, value);
+                break;
+            case ColliderFlag.SIMULATION_SHAPE:
+                this._pxShape.setFlag(PhysX.PxShapeFlag.eSIMULATION_SHAPE, value);
+                break;
+            case ColliderFlag.TRIGGER_SHAPE:
+                this._pxShape.setFlag(PhysX.PxShapeFlag.eTRIGGER_SHAPE, value);
+                break;
+        }
+    }
+
+    protected attachActor() {
         const transform = {
             translation: {
                 x: this.entity.transform.position.x,

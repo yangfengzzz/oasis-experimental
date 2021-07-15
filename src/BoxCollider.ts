@@ -46,7 +46,7 @@ export class BoxCollider extends Collider {
 
             this._is_dirty = false;
 
-            this.attachInternalActor();
+            this.attachActor();
         }
     }
 }
