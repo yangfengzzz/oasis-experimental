@@ -21,15 +21,15 @@ export class CharacterController extends Component {
         this.entity.transform.position = this.position;
     }
 
-    init(scene: PhysicManager, camera: Entity, group_id: number) {
+    init(scene: PhysicManager, camera: Entity, group_id: number, radius: number, height: number) {
         this._PxControllerManager = PhysX.PxCreateControllerManager(scene.get(), false);
 
         this._group_id = group_id;
         const data = new PhysX.PxFilterData(group_id, 0, 0, 0);
 
         const controllerDesc = new PhysX.PxCapsuleControllerDesc();
-        controllerDesc.radius = 1.25;
-        controllerDesc.height = 10;
+        controllerDesc.radius = radius * 1.3; // maybe because of skin.
+        controllerDesc.height = height;
         controllerDesc.setMaterial(new PhysicMaterial(0.1, 0.1, 0.1).create());
         this._PxController = this._PxControllerManager.createController(controllerDesc);
         this._PxController.setQueryFilterData(data);

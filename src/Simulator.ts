@@ -45,7 +45,7 @@ export function init() {
 
     addPlane(new Vector3(30, 0.1, 30), new Vector3, new Quaternion, physic_scene);
 
-    player = addPlayer(new Vector3(1, 5, 1), new Vector3(0, 2.5, 0), new Quaternion, physic_scene);
+    player = addPlayer(1, 5, new Vector3(0, 2.5, 0), new Quaternion, physic_scene);
 
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 5; j++) {
@@ -70,7 +70,6 @@ window.addEventListener("keydown", (event) => {
     }
 })
 
-let click: boolean = true;
 window.addEventListener("mousedown", (event) => {
     const ray = new Ray();
     cameraEntity.getComponent(Camera).screenPointToRay(
@@ -86,15 +85,12 @@ window.addEventListener("mousedown", (event) => {
         color.g = Math.random();
         color.b = Math.random();
         color.a = 1.0;
-        hit.entity.getComponent(MeshRenderer).setMaterial(mtl);
-        //
-        // if (click) {
-        //     physic_scene.gravity = new Vector3(0, 1, 0);
-        //     click = !click;
-        // } else {
-        //     physic_scene.gravity = new Vector3(0, -9.81, 0);
-        //     click = !click;
-        // }
+
+        const meshes: MeshRenderer[] = [];
+        hit.entity.getComponentsIncludeChildren(MeshRenderer, meshes);
+        meshes.forEach((mesh) => {
+            mesh.setMaterial(mtl);
+        })
     }
 })
 
@@ -151,7 +147,7 @@ function addPlane(size: Vector3, position: Vector3, rotation: Quaternion, scene:
     return cubeEntity;
 }
 
-function addPlayer(size: Vector3, position: Vector3, rotation: Quaternion, scene: PhysicManager): Entity {
+function addPlayer(radius: number, height: number, position: Vector3, rotation: Quaternion, scene: PhysicManager): Entity {
     const mtl = new BlinnPhongMaterial(engine);
     const color = mtl.baseColor;
     color.r = Math.random();
@@ -159,15 +155,37 @@ function addPlayer(size: Vector3, position: Vector3, rotation: Quaternion, scene
     color.b = Math.random();
     color.a = 1.0;
     const cubeEntity = rootEntity.createChild();
-    const renderer = cubeEntity.addComponent(MeshRenderer);
-
-    renderer.mesh = PrimitiveMesh.createCylinder(engine, 1, 1, 10);
-    renderer.setMaterial(mtl);
     cubeEntity.transform.position = position;
     cubeEntity.transform.rotationQuaternion = rotation;
 
+    height -= radius * 2;
+    //body
+    {
+        const renderer = cubeEntity.addComponent(MeshRenderer);
+        renderer.mesh = PrimitiveMesh.createCylinder(engine, radius, radius, height);
+        renderer.setMaterial(mtl);
+    }
+
+    //foot
+    {
+        const foot = cubeEntity.createChild("foot");
+        const renderer = foot.addComponent(MeshRenderer);
+        renderer.mesh = PrimitiveMesh.createSphere(engine, radius);
+        renderer.setMaterial(mtl);
+        foot.transform.position = new Vector3(0, -height / 2, 0);
+    }
+
+    //head
+    {
+        const head = cubeEntity.createChild("foot");
+        const renderer = head.addComponent(MeshRenderer);
+        renderer.mesh = PrimitiveMesh.createSphere(engine, radius);
+        renderer.setMaterial(mtl);
+        head.transform.position = new Vector3(0, height / 2, 0);
+    }
+
     const controller = cubeEntity.addComponent(CharacterController);
-    controller.init(scene, cameraEntity, entity_id++);
+    controller.init(scene, cameraEntity, entity_id++, radius, height);
     scene.addController(controller);
 
     return cubeEntity;
