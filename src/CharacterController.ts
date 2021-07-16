@@ -12,6 +12,7 @@ enum ControllerCollisionFlag {
 }
 
 export class CharacterController extends Component {
+    displacement: Vector3 = new Vector3;
     private _group_id: number;
 
     _PxControllerManager: any;
@@ -31,28 +32,39 @@ export class CharacterController extends Component {
         }
     }
 
-    PHYSXPxQueryFilterCallbackInstance = PhysX.PxQueryFilterCallback.implement(
-        this.queryFilterCallback
-    )
-
-    _PxControllerFilters = new PhysX.PxControllerFilters(
-        null,
-        null,
-        null);
+    _PxControllerFilters: any;
 
     update() {
+        let flag = this._PxController.move({
+            x: this.displacement.x,
+            y: this.displacement.y,
+            z: this.displacement.z
+        }, 0.1, 0.1, this._PxControllerFilters, null)
+        this.displacement = new Vector3();
+        if (!flag.isSet(PhysX.PxControllerCollisionFlag.eCOLLISION_DOWN)) {
+            this._PxController.move({x: 0, y: -0.2, z: 0}, 0.1, 0.1, this._PxControllerFilters, null)
+        }
+
         const pos = this._PxController.getPosition();
         this.entity.transform.position = new Vector3(pos.x, pos.y, pos.z);
     }
 
     init(scene: PhysicManager, camera: Entity, group_id: number, radius: number, height: number) {
+        const PHYSXPxQueryFilterCallbackInstance = PhysX.PxQueryFilterCallback.implement(
+            this.queryFilterCallback
+        );
+        this._PxControllerFilters = new PhysX.PxControllerFilters(
+            new PhysX.PxFilterData(0, 0, 0, 0),
+            null,
+            null);
+
         this._PxControllerManager = PhysX.PxCreateControllerManager(scene.get(), false);
 
         this._group_id = group_id;
         const data = new PhysX.PxFilterData(group_id, 0, 0, 0);
 
         const controllerDesc = new PhysX.PxCapsuleControllerDesc();
-        controllerDesc.radius = radius * 1.3; // maybe because of skin.
+        controllerDesc.radius = radius; // maybe because of skin.
         controllerDesc.height = height;
         controllerDesc.setMaterial(new PhysicMaterial(0.1, 0.1, 0.1).create());
         this._PxController = this._PxControllerManager.createController(controllerDesc);
@@ -72,39 +84,24 @@ export class CharacterController extends Component {
 
             switch (event.code) {
                 case 'KeyW': {
-                    this._PxController.move({
-                        x: forward.x,
-                        y: forward.y,
-                        z: forward.z
-                    }, 0.1, 0.1, this._PxControllerFilters, null)
+                    this.displacement = forward.scale(0.3);
                     break;
                 }
                 case 'KeyS': {
-                    this._PxController.move({
-                        x: -forward.x,
-                        y: -forward.y,
-                        z: -forward.z
-                    }, 0.1, 0.1, this._PxControllerFilters, null)
+                    this.displacement = forward.negate().scale(0.3);
                     break;
                 }
                 case 'KeyA': {
-                    this._PxController.move({
-                        x: cross.x,
-                        y: cross.y,
-                        z: cross.z
-                    }, 0.1, 0.1, this._PxControllerFilters, null)
+                    this.displacement = cross.scale(0.3);
                     break;
                 }
                 case 'KeyD': {
-                    this._PxController.move({
-                        x: -cross.x,
-                        y: -cross.y,
-                        z: -cross.z
-                    }, 0.1, 0.1, this._PxControllerFilters, null)
+                    this.displacement = cross.negate().scale(0.3);
                     break;
                 }
                 case 'Space' : {
-                    this._PxController.move({x: 0, y: -1, z: 0}, 0.1, 0.1, this._PxControllerFilters, null)
+                    this.displacement = new Vector3(0, 2, 0);
+                    break;
                 }
             }
         })
