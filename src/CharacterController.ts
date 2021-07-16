@@ -5,9 +5,14 @@ import {Component, Entity, Vector3} from "oasis-engine";
 import {PhysicManager} from "./PhysicManager";
 import {PhysicMaterial} from "./PhysicMaterial";
 
+enum ControllerCollisionFlag {
+    COLLISION_SIDES = 1 << 0,
+    COLLISION_UP = 1 << 1,
+    COLLISION_DOWN = 1 << 2,
+}
+
 export class CharacterController extends Component {
     private _group_id: number;
-    position: Vector3;
 
     _PxControllerManager: any;
     _PxController: any;
@@ -16,9 +21,28 @@ export class CharacterController extends Component {
         return this._group_id;
     }
 
+    queryFilterCallback = {
+        postFilter: (filterData, hit) => {
+
+        },
+
+        preFilter: (filterData, shape, actor) => {
+
+        }
+    }
+
+    PHYSXPxQueryFilterCallbackInstance = PhysX.PxQueryFilterCallback.implement(
+        this.queryFilterCallback
+    )
+
+    _PxControllerFilters = new PhysX.PxControllerFilters(
+        null,
+        null,
+        null);
+
     update() {
-        this._PxController.setPosition({x: this.position.x, y: this.position.y, z: this.position.z})
-        this.entity.transform.position = this.position;
+        const pos = this._PxController.getPosition();
+        this.entity.transform.position = new Vector3(pos.x, pos.y, pos.z);
     }
 
     init(scene: PhysicManager, camera: Entity, group_id: number, radius: number, height: number) {
@@ -33,9 +57,12 @@ export class CharacterController extends Component {
         controllerDesc.setMaterial(new PhysicMaterial(0.1, 0.1, 0.1).create());
         this._PxController = this._PxControllerManager.createController(controllerDesc);
         this._PxController.setQueryFilterData(data);
+        this._PxController.setPosition({
+            x: this.entity.transform.position.x,
+            y: this.entity.transform.position.y,
+            z: this.entity.transform.position.z
+        })
 
-        this.position = new Vector3(this.entity.transform.position.x,
-            this.entity.transform.position.y, this.entity.transform.position.z);
         window.addEventListener("keypress", (event) => {
             let forward = new Vector3();
             Vector3.subtract(this.entity.transform.position, camera.transform.position, forward);
@@ -45,23 +72,39 @@ export class CharacterController extends Component {
 
             switch (event.code) {
                 case 'KeyW': {
-                    Vector3.add(this.position, forward, this.position);
+                    this._PxController.move({
+                        x: forward.x,
+                        y: forward.y,
+                        z: forward.z
+                    }, 0.1, 0.1, this._PxControllerFilters, null)
                     break;
                 }
                 case 'KeyS': {
-                    Vector3.subtract(this.position, forward, this.position);
+                    this._PxController.move({
+                        x: -forward.x,
+                        y: -forward.y,
+                        z: -forward.z
+                    }, 0.1, 0.1, this._PxControllerFilters, null)
                     break;
                 }
                 case 'KeyA': {
-                    Vector3.add(this.position, cross, this.position);
+                    this._PxController.move({
+                        x: cross.x,
+                        y: cross.y,
+                        z: cross.z
+                    }, 0.1, 0.1, this._PxControllerFilters, null)
                     break;
                 }
                 case 'KeyD': {
-                    Vector3.subtract(this.position, cross, this.position);
+                    this._PxController.move({
+                        x: -cross.x,
+                        y: -cross.y,
+                        z: -cross.z
+                    }, 0.1, 0.1, this._PxControllerFilters, null)
                     break;
                 }
                 case 'Space' : {
-                    console.log("hhh")
+                    this._PxController.move({x: 0, y: -1, z: 0}, 0.1, 0.1, this._PxControllerFilters, null)
                 }
             }
         })
