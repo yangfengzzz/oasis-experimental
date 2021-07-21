@@ -24,3 +24,5 @@ stats.html
 tsconfig.tsbuildinfo
 oasis-npm
 api
+
+package-lock.json
