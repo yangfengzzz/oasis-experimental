@@ -46,6 +46,13 @@ void main() {
  `;
 
 const fragSource = `
+attribute vec3 POSITION;
+attribute vec2 TEXCOORD_0;
+attribute vec3 NORMAL;
+
+varying vec2 v_uv;
+varying vec3 v_position;
+varying vec3 v_normal;
 
 uniform mat4 u_mtx;
 uniform vec4 u_lightDirTime;
@@ -181,10 +188,10 @@ vec4 lit(float _ndotl, float _rdotv, float _m) {
 //----------------------------------------------------------------------------------------------------------------------
 void main (void) {
     vec4 tmp;
-    tmp = mul(u_mtx, vec4(v_texcoord0.xy, 0.0, 1.0) );
+    tmp = u_mtx * vec4(v_uv.xy, 0.0, 1.0);
     vec3 eye = tmp.xyz/tmp.w;
     
-    tmp = mul(u_mtx, vec4(v_texcoord0.xy, 1.0, 1.0) );
+    tmp = u_mtx * vec4(v_uv.xy, 1.0, 1.0);
     vec3 at = tmp.xyz/tmp.w;
     
     float maxd = length(at - eye);
@@ -208,11 +215,9 @@ void main (void) {
         gl_FragDepth = dist/maxd;
     }
     else {
-        gl_FragColor = v_color0;
+        gl_FragColor = vec4(0.5, 0.9, 0.5, 1.0);
         gl_FragDepth = 1.0;
     }
-
-    gl_FragColor = vec4(0.5, 0.9, 0.5, 1.0);
 }
 `;
 
