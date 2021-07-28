@@ -238,18 +238,20 @@ renderer.setMaterial(material);
 
 // u_time 更新脚本
 class WaterScript extends Script {
-    m_data: Date = new Date();
-    m_timeOffset: number = this.m_data.getSeconds();
+    m_time:number = 0;
+    lightDirModelN = (new Vector3(-0.4, -0.5, -1.0)).normalize();
 
     onUpdate() {
-        const time = this.m_data.getSeconds() - this.m_timeOffset;
+        this.m_time += 0.001;
         const mtx = new Matrix();
-        Matrix.rotationAxisAngle(new Vector3(1, 0, 0), time, mtx);
+        Matrix.rotationAxisAngle(new Vector3(1, 0, 0), this.m_time, mtx);
         const inverse_mvp = new Matrix();
         Matrix.multiply(cameraEntity.getComponent(Camera).invViewProjMat, mtx.invert(), inverse_mvp);
 
+        const light_dir = this.lightDirModelN.transformToVec3(mtx.invert());
+
         material.shaderData.setMatrix("u_mtx", inverse_mvp);
-        material.shaderData.setVector4("u_lightDirTime", new Vector4(1, 1, 1, time));
+        material.shaderData.setVector4("u_lightDirTime", new Vector4(light_dir.x, light_dir.y, light_dir.z, this.m_time));
     }
 }
 
