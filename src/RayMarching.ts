@@ -3,7 +3,7 @@ import {
     Camera, Engine,
     Material,
     MeshRenderer,
-    PrimitiveMesh,
+    PrimitiveMesh, Script,
     Shader,
     Vector3,
     WebGLEngine
@@ -19,11 +19,12 @@ const rootEntity = scene.createRootEntity();
 //-- create camera
 const cameraEntity = rootEntity.createChild("camera_entity");
 cameraEntity.transform.position = new Vector3(0, 0, 15);
-cameraEntity.addComponent(Camera);
+const camera = cameraEntity.addComponent(Camera);
+camera.fieldOfView = 60.0;
 
 const sphereEntity = rootEntity.createChild("sphere");
 const renderer = sphereEntity.addComponent(MeshRenderer);
-renderer.mesh = PrimitiveMesh.createCuboid(engine, 10, 10);
+renderer.mesh = PrimitiveMesh.createPlane(engine, 20, 20);
 
 // 自定义材质
 const vertexSource = `
@@ -39,7 +40,7 @@ varying vec3 v_normal;
 void main() {
 
   gl_Position = u_MVPMat  *  vec4( POSITION, 1.0 );
-  v_uv = TEXCOORD_0;
+  v_uv = vec2(TEXCOORD_0.x * 2.0 - 1.0, TEXCOORD_0.y * 3.0 - 1.0);
   v_normal = NORMAL;
   v_position = POSITION;
 }
@@ -221,7 +222,6 @@ void main (void) {
 }
 `;
 
-
 // 初始化 shader
 Shader.create("water", vertexSource, fragSource);
 
@@ -229,11 +229,30 @@ class ShaderMaterial extends Material {
     constructor(engine: Engine) {
         super(engine, Shader.find("water"));
         this.shaderData.setMatrix("u_mtx", new Matrix());
-        this.shaderData.setVector4("u_lightDirTime", new Vector4(1, 1, 1, 1));
+        this.shaderData.setVector4("u_lightDirTime", new Vector4());
     }
 }
 
 const material = new ShaderMaterial(engine);
 renderer.setMaterial(material);
+
+// u_time 更新脚本
+class WaterScript extends Script {
+    m_data: Date = new Date();
+    m_timeOffset: number = this.m_data.getSeconds();
+
+    onUpdate() {
+        const time = this.m_data.getSeconds() - this.m_timeOffset;
+        const mtx = new Matrix();
+        Matrix.rotationAxisAngle(new Vector3(1, 0, 0), time, mtx);
+        const inverse_mvp = new Matrix();
+        Matrix.multiply(cameraEntity.getComponent(Camera).invViewProjMat, mtx.invert(), inverse_mvp);
+
+        material.shaderData.setMatrix("u_mtx", inverse_mvp);
+        material.shaderData.setVector4("u_lightDirTime", new Vector4(1, 1, 1, time));
+    }
+}
+
+sphereEntity.addComponent(WaterScript);
 
 engine.run();
