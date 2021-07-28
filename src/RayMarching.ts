@@ -19,13 +19,16 @@ const rootEntity = scene.createRootEntity();
 
 //-- create camera
 const cameraEntity = rootEntity.createChild("camera_entity");
-cameraEntity.transform.position = new Vector3(0, 0, 15);
+cameraEntity.transform.position = new Vector3(0, 0, -15);
+cameraEntity.transform.lookAt(new Vector3());
 const camera = cameraEntity.addComponent(Camera);
 camera.fieldOfView = 60.0;
+camera.orthographicSize = 20.0;
+camera.isOrthographic = true;
 
 const sphereEntity = rootEntity.createChild("sphere");
 const renderer = sphereEntity.addComponent(MeshRenderer);
-const cubeGeometry = renderScreenSpaceQuad(engine, 0.0, 0.0, 1280, 720);
+const cubeGeometry = renderScreenSpaceQuad(engine, -10.0, -10.0, 30, 30);
 renderer.mesh = cubeGeometry;
 
 /**
@@ -60,7 +63,7 @@ function renderScreenSpaceQuad(engine: Engine, _x: number, _y: number, _width: n
 
     // prettier-ignore
     // Create indices data.
-    const indices: Uint16Array = new Uint16Array([ 0, 2, 1, 0, 3, 2]);
+    const indices: Uint16Array = new Uint16Array([0, 2, 1, 0, 3, 2]);
 
     // Create gpu vertex buffer and index buffer.
     const vertexBuffer = new Buffer(engine, BufferBindFlag.VertexBuffer, vertices, BufferUsage.Static);
@@ -105,7 +108,7 @@ uniform mat4 u_mtx;
 uniform vec4 u_lightDirTime;
 
 #define u_lightDir u_lightDirTime.xyz
-// #define u_time     u_lightDirTime.w
+#define u_time     u_lightDirTime.w
 
 float sdSphere(vec3 _pos, float _radius) {
     return length(_pos) - _radius;
@@ -287,14 +290,18 @@ class WaterScript extends Script {
     m_time: number = 0;
 
     onUpdate(deltaTime) {
-        this.m_time += deltaTime / 10000;
+        this.m_time += deltaTime / 1000;
         const mtx = new Matrix();
         Matrix.rotationAxisAngle(new Vector3(0, 0, 1), this.m_time, mtx);
-        const inverse_mvp = new Matrix();
-        Matrix.multiply(cameraEntity.getComponent(Camera).invViewProjMat, mtx.invert(), inverse_mvp);
+        const proj = new Matrix();
+        Matrix.perspective(60, camera.aspectRatio, 0.1, 100.0, proj);
+        const view = new Matrix();
+        Matrix.lookAt(new Vector3(0, 0, -15), new Vector3(), new Vector3(0, 1, 0), view);
+        view.multiply(proj);
+        mtx.multiply(view);
 
-        material.shaderData.setMatrix("u_mtx", inverse_mvp);
-        material.shaderData.setVector4("u_lightDirTime", new Vector4(1, 1, 1, this.m_time));
+        material.shaderData.setMatrix("u_mtx", mtx.invert());
+        material.shaderData.setVector4("u_lightDirTime", new Vector4(-1, -1, -1, this.m_time));
     }
 }
 
