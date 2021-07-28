@@ -1,11 +1,12 @@
 //-- create engine object
 import {
-    Camera, Engine,
-    Material,
-    MeshRenderer,
-    PrimitiveMesh, Script,
+    Buffer, BufferBindFlag,
+    BufferMesh, BufferUsage,
+    Camera, Engine, IndexFormat,
+    Material, Mesh,
+    MeshRenderer, Script,
     Shader,
-    Vector3,
+    Vector3, VertexElement, VertexElementFormat,
     WebGLEngine
 } from "oasis-engine";
 import {Matrix, Vector4} from "@oasis-engine/math";
@@ -24,42 +25,87 @@ camera.fieldOfView = 60.0;
 
 const sphereEntity = rootEntity.createChild("sphere");
 const renderer = sphereEntity.addComponent(MeshRenderer);
-renderer.mesh = PrimitiveMesh.createPlane(engine, 20, 20);
+const cubeGeometry = renderScreenSpaceQuad(engine, 0.0, 0.0, 1280, 720);
+renderer.mesh = cubeGeometry;
 
-// 自定义材质
+/**
+ * Create cube geometry with custom BufferGeometry.
+ */
+function renderScreenSpaceQuad(engine: Engine, _x: number, _y: number, _width: number, _height: number): Mesh {
+    const geometry = new BufferMesh(engine, "CustomCubeGeometry");
+
+    const zz: number = 0.0;
+
+    const minx: number = _x;
+    const maxx: number = _x + _width;
+    const miny: number = _y;
+    const maxy: number = _y + _height;
+
+    const minu: number = -1.0;
+    const minv: number = -1.0;
+    const maxu: number = 1.0;
+    const maxv: number = 1.0;
+
+    // prettier-ignore
+    // Create vertices data.
+    const vertices: Float32Array = new Float32Array([
+        // Up
+        minx, miny, zz, minu, minv,
+        // Down
+        maxx, miny, zz, maxu, minv,
+        // Left
+        maxx, maxy, zz, maxu, maxv,
+        // Right
+        minx, maxy, zz, minu, maxv]);
+
+    // prettier-ignore
+    // Create indices data.
+    const indices: Uint16Array = new Uint16Array([ 0, 2, 1, 0, 3, 2]);
+
+    // Create gpu vertex buffer and index buffer.
+    const vertexBuffer = new Buffer(engine, BufferBindFlag.VertexBuffer, vertices, BufferUsage.Static);
+    const indexBuffer = new Buffer(engine, BufferBindFlag.IndexBuffer, indices, BufferUsage.Static);
+
+    // Bind buffer
+    geometry.setVertexBufferBinding(vertexBuffer, 20);
+    geometry.setIndexBufferBinding(indexBuffer, IndexFormat.UInt16);
+
+    // Add vertexElement
+    geometry.setVertexElements([
+        new VertexElement("POSITION", 0, VertexElementFormat.Vector3, 0),
+        new VertexElement("TEXCOORD_0", 12, VertexElementFormat.Vector2, 0)
+    ]);
+
+    // Add one sub geometry.
+    geometry.addSubMesh(0, indices.length);
+    return geometry;
+}
+
+// 自定义材质============================================================================================================
 const vertexSource = `
 uniform mat4 u_MVPMat;
 attribute vec3 POSITION;
 attribute vec2 TEXCOORD_0;
-attribute vec3 NORMAL;
 
 varying vec2 v_uv;
-varying vec3 v_position;
-varying vec3 v_normal;
 
 void main() {
-
   gl_Position = u_MVPMat  *  vec4( POSITION, 1.0 );
-  v_uv = vec2(TEXCOORD_0.x * 2.0 - 1.0, TEXCOORD_0.y * 3.0 - 1.0);
-  v_normal = NORMAL;
-  v_position = POSITION;
+  v_uv = TEXCOORD_0;
 }
  `;
 
 const fragSource = `
 attribute vec3 POSITION;
 attribute vec2 TEXCOORD_0;
-attribute vec3 NORMAL;
 
 varying vec2 v_uv;
-varying vec3 v_position;
-varying vec3 v_normal;
 
 uniform mat4 u_mtx;
 uniform vec4 u_lightDirTime;
 
 #define u_lightDir u_lightDirTime.xyz
-#define u_time     u_lightDirTime.w
+// #define u_time     u_lightDirTime.w
 
 float sdSphere(vec3 _pos, float _radius) {
     return length(_pos) - _radius;
@@ -213,11 +259,11 @@ void main (void) {
         val = pow(val, 1.0/2.2);
         
         gl_FragColor = vec4(val, val, val, 1.0);
-        gl_FragDepth = dist/maxd;
+        // gl_FragDepth = dist/maxd;
     }
     else {
         gl_FragColor = vec4(0.5, 0.9, 0.5, 1.0);
-        gl_FragDepth = 1.0;
+        // gl_FragDepth = 1.0;
     }
 }
 `;
@@ -236,22 +282,19 @@ class ShaderMaterial extends Material {
 const material = new ShaderMaterial(engine);
 renderer.setMaterial(material);
 
-// u_time 更新脚本
+// u_time 更新脚本=======================================================================================================
 class WaterScript extends Script {
-    m_time:number = 0;
-    lightDirModelN = (new Vector3(-0.4, -0.5, -1.0)).normalize();
+    m_time: number = 0;
 
-    onUpdate() {
-        this.m_time += 0.001;
+    onUpdate(deltaTime) {
+        this.m_time += deltaTime / 10000;
         const mtx = new Matrix();
-        Matrix.rotationAxisAngle(new Vector3(1, 0, 0), this.m_time, mtx);
+        Matrix.rotationAxisAngle(new Vector3(0, 0, 1), this.m_time, mtx);
         const inverse_mvp = new Matrix();
         Matrix.multiply(cameraEntity.getComponent(Camera).invViewProjMat, mtx.invert(), inverse_mvp);
 
-        const light_dir = this.lightDirModelN.transformToVec3(mtx.invert());
-
         material.shaderData.setMatrix("u_mtx", inverse_mvp);
-        material.shaderData.setVector4("u_lightDirTime", new Vector4(light_dir.x, light_dir.y, light_dir.z, this.m_time));
+        material.shaderData.setVector4("u_lightDirTime", new Vector4(1, 1, 1, this.m_time));
     }
 }
 
