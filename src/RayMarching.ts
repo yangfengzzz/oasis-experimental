@@ -127,8 +127,10 @@ float distanceToScene(Ray r, Sphere s, float range) {
 
 void main (void) {
     vec3 color = vec3(0.0, 0.0, 0.0);
+    
+    // raymarching
     Sphere s;
-    s.center = vec3(1.0, 0.0, 0.0);
+    s.center = vec3(1.0);
     s.radius = 0.5;
     vec3 cameraPosition = vec3(1000.0 + sin(time) + 1.0, 1000.0 + cos(time) + 1.0, time);
     Ray ray;
