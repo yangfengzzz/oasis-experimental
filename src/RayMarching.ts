@@ -9,9 +9,13 @@ import {
     Vector3, VertexElement, VertexElementFormat,
     WebGLEngine
 } from "oasis-engine";
+import { Stats } from '@oasis-engine/stats';
 
 const engine = new WebGLEngine("canvas");
 engine.canvas.resizeByClientSize();
+
+// @ts-ignore
+Engine.registerFeature(Stats);
 
 const scene = engine.sceneManager.activeScene;
 const rootEntity = scene.createRootEntity();
@@ -27,7 +31,7 @@ camera.isOrthographic = true;
 
 const sphereEntity = rootEntity.createChild("sphere");
 const renderer = sphereEntity.addComponent(MeshRenderer);
-const cubeGeometry = renderScreenSpaceQuad(engine, -10.0, -15.0, 30, 30);
+const cubeGeometry = renderScreenSpaceQuad(engine, -10.0, -15.0, 35, 30);
 renderer.mesh = cubeGeometry;
 
 /**
