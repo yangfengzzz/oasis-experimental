@@ -103,18 +103,49 @@ attribute vec2 TEXCOORD_0;
 
 varying vec2 v_uv;
 
+uniform float time;
+
+struct Sphere {
+  vec3 center;
+  float radius;
+};
+
+struct Ray {
+  vec3 origin;
+  vec3 direction;
+};
+
+float distanceToSphere(Ray r, Sphere s) {
+  return length(r.origin - s.center) - s.radius;
+}
+
+float distanceToScene(Ray r, Sphere s, float range) {
+  Ray repeatRay = r;
+  repeatRay.origin = mod(r.origin, range);
+  return distanceToSphere(repeatRay, s);
+}
+
 void main (void) {
-    vec4 color = vec4(0.41, 0.61, 0.86, 1.0);
+    vec3 color = vec3(0.0, 0.0, 0.0);
+    Sphere s;
+    s.center = vec3(1.0, 0.0, 0.0);
+    s.radius = 0.5;
+    vec3 cameraPosition = vec3(1000.0 + sin(time) + 1.0, 1000.0 + cos(time) + 1.0, time);
+    Ray ray;
+    ray.origin = cameraPosition;
+    ray.direction = normalize(vec3(v_uv, 1.0));
     
-    // SDF
-    float radius = 0.25; 
-    vec2 center = vec2(0.0, 0.0);
-    float distance = length(v_uv - center) - radius;
-    if (distance < 0.0) {
-        color = vec4(1.0, 0.85, 0.0, 1.0);
+    for (float i = 0.0; i < 100.0; i++) {
+      float distance = distanceToScene(ray, s, 2.0);
+      if (distance < 0.001) {
+        color = vec3(1.0);
+        break;
+      }
+      ray.origin += ray.direction * distance;
     }
-  
-    gl_FragColor = color;
+    vec3 positionToCamera = ray.origin - cameraPosition;
+    
+    gl_FragColor = vec4(color * abs(positionToCamera / 10.0), 1.0);
 }
 `;
 
@@ -124,6 +155,7 @@ Shader.create("water", vertexSource, fragSource);
 class ShaderMaterial extends Material {
     constructor(engine: Engine) {
         super(engine, Shader.find("water"));
+        this.shaderData.setFloat("time", 0.0);
     }
 }
 
@@ -132,7 +164,11 @@ renderer.setMaterial(material);
 
 // u_time 更新脚本=======================================================================================================
 class WaterScript extends Script {
+    m_time: number = 0;
+
     onUpdate(deltaTime) {
+        this.m_time += deltaTime / 10000;
+        material.shaderData.setFloat("time", this.m_time);
     }
 }
 
