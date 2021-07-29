@@ -64,13 +64,13 @@ fetch('./src/render-texture.fs.glsl')
                 //-- create light entity
                 let lighthouse = rootEntity.createChild("lighthouse");
                 let light1 = lighthouse.createChild("light1");
-                light1.transform.position = new Vector3(0, 2, 0);
+                light1.transform.position = new Vector3(0, 5, 0);
                 light1.transform.lookAt(new Vector3(), new Vector3(1, 0, 0))
 
                 let camera = light1.addComponent(Camera);
                 const renderColorTexture = new RenderColorTexture(engine, engine.canvas.width, engine.canvas.height);
                 camera.renderTarget = new RenderTarget(engine, engine.canvas.width, engine.canvas.height, renderColorTexture);
-
+                camera.aspectRatio = 1.0;
                 let spotLight = light1.addComponent(SpotLight);
                 spotLight.angle = Math.PI / 12;
 
