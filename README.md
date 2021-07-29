@@ -4,8 +4,9 @@ Oasis-Experimental is experimental projects for [Oasis-Engine](https://github.co
 
 Current plan：
 
-- [x] PhysX intergration：Collider，Rigidbody，CharacterController
-- [ ] SPH simulation and Raymarching for the fluid.
+- [x] PhysX integration：Collider，Rigidbody，CharacterController
+- [x] RayMarching
+- [ ] SPH simulation and Render for the fluid.
 - [ ] Soft Shadow
 - [ ] Temporal Anti-Aliasing（TAA）
 - [ ] Global Illumination
