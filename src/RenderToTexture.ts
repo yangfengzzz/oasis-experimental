@@ -91,9 +91,10 @@ fetch('./src/render-texture.fs.glsl')
                 let light1 = lighthouse.createChild("light1");
                 light1.addComponent(Move);
                 light1.addComponent(LookAtFocus);
+
                 let camera = light1.addComponent(Camera);
-                const renderColorTexture = new RenderColorTexture(engine, 1024, 1024);
-                camera.renderTarget = new RenderTarget(engine, 1024, 1024, renderColorTexture);
+                const renderColorTexture = new RenderColorTexture(engine, engine.canvas.width, engine.canvas.height);
+                camera.renderTarget = new RenderTarget(engine, engine.canvas.width, engine.canvas.height, renderColorTexture);
 
                 let spotLight = light1.addComponent(SpotLight);
                 spotLight.angle = Math.PI / 12;
