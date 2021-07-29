@@ -12,4 +12,4 @@
 //     update()
 // })
 
-import * as simulator from "./src/ShadowCast";
+import * as simulator from "./src/RayMarching";
