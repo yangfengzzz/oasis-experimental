@@ -14,27 +14,7 @@ import {
     WebGLEngine
 } from "oasis-engine";
 import {OrbitControl} from "@oasis-engine/controls";
-
-const target = new Vector3(0, -3, 0);
-const up = new Vector3(0, 1, 0);
-
-class Move extends Script {
-    time = 0;
-    y = 3;
-    range = 5;
-
-    constructor(node) {
-        super(node);
-    }
-
-    onUpdate(deltaTime) {
-        this.time += deltaTime / 1000;
-        let x = Math.cos(this.time) * this.range;
-        let y = Math.sin(this.time) * this.range * 0.2 + this.y;
-        let z = Math.cos(this.time) * this.range;
-        this.entity.transform.position = new Vector3(x, y, z);
-    }
-}
+import {Stats} from '@oasis-engine/stats';
 
 //----------------------------------------------------------------------------------------------------------------------
 fetch('./src/render-texture.fs.glsl')
@@ -43,13 +23,6 @@ fetch('./src/render-texture.fs.glsl')
         fetch('./src/render-texture.vs.glsl')
             .then(response => response.text())
             .then((vs) => {
-                // 控制 light entity 始终看向固定点
-                class LookAtFocus extends Script {
-                    onUpdate(deltaTime) {
-                        light1.transform.lookAt(target, up);
-                    }
-                }
-
                 class ShaderMaterial extends Material {
                     constructor(engine: Engine) {
                         super(engine, Shader.find("water"));
@@ -62,14 +35,6 @@ fetch('./src/render-texture.fs.glsl')
                     }
                 }
 
-                //-- create engine object
-                const engine = new WebGLEngine("canvas");
-                engine.canvas.resizeByClientSize();
-
-                const scene = engine.sceneManager.activeScene;
-                const rootEntity = scene.createRootEntity();
-
-                // Logger.enable();
                 function createCuboidGeometry(name, position, rotation, w, h, d) {
                     let obj = rootEntity.createChild(name);
                     obj.position = new Vector3(...position);
@@ -86,11 +51,21 @@ fetch('./src/render-texture.fs.glsl')
                     cubeRenderer.setMaterial(mtl);
                 }
 
+                //-- create engine object
+                const engine = new WebGLEngine("canvas");
+                engine.canvas.resizeByClientSize();
+
+                // @ts-ignore
+                Engine.registerFeature(Stats);
+
+                const scene = engine.sceneManager.activeScene;
+                const rootEntity = scene.createRootEntity();
+
                 //-- create light entity
                 let lighthouse = rootEntity.createChild("lighthouse");
                 let light1 = lighthouse.createChild("light1");
-                light1.addComponent(Move);
-                light1.addComponent(LookAtFocus);
+                light1.transform.position = new Vector3(0, 2, 0);
+                light1.transform.lookAt(new Vector3(), new Vector3(1, 0, 0))
 
                 let camera = light1.addComponent(Camera);
                 const renderColorTexture = new RenderColorTexture(engine, engine.canvas.width, engine.canvas.height);
