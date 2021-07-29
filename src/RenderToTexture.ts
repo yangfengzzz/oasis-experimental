@@ -13,6 +13,7 @@ import {
     Vector3,
     WebGLEngine
 } from "oasis-engine";
+import {OrbitControl} from "@oasis-engine/controls";
 
 const target = new Vector3(0, -3, 0);
 const up = new Vector3(0, 1, 0);
@@ -36,10 +37,10 @@ class Move extends Script {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-fetch('./src/ray-marching.fs.glsl')
+fetch('./src/render-texture.fs.glsl')
     .then(response => response.text())
     .then((fs) => {
-        fetch('./src/ray-marching.vs.glsl')
+        fetch('./src/render-texture.vs.glsl')
             .then(response => response.text())
             .then((vs) => {
                 // 控制 light entity 始终看向固定点
@@ -52,9 +53,12 @@ fetch('./src/ray-marching.fs.glsl')
                 class ShaderMaterial extends Material {
                     constructor(engine: Engine) {
                         super(engine, Shader.find("water"));
-                        this.shaderData.setFloat("time", 0.0);
-                        this.shaderData.setFloat("width", 1000.0);
-                        this.shaderData.setTexture("u_shadowMaps", renderColorTexture);
+                    }
+                }
+
+                class WaterScript extends Script {
+                    onUpdate(deltaTime) {
+                        material.shaderData.setTexture("u_shadowMaps", renderColorTexture);
                     }
                 }
 
@@ -87,6 +91,9 @@ fetch('./src/ray-marching.fs.glsl')
                 let light1 = lighthouse.createChild("light1");
                 light1.addComponent(Move);
                 light1.addComponent(LookAtFocus);
+                let camera = light1.addComponent(Camera);
+                const renderColorTexture = new RenderColorTexture(engine, 1024, 1024);
+                camera.renderTarget = new RenderTarget(engine, 1024, 1024, renderColorTexture);
 
                 let spotLight = light1.addComponent(SpotLight);
                 spotLight.angle = Math.PI / 12;
@@ -116,16 +123,14 @@ fetch('./src/ray-marching.fs.glsl')
                 Shader.create("water", vs, fs);
                 const material = new ShaderMaterial(engine);
                 cubeRenderer.setMaterial(material);
+                obj.addComponent(WaterScript);
 
                 //-- create camera
                 let cameraNode = rootEntity.createChild("camera_node");
                 cameraNode.transform.position = new Vector3(0, 5, 17);
                 cameraNode.transform.lookAt(new Vector3(), new Vector3(0, 1, 0));
                 cameraNode.addComponent(Camera);
-
-                let camera = cameraNode.addComponent(Camera);
-                const renderColorTexture = new RenderColorTexture(engine, 1024, 1024);
-                camera.renderTarget = new RenderTarget(engine, 1024, 1024, renderColorTexture);
+                cameraNode.addComponent(OrbitControl);
 
                 engine.run();
             })
