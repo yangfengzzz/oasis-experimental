@@ -1,8 +1,8 @@
-import {OrbitControl} from "@oasis-engine/controls";
+import { OrbitControl } from "@oasis-engine/controls";
 import {
     BlinnPhongMaterial,
     Camera,
-    Color, Engine,
+    Color,
     MeshRenderer,
     PrimitiveMesh,
     Script,
@@ -10,11 +10,6 @@ import {
     Vector3,
     WebGLEngine
 } from "oasis-engine";
-import { Stats } from '@oasis-engine/stats';
-
-// @ts-ignore
-Engine.registerFeature(Stats);
-
 const target = new Vector3(0, -3, 0);
 const up = new Vector3(0, 1, 0);
 
@@ -51,19 +46,28 @@ const scene = engine.sceneManager.activeScene;
 const rootEntity = scene.createRootEntity();
 
 // Logger.enable();
-function createCuboidGeometry(name, position, rotation, w, h, d, castShadow: boolean = false) {
+function createCuboidGeometry(name, position, rotation, w, h, d) {
     let obj = rootEntity.createChild(name);
     obj.position = new Vector3(...position);
     obj.transform.rotation = new Vector3(rotation[0], rotation[0], rotation[0]);
     let cubeRenderer = obj.addComponent(MeshRenderer);
     cubeRenderer.mesh = PrimitiveMesh.createCuboid(rootEntity.engine, w, h, d);
+
+    let mtl = new BlinnPhongMaterial(engine);
+    const color = mtl.baseColor;
+    color.r = Math.random();
+    color.g = Math.random();
+    color.b = Math.random();
+    color.a = 1.0;
     cubeRenderer.setMaterial(mtl);
-    cubeRenderer["recieveShadow"] = !castShadow;
-    cubeRenderer["castShadow"] = castShadow;
 }
 
 let mtl = new BlinnPhongMaterial(engine);
-mtl.baseColor = new Color(0.1, 0.9, 0.8, 1);
+const color = mtl.baseColor;
+color.r = Math.random();
+color.g = Math.random();
+color.b = Math.random();
+color.a = 1.0;
 //-- create light entity
 let lighthouse = rootEntity.createChild("lighthouse");
 let light1 = lighthouse.createChild("light1");
@@ -72,9 +76,6 @@ light1.addComponent(LookAtFocus);
 
 let spotLight = light1.addComponent(SpotLight);
 spotLight.angle = Math.PI / 12;
-spotLight["enableShadow"] = true;
-spotLight["shadow"].bias = 0.0001;
-spotLight["shadow"].intensity = 0.2;
 
 let sphereRenderer3 = light1.addComponent(MeshRenderer);
 sphereRenderer3.mesh = PrimitiveMesh.createSphere(engine, 0.1);
@@ -85,7 +86,7 @@ createCuboidGeometry("cubiod1", [0, -3, 0], [0, 0, 0], 10, 0.1, 10);
 createCuboidGeometry("cubiod2", [5, -2, 0], [0, 0, 0], 0.1, 2, 10);
 createCuboidGeometry("cubiod3", [-5, -2, 0], [0, 0, 0], 0.1, 2, 10);
 createCuboidGeometry("cubiod4", [0, -2, -5], [0, 0, 0], 10, 2, 0.1);
-createCuboidGeometry("cubiod-cast-shadow", [0, -1, 0], [0, 0, 0], 1, 1, 1, true);
+createCuboidGeometry("cubiod-cast-shadow", [0, -1, 0], [0, 0, 0], 1, 1, 1);
 
 //-- create camera
 let cameraNode = rootEntity.createChild("camera_node");

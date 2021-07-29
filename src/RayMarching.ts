@@ -53,7 +53,7 @@ fetch('./src/ray-marching.fs.glsl')
                 const material = new ShaderMaterial(engine);
                 renderer.setMaterial(material);
 
-                // u_time 更新脚本=======================================================================================================
+                // u_time 更新脚本=======================================================================================
                 class WaterScript extends Script {
                     m_time: number = 0;
 
