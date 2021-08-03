@@ -94,23 +94,11 @@ window.addEventListener("mousedown", (event) => {
     }
 })
 
-let isFirstFrame: boolean = true;
-
 export function update() {
-    if (isFirstFrame) {
-        //Run the first frame's collision detection
-        physic_scene.collide();
-        isFirstFrame = false;
-    }
-
-    player.getComponent(CharacterController).update();
-    physic_scene.fetchCollision();
-    physic_scene.advance();
+    physic_scene.simulate()
     physic_scene.fetchResults();
 
-    //Run the deferred collision detection for the next frame. This will run in parallel with render.
-    physic_scene.collide();
-
+    player.getComponent(CharacterController).update();
     for (let i = 2; i < entity_id; i++) {
         const transform = physic_scene.physicObjectsMap[i].getComponent(Rigidbody).getGlobalPose();
         physic_scene.physicObjectsMap[i].transform.position = transform.translation;

@@ -1,7 +1,7 @@
 import {
-    PHYSX as PhysX,
+    PhysX as PhysX,
     physics as PhysicsSystem,
-} from "./physx.release";
+} from "../main";
 import {Component, Quaternion, Vector3} from "oasis-engine";
 import {Collider} from "./Collider";
 

@@ -1,7 +1,7 @@
 import {
-    PHYSX as PhysX,
+    PhysX as PhysX,
     physics as PhysicsSystem,
-} from "./physx.release";
+} from "../main";
 import {Rigidbody} from "./Rigidbody";
 import {PhysicScript} from "./PhysicScript";
 import {Collision} from "./Collision";

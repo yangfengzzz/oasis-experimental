@@ -1,7 +1,7 @@
 import {
-    PHYSX as PhysX,
+    PhysX as PhysX,
     physics as PhysicsSystem,
-} from "./physx.release";
+} from "../main";
 import {Collider} from "./Collider";
 
 export class SphereCollider extends Collider {

@@ -1,6 +1,6 @@
 import {
-    PHYSX as PhysX,
-} from "./physx.release";
+    PhysX as PhysX,
+} from "../main";
 import {Component, Entity, Vector3} from "oasis-engine";
 import {PhysicManager} from "./PhysicManager";
 import {PhysicMaterial} from "./PhysicMaterial";

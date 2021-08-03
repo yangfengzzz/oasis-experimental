@@ -1,6 +1,6 @@
 import {
     physics as PhysicsSystem,
-} from "./physx.release";
+} from "../main";
 
 /**
  * Describes how physics materials of the colliding objects are combined.

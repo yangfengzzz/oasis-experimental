@@ -1,9 +1,9 @@
 import {Component, Vector3} from "oasis-engine";
 import {PhysicMaterial} from "./PhysicMaterial";
 import {
-    PHYSX as PhysX,
+    PhysX as PhysX,
     physics as PhysicsSystem,
-} from "./physx.release";
+} from "../main";
 
 export enum ColliderFlag {
     SIMULATION_SHAPE,
