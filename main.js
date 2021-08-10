@@ -1,5 +1,5 @@
 import * as simulator from "./src/Simulator";
-import {PHYSX} from "./src/physx.release.js";
+import {PHYSX} from "./src/physx.release";
 
 //----------------------------------------------------------------------------------------------------------------------
 export let physics
@@ -14,6 +14,10 @@ const setup = () => {
         allocator,
         defaultErrorCallback
     )
+
+    const gPvd = PhysX.PxCreatePvd(foundation);
+    const transport = PhysX.PxDefaultPvdSocketTransportCreate();
+    // gPvd.connect(transport, new PhysX.PxPvdInstrumentationFlags(PhysX.PxPvdInstrumentationFlag.eALL.value));
 
     physics = PhysX.PxCreatePhysics(
         version,

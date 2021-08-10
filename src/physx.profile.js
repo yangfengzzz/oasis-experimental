@@ -1,5 +1,5 @@
 
-var PHYSX = (function() {
+export var PHYSX = (function() {
   var _scriptDir = import.meta.url;
   
   return (
