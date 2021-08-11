@@ -7,43 +7,45 @@ export let PhysX
 
 const host = '127.0.0.1';
 const port = 8090;
-let socket: WebSocket;
-let queue: any[] = [];
-const pvdTransportImpl = PhysX.IPvdTransport.implementation({
-    connect: function () {
-        socket = new WebSocket(`wsl://$(host):$(port)`, ['binary'])
-        socket.onopen = () => {
-            console.log('Connected to PhysX Debugger');
-            queue.forEach(data => socket.send(data));
-            queue = []
-        }
-        socket.onclose = () => {
-        }
-        return true
-    },
-    disconnect: function () {
-        console.log("Socket disconnect")
-    },
-    isConnected: function () {
-    },
-    write: function (inBytes: number, inLength: number) {
-        const data = PhysX.HEAPU8.slice(inBytes, inBytes + inLength)
-        if (socket.readyState === WebSocket.OPEN) {
-            if (queue.length) {
-                queue.forEach(data => socket.send(data));
-                queue.length = 0;
-            }
-            socket.send(data);
-        } else {
-            queue.push(data);
-        }
-        return true;
-    }
-})
-
-const pvdTransport = new PhysX.ccPvdTransport(pvdTransportImpl);
+let socket;
+let queue = [];
 
 const setup = () => {
+    const pvdTransportImpl = PhysX.IPvdTransport.implement({
+        connect: function () {
+            socket = new WebSocket(`wsl://$(host):$(port)`, ['binary'])
+            socket.onopen = () => {
+                console.log('Connected to PhysX Debugger');
+                queue.forEach(data => socket.send(data));
+                queue = []
+            }
+            socket.onclose = () => {
+            }
+            return true
+        },
+        disconnect: function () {
+            console.log("Socket disconnect")
+        },
+        isConnected: function () {
+        },
+        write: function (inBytes, inLength) {
+            const data = PhysX.HEAPU8.slice(inBytes, inBytes + inLength)
+            if (socket.readyState === WebSocket.OPEN) {
+                if (queue.length) {
+                    queue.forEach(data => socket.send(data));
+                    queue.length = 0;
+                }
+                socket.send(data);
+            } else {
+                queue.push(data);
+            }
+            return true;
+        }
+    })
+
+    const pvdTransport = new PhysX.ccPvdTransport(pvdTransportImpl);
+
+    //------------------------------------------------------------------------------------------------------------------
     const version = PhysX.PX_PHYSICS_VERSION
     const defaultErrorCallback = new PhysX.PxDefaultErrorCallback()
     const allocator = new PhysX.PxDefaultAllocator()
