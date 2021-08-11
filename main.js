@@ -5,15 +5,13 @@ import {PHYSX} from "./src/physx.release";
 export let physics
 export let PhysX
 
-const host = '127.0.0.1';
-const port = 8090;
 let socket;
 let queue = [];
 
 const setup = () => {
     const pvdTransportImpl = PhysX.IPvdTransport.implement({
         connect: function () {
-            socket = new WebSocket(`wsl://$(host):$(port)`, ['binary'])
+            socket = new WebSocket('wsl://127.0.0.1:8090', ['binary'])
             socket.onopen = () => {
                 console.log('Connected to PhysX Debugger');
                 queue.forEach(data => socket.send(data));
