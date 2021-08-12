@@ -9,9 +9,9 @@ let socket;
 let queue = [];
 
 const setup = () => {
-    const pvdTransportImpl = PhysX.IPvdTransport.implement({
+    const pvdTransport = PhysX.PxPvdTransport.implement({
         connect: function () {
-            socket = new WebSocket('wsl://127.0.0.1:8090', ['binary'])
+            socket = new WebSocket('ws://127.0.0.1:8090', ['binary'])
             socket.onopen = () => {
                 console.log('Connected to PhysX Debugger');
                 queue.forEach(data => socket.send(data));
@@ -40,8 +40,6 @@ const setup = () => {
             return true;
         }
     })
-
-    const pvdTransport = new PhysX.ccPvdTransport(pvdTransportImpl);
 
     //------------------------------------------------------------------------------------------------------------------
     const version = PhysX.PX_PHYSICS_VERSION
