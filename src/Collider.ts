@@ -69,6 +69,7 @@ export class Collider extends Component {
     }
 
     protected attachActor() {
+        const quat = this.entity.transform.rotationQuaternion.normalize()
         const transform = {
             translation: {
                 x: this.entity.transform.position.x,
@@ -76,10 +77,10 @@ export class Collider extends Component {
                 z: this.entity.transform.position.z,
             },
             rotation: {
-                w: this.entity.transform.rotationQuaternion.w, // PHYSX uses WXYZ quaternions,
-                x: this.entity.transform.rotationQuaternion.x,
-                y: this.entity.transform.rotationQuaternion.y,
-                z: this.entity.transform.rotationQuaternion.z,
+                w: quat.w, // PHYSX uses WXYZ quaternions,
+                x: quat.x,
+                y: quat.y,
+                z: quat.z,
             },
         }
 
