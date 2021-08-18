@@ -97,11 +97,24 @@ window.addEventListener("mousedown", (event) => {
             mesh.setMaterial(mtl);
         })
 
-        fixJoint(hit.entity);
+        fixJointCreate(hit.entity);
     }
 })
 
-function fixJoint(entity) {
+window.addEventListener("mousemove", (event) => {
+
+})
+
+window.addEventListener("mouseup", (event) => {
+    if (joint != undefined) {
+        joint.release();
+        joint = undefined;
+    }
+})
+
+let joint;
+
+function fixJointCreate(entity) {
     const quat = entity.transform.rotationQuaternion.normalize()
     const transform = {
         translation: {
@@ -130,7 +143,7 @@ function fixJoint(entity) {
 
     const actor = entity.getComponent(Rigidbody);
     actor.wakeUp()
-    PhysX.PxFixedJointCreate(PhysicsSystem, null, transform, actor.get(), transform2);
+    joint = PhysX.PxFixedJointCreate(PhysicsSystem, null, transform, actor.get(), transform2);
 }
 
 export function update() {
