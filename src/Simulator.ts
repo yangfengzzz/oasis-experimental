@@ -17,6 +17,11 @@ import {Ray, Vector2} from "@oasis-engine/math";
 import {RaycastHit} from "./RaycastHit";
 import {CharacterController} from "./CharacterController";
 
+import {
+    PhysX as PhysX,
+    physics as PhysicsSystem,
+} from "../main";
+
 export const engine = new WebGLEngine("canvas");
 engine.canvas.resizeByClientSize();
 const scene = engine.sceneManager.activeScene;
@@ -91,8 +96,42 @@ window.addEventListener("mousedown", (event) => {
         meshes.forEach((mesh) => {
             mesh.setMaterial(mtl);
         })
+
+        fixJoint(hit.entity);
     }
 })
+
+function fixJoint(entity) {
+    const quat = entity.transform.rotationQuaternion.normalize()
+    const transform = {
+        translation: {
+            x: entity.transform.position.x + 2,
+            y: entity.transform.position.y,
+            z: entity.transform.position.z,
+        },
+        rotation: {
+            w: quat.w, // PHYSX uses WXYZ quaternions,
+            x: quat.x,
+            y: quat.y,
+            z: quat.z,
+        },
+    }
+
+    const transform2 = {
+        translation: {
+            x: 2,
+            y: 0,
+            z: 0,
+        },
+        rotation: {
+            w: 1, x: 0, y: 0, z: 0,
+        },
+    }
+
+    const actor = entity.getComponent(Rigidbody);
+    actor.wakeUp()
+    PhysX.PxFixedJointCreate(PhysicsSystem, null, transform, actor.get(), transform2);
+}
 
 export function update() {
     physic_scene.simulate()
