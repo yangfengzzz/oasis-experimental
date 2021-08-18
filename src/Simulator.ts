@@ -64,13 +64,13 @@ export function init() {
 }
 
 window.addEventListener("keydown", (event) => {
+    const dir = new Vector3();
+    cameraEntity.transform.getWorldForward(dir);
+    Vector3.scale(dir, 50, dir);
     switch (event.key) {
         case 'Enter':
-            addSphere(0.5, new Vector3(
-                Math.floor(Math.random() * 6) - 2.5,
-                5,
-                Math.floor(Math.random() * 6) - 2.5,
-            ), new Quaternion(0, 0, 0.3, 0.7), physic_scene);
+            addSphere(0.5, cameraEntity.transform.position,
+                cameraEntity.transform.rotationQuaternion, dir, physic_scene);
             break;
     }
 })
@@ -101,19 +101,6 @@ window.addEventListener("mousedown", (event) => {
     }
 })
 
-window.addEventListener("mousemove", (event) => {
-
-})
-
-window.addEventListener("mouseup", (event) => {
-    if (joint != undefined) {
-        joint.release();
-        joint = undefined;
-    }
-})
-
-let joint;
-
 function fixJointCreate(entity) {
     const quat = entity.transform.rotationQuaternion.normalize()
     const transform = {
@@ -143,7 +130,7 @@ function fixJointCreate(entity) {
 
     const actor = entity.getComponent(Rigidbody);
     actor.wakeUp()
-    joint = PhysX.PxFixedJointCreate(PhysicsSystem, null, transform, actor.get(), transform2);
+    PhysX.PxFixedJointCreate(PhysicsSystem, null, transform, actor.get(), transform2);
 }
 
 export function update() {
@@ -264,7 +251,7 @@ function addBox(size: Vector3, position: Vector3, rotation: Quaternion, scene: P
     return cubeEntity;
 }
 
-function addSphere(radius: number, position: Vector3, rotation: Quaternion, scene: PhysicManager): Entity {
+function addSphere(radius: number, position: Vector3, rotation: Quaternion, velocity: Vector3, scene: PhysicManager): Entity {
     const mtl = new BlinnPhongMaterial(engine);
     const color = mtl.baseColor;
     color.r = Math.random();
@@ -286,13 +273,14 @@ function addSphere(radius: number, position: Vector3, rotation: Quaternion, scen
     sphere_collider.material.staticFriction = 0.1;
     sphere_collider.material.dynamicFriction = 0.2;
     sphere_collider.material.bounciness = 2;
-    sphere_collider.material.bounceCombine = PhysicCombineMode.Minimum;
+    sphere_collider.material.bounceCombine = PhysicCombineMode.Average;
     sphere_collider.init(entity_id++);
     const rigid_body = cubeEntity.addComponent(Rigidbody);
     rigid_body.init(position, rotation);
     rigid_body.freezeRotation = false;
     rigid_body.attachShape(sphere_collider);
-
+    rigid_body.velocity = velocity;
+    rigid_body.angularDrag = 0.5;
     scene.addDynamicActor(rigid_body);
     rigid_body.addForce(new Vector3(0, 300, 0));
 
