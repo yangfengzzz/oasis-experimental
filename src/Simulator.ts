@@ -62,20 +62,20 @@ export function init() {
         }
     }
 
-    createChain(new Vector3(0.0, 20.0, -10.0), new Quaternion(), 5, 4.0);
+    createChain(new Vector3(0.0, 25.0, -10.0), new Quaternion(), 10, 2.0);
 }
 
 function createChain(position, rotation, length, separation) {
-    const offset = new Vector3(separation / 2, 0, 0);
+    const offset = new Vector3(0, -separation / 2, 0);
     let prev = null;
     for (let i = 0; i < length; i++) {
-        let localTm_pos = new Vector3(separation / 2 * (2 * i + 1), 0, 0);
+        let localTm_pos = new Vector3(0, -separation / 2 * (2 * i + 1), 0);
         let localTm_quat = new Quaternion();
         transform(position, rotation, localTm_pos, localTm_quat);
 
-        let current = addBox(new Vector3(2.0, 0.5, 0.5), localTm_pos, localTm_quat, physic_scene).getComponent(Rigidbody).get();
+        let current = addBox(new Vector3(2.0, 2.0, 0.5), localTm_pos, localTm_quat, physic_scene).getComponent(Rigidbody).get();
         createBreakableFixed(prev, prev ? offset : position, prev ? new Quaternion() : rotation,
-            current, new Vector3(-separation / 2, 0, 0), new Quaternion());
+            current, new Vector3(0, separation / 2, 0), new Quaternion());
         prev = current;
     }
 }
@@ -117,7 +117,6 @@ function transform(position, rotation, outPosition, outRotation) {
     Vector3.transformByQuat(outPosition, rotation, outPosition);
     Vector3.add(outPosition, position, outPosition);
 }
-
 
 window.addEventListener("keydown", (event) => {
     const dir = new Vector3();
