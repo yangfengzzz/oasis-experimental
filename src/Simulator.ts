@@ -61,7 +61,63 @@ export function init() {
             ), new Quaternion(0, 0, 0.3, 0.7), physic_scene);
         }
     }
+
+    createChain(new Vector3(0.0, 20.0, -10.0), new Quaternion(), 5, 4.0);
 }
+
+function createChain(position, rotation, length, separation) {
+    const offset = new Vector3(separation / 2, 0, 0);
+    let prev = null;
+    for (let i = 0; i < length; i++) {
+        let localTm_pos = new Vector3(separation / 2 * (2 * i + 1), 0, 0);
+        let localTm_quat = new Quaternion();
+        transform(position, rotation, localTm_pos, localTm_quat);
+
+        let current = addBox(new Vector3(2.0, 0.5, 0.5), localTm_pos, localTm_quat, physic_scene).getComponent(Rigidbody).get();
+        createBreakableFixed(prev, prev ? offset : position, prev ? new Quaternion() : rotation,
+            current, new Vector3(-separation / 2, 0, 0), new Quaternion());
+        prev = current;
+    }
+}
+
+function createBreakableFixed(actor0, position0, rotation0, actor1, position1, rotation1) {
+    const transform0 = {
+        translation: {
+            x: position0.x,
+            y: position0.y,
+            z: position0.z,
+        },
+        rotation: {
+            w: rotation0.w, // PHYSX uses WXYZ quaternions,
+            x: rotation0.x,
+            y: rotation0.y,
+            z: rotation0.z,
+        },
+    }
+
+    const transform1 = {
+        translation: {
+            x: position1.x,
+            y: position1.y,
+            z: position1.z,
+        },
+        rotation: {
+            w: rotation1.w, x: rotation1.x, y: rotation1.y, z: rotation1.z,
+        },
+    }
+
+    let joint = PhysX.PxFixedJointCreate(PhysicsSystem, actor0, transform0, actor1, transform1);
+    joint.setBreakForce(1000, 100000);
+    joint.setConstraintFlag(PhysX.PxConstraintFlag.eDRIVE_LIMITS_ARE_FORCES, true);
+    joint.setConstraintFlag(PhysX.PxConstraintFlag.eDISABLE_PREPROCESSING, true);
+}
+
+function transform(position, rotation, outPosition, outRotation) {
+    Quaternion.multiply(rotation, outRotation, outRotation)
+    Vector3.transformByQuat(outPosition, rotation, outPosition);
+    Vector3.add(outPosition, position, outPosition);
+}
+
 
 window.addEventListener("keydown", (event) => {
     const dir = new Vector3();
