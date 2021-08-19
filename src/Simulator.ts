@@ -2,7 +2,7 @@ import {
     BlinnPhongMaterial,
     Camera, Entity,
     MeshRenderer,
-    PrimitiveMesh, Quaternion, Vector3,
+    PrimitiveMesh, Quaternion, Vector3, PointLight,
     WebGLEngine,
 } from "oasis-engine";
 import {OrbitControl} from "@oasis-engine/controls";
@@ -38,6 +38,11 @@ cameraEntity.addComponent(OrbitControl);
 // init light
 scene.ambientLight.diffuseSolidColor.setValue(1, 1, 1, 1);
 scene.ambientLight.diffuseIntensity = 1.2;
+
+let light = rootEntity.createChild("light");
+light.transform.position = new Vector3(0, 5, 0);
+const p = light.addComponent(PointLight);
+p.intensity = 0.3;
 
 //----------------------------------------------------------------------------------------------------------------------
 let entity_id: number = 0;
@@ -151,42 +156,8 @@ window.addEventListener("mousedown", (event) => {
         meshes.forEach((mesh) => {
             mesh.setMaterial(mtl);
         })
-
-        fixJointCreate(hit.entity);
     }
 })
-
-function fixJointCreate(entity) {
-    const quat = entity.transform.rotationQuaternion.normalize()
-    const transform = {
-        translation: {
-            x: entity.transform.position.x + 2,
-            y: entity.transform.position.y,
-            z: entity.transform.position.z,
-        },
-        rotation: {
-            w: quat.w, // PHYSX uses WXYZ quaternions,
-            x: quat.x,
-            y: quat.y,
-            z: quat.z,
-        },
-    }
-
-    const transform2 = {
-        translation: {
-            x: 2,
-            y: 0,
-            z: 0,
-        },
-        rotation: {
-            w: 1, x: 0, y: 0, z: 0,
-        },
-    }
-
-    const actor = entity.getComponent(Rigidbody);
-    actor.wakeUp()
-    PhysX.PxFixedJointCreate(PhysicsSystem, null, transform, actor.get(), transform2);
-}
 
 export function update() {
     physic_scene.simulate()
