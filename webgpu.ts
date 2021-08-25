@@ -1,7 +1,7 @@
 import {App} from './app';
 import vxCode from './shader/vertex.wgsl';
 import fxCode from './shader/fragment.wgsl'
-import {PerspectiveCamera, Matrix4, Vector3} from 'three';
+import {Matrix, Vector3} from "@oasis-engine/math";
 
 const triangleVertexPositon = new Float32Array([
 
@@ -21,7 +21,7 @@ const triangleVertexColor = new Float32Array([
 
 const triangleIndex = new Uint32Array([0, 1, 2]);
 
-const triangleMVMatrix = new Matrix4();
+const triangleMVMatrix = new Matrix;
 
 const squareVertexPosition = new Float32Array([
 
@@ -43,14 +43,11 @@ const squareVertexColor = new Float32Array([
 
 const squareIndex = new Uint32Array([0, 1, 2, 1, 2, 3]);
 
-const squareMVMatrix = new Matrix4();
+const squareMVMatrix = new Matrix();
 
 let main = async () => {
-
-    let camera = new PerspectiveCamera(45, document.body.clientWidth / document.body.clientHeight, 0.1, 100);
-
-    let pMatrix = camera.projectionMatrix;
-
+    let pMatrix = new Matrix();
+    Matrix.perspective(45, document.body.clientWidth / document.body.clientHeight, 0.1, 100, pMatrix);
 
     let backgroundColor = {r: 0, g: 0, b: 0, a: 1.0};
 
@@ -91,13 +88,27 @@ let main = async () => {
 
         app.renderPassEncoder.setPipeline(app.renderPipeline);
 
-        triangleMVMatrix.makeTranslation(-1.5, 0.0, -7.0).multiply(new Matrix4().makeRotationY(rTri));
+        triangleMVMatrix.identity().translate(new Vector3(-1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(0, 1, 0), rTri));
+        squareMVMatrix.identity().translate(new Vector3(1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(1, 0, 0), rSquare));
 
-        squareMVMatrix.makeTranslation(1.5, 0.0, -7.0).multiply(new Matrix4().makeRotationX(rSquare));
+        let pBuffer: number[] = [
+            0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0];
+        pMatrix.toArray(pBuffer);
 
-        let triangleUniformBufferView = new Float32Array(pMatrix.toArray().concat(triangleMVMatrix.toArray()));
+        let mvBuffer: number[] = [
+            0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0];
 
-        let squareUniformBufferView = new Float32Array(pMatrix.toArray().concat(squareMVMatrix.toArray()));
+        triangleMVMatrix.toArray(mvBuffer);
+        let triangleUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
+
+        squareMVMatrix.toArray(mvBuffer);
+        let squareUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
 
         app.InitGPUBufferWithMultiBuffers(triangleVertexPositon, triangleVertexColor, triangleIndex, triangleUniformBufferView);
 

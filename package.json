@@ -14,8 +14,6 @@
     "@oasis-engine/stats": "^0.4.9",
     "dat.gui": "^0.7.7",
     "oasis-engine": "^0.4.0",
-    "@webgpu/glslang": "0.0.12",
-    "@webgpu/types": "^0.1.6",
-    "three": "^0.125.2"
+    "@webgpu/types": "^0.1.6"
   }
 }

@@ -1,7 +1,16 @@
-import {TypedArray} from 'three';
+// typed array parameters
+export type TypedArray =
+    Int8Array
+    | Uint8Array
+    | Uint8ClampedArray
+    | Int16Array
+    | Uint16Array
+    | Int32Array
+    | Uint32Array
+    | Float32Array
+    | Float64Array;
 
 export class App {
-
     public canvas: HTMLCanvasElement;
 
     public adapter: GPUAdapter;
