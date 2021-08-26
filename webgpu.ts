@@ -1,9 +1,9 @@
-import {App} from './app';
+import {Engine} from './webgpu/Engine';
 import vxCode from './shader/vertex.wgsl';
 import fxCode from './shader/fragment.wgsl'
 import {Matrix, Vector3} from "@oasis-engine/math";
 
-const triangleVertexPositon = new Float32Array([
+const triangleVertexPosition = new Float32Array([
 
     0.0, 1.0, 0.0,
     -1.0, -1.0, 0.0,
@@ -51,15 +51,15 @@ let main = async () => {
 
     let backgroundColor = {r: 0, g: 0, b: 0, a: 1.0};
 
-    let app = new App();
+    let engine = new Engine();
 
-    app.CreateCanvas(document.body)
+    engine.CreateCanvas(document.body)
 
-    await app.InitWebGPU();
+    await engine.InitWebGPU();
 
-    app.InitRenderPass(backgroundColor);
+    engine.InitRenderPass(backgroundColor);
 
-    app.InitPipelineWitMultiBuffers(vxCode, fxCode);
+    engine.InitPipelineWitMultiBuffers(vxCode, fxCode);
 
     let lastTime = 0, rTri = 0, rSquare = 0;
 
@@ -80,13 +80,13 @@ let main = async () => {
         lastTime = timeNow;
     }
 
-    app.RunRenderLoop(() => {
+    engine.RunRenderLoop(() => {
 
         animate();
 
-        app.InitRenderPass(backgroundColor);
+        engine.InitRenderPass(backgroundColor);
 
-        app.renderPassEncoder.setPipeline(app.renderPipeline);
+        engine.renderPassEncoder.setPipeline(engine.renderPipeline);
 
         triangleMVMatrix.identity().translate(new Vector3(-1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(0, 1, 0), rTri));
         squareMVMatrix.identity().translate(new Vector3(1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(1, 0, 0), rSquare));
@@ -110,15 +110,15 @@ let main = async () => {
         squareMVMatrix.toArray(mvBuffer);
         let squareUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
 
-        app.InitGPUBufferWithMultiBuffers(triangleVertexPositon, triangleVertexColor, triangleIndex, triangleUniformBufferView);
+        engine.InitGPUBufferWithMultiBuffers(triangleVertexPosition, triangleVertexColor, triangleIndex, triangleUniformBufferView);
 
-        app.Draw(triangleIndex.length);
+        engine.Draw(triangleIndex.length);
 
-        app.InitGPUBufferWithMultiBuffers(squareVertexPosition, squareVertexColor, squareIndex, squareUniformBufferView);
+        engine.InitGPUBufferWithMultiBuffers(squareVertexPosition, squareVertexColor, squareIndex, squareUniformBufferView);
 
-        app.Draw(squareIndex.length);
+        engine.Draw(squareIndex.length);
 
-        app.Present();
+        engine.Present();
 
     })
 
