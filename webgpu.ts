@@ -76,7 +76,7 @@ let main = async () => {
 
             engine.DrawIndexed(triangleIndex.length);
 
-            const mesh = PrimitiveMesh.createCuboid(engine, 1, 1, 1, false);
+            const mesh = PrimitiveMesh.createSphere(engine, 1, 50, false);
             engine.createUniformBuffer(squareUniformBufferView);
             engine.DrawIndexed(mesh.getIndices().length);
 
