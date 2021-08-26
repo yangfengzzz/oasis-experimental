@@ -1,4 +1,4 @@
-import { Vector2, Vector3 } from "@oasis-engine/math";
+import {Vector2, Vector3} from "@oasis-engine/math";
 import {ModelMesh} from "./ModelMesh";
 import {Engine} from "./Engine";
 
@@ -127,7 +127,7 @@ export class PrimitiveMesh {
             // Back
             indices[30] = 20, indices[31] = 22, indices[32] = 23, indices[33] = 22, indices[34] = 20, indices[35] = 21;
 
-        const { bounds } = mesh;
+        const {bounds} = mesh;
         bounds.min.setValue(-halfWidth, -halfHeight, -halfDepth);
         bounds.max.setValue(halfWidth, halfHeight, halfDepth);
 

@@ -1,11 +1,13 @@
 import {BoundingBox} from "@oasis-engine/math";
 import {SubMesh} from "./SubMesh";
 import {MeshTopology} from "oasis-engine";
+import {EngineObject} from "./EngineObject";
+import {Engine} from "./Engine";
 
 /**
  * Mesh.
  */
-export abstract class Mesh {
+export abstract class Mesh extends EngineObject {
     /** Name. */
     name: string;
     /** The bounding volume of the mesh. */
@@ -25,6 +27,16 @@ export abstract class Mesh {
      */
     get subMeshes(): Readonly<SubMesh[]> {
         return this._subMeshes;
+    }
+
+    /**
+     * Create mesh.
+     * @param engine - Engine
+     * @param name - Mesh name
+     */
+    constructor(engine: Engine, name?: string) {
+        super(engine);
+        this.name = name;
     }
 
     /**

@@ -1,6 +1,7 @@
 import {Mesh} from "./Mesh";
-import { Color, Vector2, Vector3, Vector4 } from "@oasis-engine/math";
-import {IndexFormat} from "oasis-engine";
+import {Color, Vector2, Vector3, Vector4} from "@oasis-engine/math";
+import {IndexFormat, VertexElement, VertexElementFormat} from "oasis-engine";
+import {Engine} from "./Engine";
 
 /**
  * Mesh containing common vertex elements of the model.
@@ -15,9 +16,13 @@ export class ModelMesh extends Mesh {
     private _vertexSlotChanged: boolean = true;
     private _vertexChangeFlag: number = 0;
     private _indicesChangeFlag: boolean = false;
+    private _elementCount: number = 0;
+    private _vertexElementsCache: VertexElement[] = [];
 
     private _positions: Vector3[] = [];
     private _normals: Vector3[] | null = null;
+    private _colors: Color[] | null = null;
+    private _tangents: Vector4[] | null = null;
     private _uv: Vector2[] | null = null;
     private _uv1: Vector2[] | null = null;
     private _uv2: Vector2[] | null = null;
@@ -26,6 +31,30 @@ export class ModelMesh extends Mesh {
     private _uv5: Vector2[] | null = null;
     private _uv6: Vector2[] | null = null;
     private _uv7: Vector2[] | null = null;
+
+    /**
+     * Whether to access data of the mesh.
+     */
+    get accessible(): boolean {
+        return this._accessible;
+    }
+
+    /**
+     * Vertex count of current mesh.
+     */
+    get vertexCount(): number {
+        return this._vertexCount;
+    }
+
+    /**
+     * Create a model mesh.
+     * @param engine - Engine to which the mesh belongs
+     * @param name - Mesh name
+     */
+    constructor(engine: Engine, name?: string) {
+        super(engine);
+        this.name = name;
+    }
 
     /**
      * Set positions for the mesh.
@@ -84,6 +113,64 @@ export class ModelMesh extends Mesh {
             throw "Not allowed to access data while accessible is false.";
         }
         return this._normals;
+    }
+
+    /**
+     * Set per-vertex colors for the mesh.
+     * @param colors - The colors for the mesh.
+     */
+    setColors(colors: Color[] | null): void {
+        if (!this._accessible) {
+            throw "Not allowed to access data while accessible is false.";
+        }
+
+        if (colors.length !== this._vertexCount) {
+            throw "The array provided needs to be the same size as vertex count.";
+        }
+
+        this._vertexSlotChanged = !!this._colors !== !!colors;
+        this._vertexChangeFlag |= ValueChanged.Color;
+        this._colors = colors;
+    }
+
+    /**
+     * Get colors for the mesh.
+     * @remarks Please call the setColors() method after modification to ensure that the modification takes effect.
+     */
+    getColors(): Color[] | null {
+        if (!this._accessible) {
+            throw "Not allowed to access data while accessible is false.";
+        }
+        return this._colors;
+    }
+
+    /**
+     * Set per-vertex tangents for the mesh.
+     * @param tangents - The tangents for the mesh.
+     */
+    setTangents(tangents: Vector4[] | null): void {
+        if (!this._accessible) {
+            throw "Not allowed to access data while accessible is false.";
+        }
+
+        if (tangents.length !== this._vertexCount) {
+            throw "The array provided needs to be the same size as vertex count.";
+        }
+
+        this._vertexSlotChanged = !!this._tangents !== !!tangents;
+        this._vertexChangeFlag |= ValueChanged.Tangent;
+        this._tangents = tangents;
+    }
+
+    /**
+     * Get tangents for the mesh.
+     * @remarks Please call the setTangents() method after modification to ensure that the modification takes effect.
+     */
+    getTangents(): Vector4[] | null {
+        if (!this._accessible) {
+            throw "Not allowed to access data while accessible is false.";
+        }
+        return this._tangents;
     }
 
     /**
@@ -219,7 +306,294 @@ export class ModelMesh extends Mesh {
     getIndices(): Uint8Array | Uint16Array | Uint32Array {
         return this._indices;
     }
+
+    /**
+     * Upload Mesh Data to the graphics API.
+     * @param noLongerAccessible - Whether to access data later. If true, you'll never access data anymore (free memory cache)
+     */
+    uploadData(noLongerAccessible: boolean): void {
+        if (!this._accessible) {
+            throw "Not allowed to access data while accessible is false.";
+        }
+
+        const {_indices} = this;
+
+        // Vertex value change.
+        const elementCount = this._elementCount;
+        const vertexFloatCount = elementCount * this._vertexCount;
+        const vertices = new Float32Array(vertexFloatCount);
+        this._verticesFloat32 = vertices;
+        this._verticesUint8 = new Uint8Array(vertices.buffer);
+
+        this._vertexChangeFlag = ValueChanged.All;
+        this._updateVertices(vertices);
+
+
+        if (noLongerAccessible) {
+            this._accessible = false;
+            this._releaseCache();
+        }
+    }
+
+    private _updateVertexElements(): VertexElement[] {
+        const vertexElements = this._vertexElementsCache;
+        vertexElements.length = 1;
+        vertexElements[0] = POSITION_VERTEX_ELEMENT;
+
+        let offset = 12;
+        let elementCount = 3;
+        if (this._normals) {
+            vertexElements.push(new VertexElement("NORMAL", offset, VertexElementFormat.Vector3, 0));
+            offset += 12;
+            elementCount += 3;
+        }
+        if (this._colors) {
+            vertexElements.push(new VertexElement("COLOR_0", offset, VertexElementFormat.Vector4, 0));
+            offset += 16;
+            elementCount += 4;
+        }
+        if (this._tangents) {
+            vertexElements.push(new VertexElement("TANGENT", offset, VertexElementFormat.Vector4, 0));
+            offset += 16;
+            elementCount += 4;
+        }
+        if (this._uv) {
+            vertexElements.push(new VertexElement("TEXCOORD_0", offset, VertexElementFormat.Vector2, 0));
+            offset += 8;
+            elementCount += 2;
+        }
+        if (this._uv1) {
+            vertexElements.push(new VertexElement("TEXCOORD_1", offset, VertexElementFormat.Vector2, 0));
+            offset += 8;
+            elementCount += 2;
+        }
+        if (this._uv2) {
+            vertexElements.push(new VertexElement("TEXCOORD_2", offset, VertexElementFormat.Vector2, 0));
+            offset += 8;
+            elementCount += 2;
+        }
+        if (this._uv3) {
+            vertexElements.push(new VertexElement("TEXCOORD_3", offset, VertexElementFormat.Vector2, 0));
+            offset += 8;
+            elementCount += 2;
+        }
+        if (this._uv4) {
+            vertexElements.push(new VertexElement("TEXCOORD_4", offset, VertexElementFormat.Vector2, 0));
+            offset += 8;
+            elementCount += 2;
+        }
+        if (this._uv5) {
+            vertexElements.push(new VertexElement("TEXCOORD_5", offset, VertexElementFormat.Vector2, 0));
+            offset += 8;
+            elementCount += 2;
+        }
+        if (this._uv6) {
+            vertexElements.push(new VertexElement("TEXCOORD_6", offset, VertexElementFormat.Vector2, 0));
+            offset += 8;
+            elementCount += 2;
+        }
+        if (this._uv7) {
+            vertexElements.push(new VertexElement("TEXCOORD_7", offset, VertexElementFormat.Vector2, 0));
+            offset += 8;
+            elementCount += 2;
+        }
+
+        this._elementCount = elementCount;
+        return vertexElements;
+    }
+
+    private _updateVertices(vertices: Float32Array): void {
+        // prettier-ignore
+        const {
+            _elementCount, _vertexCount, _positions, _normals, _colors, _vertexChangeFlag,
+            _tangents, _uv, _uv1, _uv2, _uv3, _uv4, _uv5, _uv6, _uv7
+        } = this;
+
+        if (_vertexChangeFlag & ValueChanged.Position) {
+            for (let i = 0; i < _vertexCount; i++) {
+                const start = _elementCount * i;
+                const position = _positions[i];
+                vertices[start] = position.x;
+                vertices[start + 1] = position.y;
+                vertices[start + 2] = position.z;
+            }
+        }
+
+        let offset = 3;
+
+        if (_normals) {
+            if (_vertexChangeFlag & ValueChanged.Normal) {
+                for (let i = 0; i < _vertexCount; i++) {
+                    const start = _elementCount * i + offset;
+                    const normal = _normals[i];
+                    if (normal) {
+                        vertices[start] = normal.x;
+                        vertices[start + 1] = normal.y;
+                        vertices[start + 2] = normal.z;
+                    }
+                }
+            }
+            offset += 3;
+        }
+
+        if (_colors) {
+            if (_vertexChangeFlag & ValueChanged.Color) {
+                for (let i = 0; i < _vertexCount; i++) {
+                    const start = _elementCount * i + offset;
+                    const color = _colors[i];
+                    if (color) {
+                        vertices[start] = color.r;
+                        vertices[start + 1] = color.g;
+                        vertices[start + 2] = color.b;
+                        vertices[start + 3] = color.a;
+                    }
+                }
+            }
+            offset += 4;
+        }
+
+        if (_tangents) {
+            if (_vertexChangeFlag & ValueChanged.Tangent) {
+                for (let i = 0; i < _vertexCount; i++) {
+                    const start = _elementCount * i + offset;
+                    const tangent = _tangents[i];
+                    if (tangent) {
+                        vertices[start] = tangent.x;
+                        vertices[start + 1] = tangent.y;
+                        vertices[start + 2] = tangent.z;
+                    }
+                }
+            }
+            offset += 4;
+        }
+        if (_uv) {
+            if (_vertexChangeFlag & ValueChanged.UV) {
+                for (let i = 0; i < _vertexCount; i++) {
+                    const start = _elementCount * i + offset;
+                    const uv = _uv[i];
+                    if (uv) {
+                        vertices[start] = uv.x;
+                        vertices[start + 1] = uv.y;
+                    }
+                }
+            }
+            offset += 2;
+        }
+        if (_uv1) {
+            if (_vertexChangeFlag & ValueChanged.UV1) {
+                for (let i = 0; i < _vertexCount; i++) {
+                    const start = _elementCount * i + offset;
+                    const uv = _uv1[i];
+                    if (uv) {
+                        vertices[start] = uv.x;
+                        vertices[start + 1] = uv.y;
+                    }
+                }
+            }
+            offset += 2;
+        }
+        if (_uv2) {
+            if (_vertexChangeFlag & ValueChanged.UV2) {
+                for (let i = 0; i < _vertexCount; i++) {
+                    const start = _elementCount * i + offset;
+                    const uv = _uv2[i];
+                    if (uv) {
+                        vertices[start] = uv.x;
+                        vertices[start + 1] = uv.y;
+                    }
+                }
+            }
+            offset += 2;
+        }
+        if (_uv3) {
+            if (_vertexChangeFlag & ValueChanged.UV3) {
+                for (let i = 0; i < _vertexCount; i++) {
+                    const start = _elementCount * i + offset;
+                    const uv = _uv3[i];
+                    if (uv) {
+                        vertices[start] = uv.x;
+                        vertices[start + 1] = uv.y;
+                    }
+                }
+            }
+            offset += 2;
+        }
+        if (_uv4) {
+            if (_vertexChangeFlag & ValueChanged.UV4) {
+                for (let i = 0; i < _vertexCount; i++) {
+                    const start = _elementCount * i + offset;
+                    const uv = _uv4[i];
+                    if (uv) {
+                        vertices[start] = uv.x;
+                        vertices[start + 1] = uv.y;
+                    }
+                }
+            }
+            offset += 2;
+        }
+        if (_uv5) {
+            if (_vertexChangeFlag & ValueChanged.UV5) {
+                for (let i = 0; i < _vertexCount; i++) {
+                    const start = _elementCount * i + offset;
+                    const uv = _uv5[i];
+                    if (uv) {
+                        vertices[start] = uv.x;
+                        vertices[start + 1] = uv.y;
+                    }
+                }
+            }
+            offset += 2;
+        }
+        if (_uv6) {
+            if (_vertexChangeFlag & ValueChanged.UV6) {
+                for (let i = 0; i < _vertexCount; i++) {
+                    const start = _elementCount * i + offset;
+                    const uv = _uv6[i];
+                    if (uv) {
+                        vertices[start] = uv.x;
+                        vertices[start + 1] = uv.y;
+                    }
+                }
+            }
+            offset += 2;
+        }
+        if (_uv7) {
+            if (_vertexChangeFlag & ValueChanged.UV7) {
+                for (let i = 0; i < _vertexCount; i++) {
+                    const start = _elementCount * i + offset;
+                    const uv = _uv7[i];
+                    if (uv) {
+                        vertices[start] = uv.x;
+                        vertices[start + 1] = uv.y;
+                    }
+                }
+            }
+            offset += 2;
+        }
+
+        this._vertexChangeFlag = 0;
+    }
+
+    private _releaseCache(): void {
+        this._verticesUint8 = null;
+        this._indices = null;
+        this._verticesFloat32 = null;
+        this._positions.length = 0;
+        this._tangents = null;
+        this._normals = null;
+        this._colors = null;
+        this._uv = null;
+        this._uv1 = null;
+        this._uv2 = null;
+        this._uv3 = null;
+        this._uv4 = null;
+        this._uv5 = null;
+        this._uv6 = null;
+        this._uv7 = null;
+    }
 }
+
+const POSITION_VERTEX_ELEMENT = new VertexElement("POSITION", 0, VertexElementFormat.Vector3, 0);
 
 enum ValueChanged {
     Position = 0x1,
