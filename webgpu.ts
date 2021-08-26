@@ -3,42 +3,21 @@ import vxCode from './shader/vertex.wgsl';
 import fxCode from './shader/fragment.wgsl'
 import {Matrix, Vector3} from "@oasis-engine/math";
 
-const triangleVertexPosition = new Float32Array([
-
-    0.0, 1.0, 0.0,
-    -1.0, -1.0, 0.0,
-    1.0, -1.0, 0.0,
-
-]);
-
-const triangleVertexColor = new Float32Array([
-
-    1.0, 0.0, 0.0, 1.0,
-    0.0, 1.0, 0.0, 1.0,
-    0.0, 0.0, 1.0, 1.0
-
+const triangleVertexPositionColor = new Float32Array([
+    0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0,
+    -1.0, -1.0, 0.0, 0.0, 1.0, 0.0, 1.0,
+    1.0, -1.0, 0.0, 0.0, 0.0, 1.0, 1.0
 ]);
 
 const triangleIndex = new Uint32Array([0, 1, 2]);
 
 const triangleMVMatrix = new Matrix;
 
-const squareVertexPosition = new Float32Array([
-
-    1.0, 1.0, 0.0,
-    -1.0, 1.0, 0.0,
-    1.0, -1.0, 0.0,
-    -1.0, -1.0, 0.0
-
-]);
-
-const squareVertexColor = new Float32Array([
-
-    0.5, 0.5, 1.0, 1.0,
-    0.5, 0.5, 1.0, 1.0,
-    0.5, 0.5, 1.0, 1.0,
-    0.5, 0.5, 1.0, 1.0,
-
+const squareVertexPositionColor = new Float32Array([
+    1.0, 1.0, 0.0,  0.5, 0.5, 1.0, 1.0,
+    -1.0, 1.0, 0.0,  0.5, 0.5, 1.0, 1.0,
+    1.0, -1.0, 0.0, 0.5, 0.5, 1.0, 1.0,
+    -1.0, -1.0, 0.0, 0.5, 0.5, 1.0, 1.0,
 ]);
 
 const squareIndex = new Uint32Array([0, 1, 2, 1, 2, 3]);
@@ -110,11 +89,11 @@ let main = async () => {
         squareMVMatrix.toArray(mvBuffer);
         let squareUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
 
-        engine.InitGPUBufferWithMultiBuffers(triangleVertexPosition, triangleVertexColor, triangleIndex, triangleUniformBufferView);
+        engine.InitGPUBufferWithMultiBuffers(triangleVertexPositionColor, triangleIndex, triangleUniformBufferView);
 
         engine.Draw(triangleIndex.length);
 
-        engine.InitGPUBufferWithMultiBuffers(squareVertexPosition, squareVertexColor, squareIndex, squareUniformBufferView);
+        engine.InitGPUBufferWithMultiBuffers(squareVertexPositionColor, squareIndex, squareUniformBufferView);
 
         engine.Draw(squareIndex.length);
 

@@ -161,61 +161,28 @@ export class Engine {
         });
 
         this.renderPipeline = this.device.createRenderPipeline({
-
             layout: layout,
-
             vertex: {
-
                 buffers: [
-
                     {
-
-                        arrayStride: 4 * 3,
-
+                        arrayStride: 4 * 7,
                         attributes: [
-
                             // position
-
                             {
-
                                 shaderLocation: 0,
-
                                 offset: 0,
-
                                 format: 'float32x3'
-
-                            }
-
-                        ],
-
-                        stepMode: 'vertex'
-
-                    },
-
-                    {
-
-                        arrayStride: 4 * 4,
-
-                        attributes: [
+                            },
 
                             // color
-
                             {
-
                                 shaderLocation: 1,
-
-                                offset: 0,
-
+                                offset: 4 * 3,
                                 format: 'float32x4'
-
                             }
-
                         ],
-
                         stepMode: 'vertex'
-
                     },
-
                 ],
 
                 module: vxModule,
@@ -278,15 +245,10 @@ export class Engine {
 
     }
 
-    public InitGPUBufferWithMultiBuffers(vxArray: Float32Array, colorArray: Float32Array, idxArray: Uint32Array, mxArray: Float32Array) {
-
+    public InitGPUBufferWithMultiBuffers(vxArray: Float32Array, idxArray: Uint32Array, mxArray: Float32Array) {
         let vertexBuffer = this._CreateGPUBuffer(vxArray, GPUBufferUsage.VERTEX);
 
         this.renderPassEncoder.setVertexBuffer(0, vertexBuffer);
-
-        let colorBuffer = this._CreateGPUBuffer(colorArray, GPUBufferUsage.VERTEX);
-
-        this.renderPassEncoder.setVertexBuffer(1, colorBuffer, 0);
 
         let indexBuffer = this._CreateGPUBuffer(idxArray, GPUBufferUsage.INDEX);
 
