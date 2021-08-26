@@ -165,7 +165,7 @@ export class Engine {
             vertex: {
                 buffers: [
                     {
-                        arrayStride: 4 * 7,
+                        arrayStride: 4 * 8,
                         attributes: [
                             // position
                             {
@@ -174,11 +174,18 @@ export class Engine {
                                 format: 'float32x3'
                             },
 
-                            // color
+                            // normal
                             {
                                 shaderLocation: 1,
                                 offset: 4 * 3,
-                                format: 'float32x4'
+                                format: 'float32x3'
+                            },
+
+                            // uv
+                            {
+                                shaderLocation: 2,
+                                offset: 4 * 6,
+                                format: 'float32x2'
                             }
                         ],
                         stepMode: 'vertex'

@@ -4,9 +4,9 @@ import fxCode from './shader/fragment.wgsl'
 import {Matrix, Vector3} from "@oasis-engine/math";
 
 const triangleVertexPositionColor = new Float32Array([
-    0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0,
-    -1.0, -1.0, 0.0, 0.0, 1.0, 0.0, 1.0,
-    1.0, -1.0, 0.0, 0.0, 0.0, 1.0, 1.0
+    0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
+    -1.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+    1.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
 ]);
 
 const triangleIndex = new Uint32Array([0, 1, 2]);
@@ -14,10 +14,10 @@ const triangleIndex = new Uint32Array([0, 1, 2]);
 const triangleMVMatrix = new Matrix;
 
 const squareVertexPositionColor = new Float32Array([
-    1.0, 1.0, 0.0,  0.5, 0.5, 1.0, 1.0,
-    -1.0, 1.0, 0.0,  0.5, 0.5, 1.0, 1.0,
-    1.0, -1.0, 0.0, 0.5, 0.5, 1.0, 1.0,
-    -1.0, -1.0, 0.0, 0.5, 0.5, 1.0, 1.0,
+    1.0, 1.0, 0.0, 0.5, 0.5, 1.0, 0.0, 0.0,
+    -1.0, 1.0, 0.0, 0.5, 0.5, 1.0, 0.0, 0.0,
+    1.0, -1.0, 0.0, 0.5, 0.5, 1.0, 0.0, 0.0,
+    -1.0, -1.0, 0.0, 0.5, 0.5, 1.0, 0.0, 0.0,
 ]);
 
 const squareIndex = new Uint32Array([0, 1, 2, 1, 2, 3]);

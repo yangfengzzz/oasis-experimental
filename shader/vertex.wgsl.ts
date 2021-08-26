@@ -8,11 +8,12 @@ var<uniform> uniforms: Uniforms;
 
 struct VertexInput {
     [[location(0)]] aVertexPosition: vec3<f32>;
-    [[location(1)]] aVertexColor: vec4<f32>;
+    [[location(1)]] aVertexColor: vec3<f32>;
+    [[location(2)]] aVertexUV: vec2<f32>;
 };
 
 struct Output {
-  [[location(0)]] vColor: vec4<f32>;
+  [[location(0)]] vColor: vec3<f32>;
   [[builtin(position)]] Position: vec4<f32>;
 };
 
