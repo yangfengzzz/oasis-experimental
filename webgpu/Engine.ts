@@ -1,0 +1,4 @@
+/**
+ * Engine.
+ */
+export class Engine {}

@@ -70,7 +70,7 @@ export function init() {
     createChain(new Vector3(0.0, 25.0, -10.0), new Quaternion(), 10, 2.0);
 }
 
-function createChain(position, rotation, length, separation) {
+function createChain(position: Vector3, rotation: Quaternion, length: number, separation: number) {
     const offset = new Vector3(0, -separation / 2, 0);
     let prev = null;
     for (let i = 0; i < length; i++) {
@@ -85,7 +85,7 @@ function createChain(position, rotation, length, separation) {
     }
 }
 
-function createBreakableFixed(actor0, position0, rotation0, actor1, position1, rotation1) {
+function createBreakableFixed(actor0: any, position0: Vector3, rotation0: Quaternion, actor1: any, position1: Vector3, rotation1: Quaternion) {
     const transform0 = {
         translation: {
             x: position0.x,
@@ -117,7 +117,7 @@ function createBreakableFixed(actor0, position0, rotation0, actor1, position1, r
     joint.setConstraintFlag(PhysX.PxConstraintFlag.eDISABLE_PREPROCESSING, true);
 }
 
-function transform(position, rotation, outPosition, outRotation) {
+function transform(position: Vector3, rotation: Quaternion, outPosition: Vector3, outRotation: Quaternion) {
     Quaternion.multiply(rotation, outRotation, outRotation)
     Vector3.transformByQuat(outPosition, rotation, outPosition);
     Vector3.add(outPosition, position, outPosition);
