@@ -4,16 +4,7 @@ import fxCode from './shader/fragment.wgsl'
 import {Engine} from './webgpu/Engine';
 import {PrimitiveMesh} from "./webgpu/PrimitiveMesh";
 
-const triangleVertexPositionColor = new Float32Array([
-    0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-    -1.0, -1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-    1.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-]);
-
-const triangleIndex = new Uint32Array([0, 1, 2]);
-
 const triangleMVMatrix = new Matrix;
-
 const squareMVMatrix = new Matrix();
 
 let main = async () => {
@@ -71,14 +62,13 @@ let main = async () => {
             squareMVMatrix.toArray(mvBuffer);
             let squareUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
 
-            engine.createVertexIndexBuffer(triangleVertexPositionColor, triangleIndex);
+            const box = PrimitiveMesh.createCuboid(engine, 1, 1, 1, false);
             engine.createUniformBuffer(triangleUniformBufferView);
+            engine.DrawIndexed(box.getIndices().length);
 
-            engine.DrawIndexed(triangleIndex.length);
-
-            const mesh = PrimitiveMesh.createSphere(engine, 1, 50, false);
+            const sphere = PrimitiveMesh.createSphere(engine, 1, 50, false);
             engine.createUniformBuffer(squareUniformBufferView);
-            engine.DrawIndexed(mesh.getIndices().length);
+            engine.DrawIndexed(sphere.getIndices().length);
 
             engine.Present();
         })
