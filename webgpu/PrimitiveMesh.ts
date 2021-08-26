@@ -111,7 +111,7 @@ export class PrimitiveMesh {
         uvs[22] = new Vector2(0, 1);
         uvs[23] = new Vector2(1, 1);
 
-        const indices = new Uint16Array(36);
+        const indices = new Uint32Array(36);
 
         // prettier-ignore
         // Up
@@ -140,7 +140,7 @@ export class PrimitiveMesh {
         positions: Vector3[],
         normals: Vector3[],
         uvs: Vector2[],
-        indices: Uint16Array | Uint32Array,
+        indices: Uint32Array,
         noLongerAccessible: boolean
     ) {
         mesh.setPositions(positions);

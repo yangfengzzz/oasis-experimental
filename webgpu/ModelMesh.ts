@@ -11,7 +11,7 @@ export class ModelMesh extends Mesh {
     private _accessible: boolean = true;
     private _verticesFloat32: Float32Array | null = null;
     private _verticesUint8: Uint8Array | null = null;
-    private _indices: Uint8Array | Uint16Array | Uint32Array | null = null;
+    private _indices: Uint32Array | null = null;
     private _indicesFormat: IndexFormat = null;
     private _vertexSlotChanged: boolean = true;
     private _vertexChangeFlag: number = 0;
@@ -281,20 +281,14 @@ export class ModelMesh extends Mesh {
      * Set indices for the mesh.
      * @param indices - The indices for the mesh.
      */
-    setIndices(indices: Uint8Array | Uint16Array | Uint32Array): void {
+    setIndices(indices: Uint32Array): void {
         if (!this._accessible) {
             throw "Not allowed to access data while accessible is false.";
         }
 
         if (this._indices !== indices) {
             this._indices = indices;
-            if (indices instanceof Uint8Array) {
-                this._indicesFormat = IndexFormat.UInt8;
-            } else if (indices instanceof Uint16Array) {
-                this._indicesFormat = IndexFormat.UInt16;
-            } else if (indices instanceof Uint32Array) {
-                this._indicesFormat = IndexFormat.UInt32;
-            }
+            this._indicesFormat = IndexFormat.UInt32;
         }
 
         this._indicesChangeFlag = true;
@@ -316,8 +310,6 @@ export class ModelMesh extends Mesh {
             throw "Not allowed to access data while accessible is false.";
         }
 
-        const {_indices} = this;
-
         // Vertex value change.
         const elementCount = this._elementCount;
         const vertexFloatCount = elementCount * this._vertexCount;
@@ -328,6 +320,7 @@ export class ModelMesh extends Mesh {
         this._vertexChangeFlag = ValueChanged.All;
         this._updateVertices(vertices);
 
+        this.engine.createVertexIndexBuffer(vertices, this._indices);
 
         if (noLongerAccessible) {
             this._accessible = false;

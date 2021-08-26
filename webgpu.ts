@@ -82,18 +82,20 @@ let main = async () => {
             0.0, 0.0, 0.0, 0.0,
             0.0, 0.0, 0.0, 0.0,
             0.0, 0.0, 0.0, 0.0];
-
         triangleMVMatrix.toArray(mvBuffer);
+
         let triangleUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
 
         squareMVMatrix.toArray(mvBuffer);
         let squareUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
 
-        engine.InitGPUBufferWithMultiBuffers(triangleVertexPositionColor, triangleIndex, triangleUniformBufferView);
+        engine.createVertexIndexBuffer(triangleVertexPositionColor, triangleIndex);
+        engine.createUniformBuffer(triangleUniformBufferView);
 
         engine.Draw(triangleIndex.length);
 
-        engine.InitGPUBufferWithMultiBuffers(squareVertexPositionColor, squareIndex, squareUniformBufferView);
+        engine.createVertexIndexBuffer(squareVertexPositionColor, squareIndex);
+        engine.createUniformBuffer(squareUniformBufferView);
 
         engine.Draw(squareIndex.length);
 

@@ -252,7 +252,7 @@ export class Engine {
 
     }
 
-    public InitGPUBufferWithMultiBuffers(vxArray: Float32Array, idxArray: Uint32Array, mxArray: Float32Array) {
+    public createVertexIndexBuffer(vxArray: Float32Array, idxArray: Uint32Array) {
         let vertexBuffer = this._CreateGPUBuffer(vxArray, GPUBufferUsage.VERTEX);
 
         this.renderPassEncoder.setVertexBuffer(0, vertexBuffer);
@@ -260,27 +260,22 @@ export class Engine {
         let indexBuffer = this._CreateGPUBuffer(idxArray, GPUBufferUsage.INDEX);
 
         this.renderPassEncoder.setIndexBuffer(indexBuffer, "uint32");
+    }
 
+    public createUniformBuffer(mxArray: Float32Array) {
         let uniformBuffer = this._CreateGPUBuffer(mxArray, GPUBufferUsage.UNIFORM);
 
         let uniformBindGroup = this.device.createBindGroup({
-
             layout: this.uniformGroupLayout,
-
             entries: [{
-
                 binding: 0,
-
                 resource: {buffer: uniformBuffer}
-
             }]
-
         });
 
         this.renderPassEncoder.setBindGroup(0, uniformBindGroup);
 
         return {uniformBuffer};
-
     }
 
     public Draw(indexCount: number) {
