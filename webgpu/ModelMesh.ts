@@ -297,7 +297,7 @@ export class ModelMesh extends Mesh {
     /**
      * Get indices for the mesh.
      */
-    getIndices(): Uint8Array | Uint16Array | Uint32Array {
+    getIndices(): Uint32Array {
         return this._indices;
     }
 
@@ -309,6 +309,8 @@ export class ModelMesh extends Mesh {
         if (!this._accessible) {
             throw "Not allowed to access data while accessible is false.";
         }
+
+        this._updateVertexElements();
 
         // Vertex value change.
         const elementCount = this._elementCount;

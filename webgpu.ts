@@ -1,7 +1,8 @@
-import {Engine} from './webgpu/Engine';
+import {Matrix, Vector3} from "@oasis-engine/math";
 import vxCode from './shader/vertex.wgsl';
 import fxCode from './shader/fragment.wgsl'
-import {Matrix, Vector3} from "@oasis-engine/math";
+import {Engine} from './webgpu/Engine';
+import {PrimitiveMesh} from "./webgpu/PrimitiveMesh";
 
 const triangleVertexPositionColor = new Float32Array([
     0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
@@ -13,96 +14,75 @@ const triangleIndex = new Uint32Array([0, 1, 2]);
 
 const triangleMVMatrix = new Matrix;
 
-const squareVertexPositionColor = new Float32Array([
-    1.0, 1.0, 0.0, 0.5, 0.5, 1.0, 0.0, 0.0,
-    -1.0, 1.0, 0.0, 0.5, 0.5, 1.0, 0.0, 0.0,
-    1.0, -1.0, 0.0, 0.5, 0.5, 1.0, 0.0, 0.0,
-    -1.0, -1.0, 0.0, 0.5, 0.5, 1.0, 0.0, 0.0,
-]);
-
-const squareIndex = new Uint32Array([0, 1, 2, 1, 2, 3]);
-
 const squareMVMatrix = new Matrix();
 
 let main = async () => {
     let pMatrix = new Matrix();
     Matrix.perspective(45, document.body.clientWidth / document.body.clientHeight, 0.1, 100, pMatrix);
 
-    let backgroundColor = {r: 0, g: 0, b: 0, a: 1.0};
+    let backgroundColor = {r: 0.4, g: 0.4, b: 0.4, a: 1.0};
 
     let engine = new Engine();
 
-    engine.CreateCanvas(document.body)
+    engine.CreateCanvas(document.body).then(({width, height}) => {
+        return engine.InitWebGPU(width, height);
+    }).then(({colorAttachmentView, depthStencilAttachmentView}) => {
+        engine.InitRenderPass(backgroundColor, colorAttachmentView, depthStencilAttachmentView)
 
-    await engine.InitWebGPU();
+        engine.InitPipelineWitMultiBuffers(vxCode, fxCode);
 
-    engine.InitRenderPass(backgroundColor);
-
-    engine.InitPipelineWitMultiBuffers(vxCode, fxCode);
-
-    let lastTime = 0, rTri = 0, rSquare = 0;
-
-    let animate = () => {
-
-        let timeNow = performance.now();
-
-        if (lastTime != 0) {
-
-            let elapsed = timeNow - lastTime;
-
-            rTri += (Math.PI / 180 * 90 * elapsed) / 1000.0;
-
-            rSquare += (Math.PI / 180 * 75 * elapsed) / 1000.0;
-
+        let lastTime = 0, rTri = 0, rSquare = 0;
+        let animate = () => {
+            let timeNow = performance.now();
+            if (lastTime != 0) {
+                let elapsed = timeNow - lastTime;
+                rTri += (Math.PI / 180 * 90 * elapsed) / 1000.0;
+                rSquare += (Math.PI / 180 * 75 * elapsed) / 1000.0;
+            }
+            lastTime = timeNow;
         }
 
-        lastTime = timeNow;
-    }
+        engine.RunRenderLoop(() => {
+            animate();
 
-    engine.RunRenderLoop(() => {
+            engine.InitRenderPass(backgroundColor, colorAttachmentView, depthStencilAttachmentView);
 
-        animate();
+            engine.renderPassEncoder.setPipeline(engine.renderPipeline);
 
-        engine.InitRenderPass(backgroundColor);
+            triangleMVMatrix.identity().translate(new Vector3(-1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(0, 1, 0), rTri));
+            squareMVMatrix.identity().translate(new Vector3(1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(1, 0, 0), rSquare));
 
-        engine.renderPassEncoder.setPipeline(engine.renderPipeline);
+            let pBuffer: number[] = [
+                0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0];
+            pMatrix.toArray(pBuffer);
 
-        triangleMVMatrix.identity().translate(new Vector3(-1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(0, 1, 0), rTri));
-        squareMVMatrix.identity().translate(new Vector3(1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(1, 0, 0), rSquare));
+            let mvBuffer: number[] = [
+                0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0, 0.0];
+            triangleMVMatrix.toArray(mvBuffer);
 
-        let pBuffer: number[] = [
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0];
-        pMatrix.toArray(pBuffer);
+            let triangleUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
 
-        let mvBuffer: number[] = [
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0];
-        triangleMVMatrix.toArray(mvBuffer);
+            squareMVMatrix.toArray(mvBuffer);
+            let squareUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
 
-        let triangleUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
+            engine.createVertexIndexBuffer(triangleVertexPositionColor, triangleIndex);
+            engine.createUniformBuffer(triangleUniformBufferView);
 
-        squareMVMatrix.toArray(mvBuffer);
-        let squareUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
+            engine.DrawIndexed(triangleIndex.length);
 
-        engine.createVertexIndexBuffer(triangleVertexPositionColor, triangleIndex);
-        engine.createUniformBuffer(triangleUniformBufferView);
+            const mesh = PrimitiveMesh.createCuboid(engine, 1, 1, 1, false);
+            engine.createUniformBuffer(squareUniformBufferView);
+            engine.DrawIndexed(mesh.getIndices().length);
 
-        engine.Draw(triangleIndex.length);
-
-        engine.createVertexIndexBuffer(squareVertexPositionColor, squareIndex);
-        engine.createUniformBuffer(squareUniformBufferView);
-
-        engine.Draw(squareIndex.length);
-
-        engine.Present();
-
-    })
-
+            engine.Present();
+        })
+    });
 
 }
 

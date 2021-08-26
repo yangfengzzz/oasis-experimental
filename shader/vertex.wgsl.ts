@@ -21,6 +21,6 @@ struct Output {
 fn main(vertexInput: VertexInput) -> Output {
   var output: Output;
   output.Position = uniforms.uPMatrix * uniforms.uMVMatrix * vec4<f32>(vertexInput.aVertexPosition, 1.0);
-  output.vColor = vertexInput.aVertexColor;
+  output.vColor = vertexInput.aVertexPosition;
   return output;
 }`;
