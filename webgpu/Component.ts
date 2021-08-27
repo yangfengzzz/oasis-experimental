@@ -1,4 +1,4 @@
-import {EngineObject} from "./EngineObject";
+import {EngineObject} from "./base/EngineObject";
 import { assignmentClone, ignoreClone } from "./clone/CloneManager";
 import {Entity} from "./Entity";
 import {Scene} from "./Scene";

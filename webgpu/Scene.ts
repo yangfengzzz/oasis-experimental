@@ -1,5 +1,5 @@
 import { Vector2, Vector3 } from "@oasis-engine/math";
-import {EngineObject} from "./EngineObject";
+import {EngineObject} from "./base/EngineObject";
 import {Entity} from "./Entity";
 import {Engine} from "./Engine";
 

@@ -1,4 +1,4 @@
-import {removeFromArray} from "./Util";
+import {removeFromArray} from "./base/Util";
 
 /**
  * Used to update tags.
