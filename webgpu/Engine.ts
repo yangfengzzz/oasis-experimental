@@ -226,38 +226,15 @@ export class Engine {
 
     }
 
-    private _CreateGPUBuffer(typedArray: TypedArray, usage: GPUBufferUsageFlags) {
-
-        let gpuBuffer = this.device.createBuffer({
-
-            size: typedArray.byteLength,
-
-            usage: usage | GPUBufferUsage.COPY_DST,
-
-            mappedAtCreation: true
-
-        });
-
-        let constructor = typedArray.constructor as new (buffer: ArrayBuffer) => TypedArray;
-
-        let view = new constructor(gpuBuffer.getMappedRange());
-
-        view.set(typedArray, 0);
-
-        gpuBuffer.unmap();
-
-        return gpuBuffer;
-
-    }
-
     public createUniformBuffer(mxArray: Float32Array) {
-        let uniformBuffer = this._CreateGPUBuffer(mxArray, GPUBufferUsage.UNIFORM);
+        let uniformBuffer = new Buffer(this, mxArray, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
+        uniformBuffer.setData(mxArray);
 
         let uniformBindGroup = this.device.createBindGroup({
             layout: this.uniformGroupLayout,
             entries: [{
                 binding: 0,
-                resource: {buffer: uniformBuffer}
+                resource: {buffer: uniformBuffer._nativeBuffer}
             }]
         });
 
