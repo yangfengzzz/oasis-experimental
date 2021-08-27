@@ -1,3 +1,5 @@
+import {ComponentsManager} from "./ComponentsManager";
+
 // typed array parameters
 export type TypedArray =
     Int8Array
@@ -14,6 +16,8 @@ export type TypedArray =
  * Engine.
  */
 export class Engine {
+    _componentsManager: ComponentsManager = new ComponentsManager();
+
     public canvas: HTMLCanvasElement;
 
     public adapter: GPUAdapter;
