@@ -1,3 +1,5 @@
+import "@webgpu/types"
+
 // typed array parameters
 export type TypedArray =
     Int8Array
@@ -53,10 +55,11 @@ export class Engine {
 
         rootElement.appendChild(this.canvas);
 
-        return Promise.resolve( {
+        // @ts-ignore
+        return Promise.resolve({
             width: this.devicePixelWidth,
             height: this.devicePixelHeight
-        } );
+        });
     }
 
     public async InitWebGPU(width: number, height: number) {
@@ -76,7 +79,7 @@ export class Engine {
             usage: GPUTextureUsage.RENDER_ATTACHMENT
         });
 
-        let colorTexture = this.device.createTexture( {
+        let colorTexture = this.device.createTexture({
             size: {
                 width,
                 height,
@@ -85,10 +88,10 @@ export class Engine {
             sampleCount: 4,
             format: this.format,
             usage: GPUTextureUsage.RENDER_ATTACHMENT
-        } );
+        });
         let colorAttachmentView = colorTexture.createView();
 
-        let depthStencilTexture = this.device.createTexture( {
+        let depthStencilTexture = this.device.createTexture({
             size: {
                 width,
                 height,
@@ -97,10 +100,11 @@ export class Engine {
             sampleCount: 4,
             format: 'depth24plus-stencil8',
             usage: GPUTextureUsage.RENDER_ATTACHMENT
-        } );
+        });
         let depthStencilAttachmentView = depthStencilTexture.createView();
 
-        return Promise.resolve( { colorAttachmentView, depthStencilAttachmentView } );
+        // @ts-ignore
+        return Promise.resolve({colorAttachmentView, depthStencilAttachmentView});
     }
 
     public InitRenderPass(clearColor: GPUColorDict, colorAttachmentView: GPUTextureView, depthStencilAttachmentView: GPUTextureView) {
@@ -274,8 +278,8 @@ export class Engine {
         this.renderPassEncoder.drawIndexed(indexCount, 1, 0, 0, 0);
     }
 
-    public Draw( vertexCount: number ) {
-        this.renderPassEncoder.draw( vertexCount, 1, 0, 0 );
+    public Draw(vertexCount: number) {
+        this.renderPassEncoder.draw(vertexCount, 1, 0, 0);
     }
 
     public Present() {

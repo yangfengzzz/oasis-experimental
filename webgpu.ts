@@ -7,6 +7,7 @@ import {PrimitiveMesh} from "./webgpu/PrimitiveMesh";
 const triangleMVMatrix = new Matrix;
 const squareMVMatrix = new Matrix();
 
+// @ts-ignore
 let main = async () => {
     let pMatrix = new Matrix();
     Matrix.perspective(45, document.body.clientWidth / document.body.clientHeight, 0.1, 100, pMatrix);
