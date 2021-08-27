@@ -1,3 +1,4 @@
+import {ignoreClone} from "./clone/CloneManager";
 import {Component} from "./Component";
 
 /**
@@ -5,52 +6,57 @@ import {Component} from "./Component";
  */
 export class Script extends Component {
     /** @internal */
-    // @ignoreClone
+    @ignoreClone
     _started: boolean = false;
     /** @internal */
-    // @ignoreClone
+    @ignoreClone
     _onStartIndex: number = -1;
     /** @internal */
-    // @ignoreClone
+    @ignoreClone
     _onUpdateIndex: number = -1;
     /** @internal */
-    // @ignoreClone
+    @ignoreClone
     _onLateUpdateIndex: number = -1;
     /** @internal */
-    // @ignoreClone
+    @ignoreClone
     _onPreRenderIndex: number = -1;
     /** @internal */
-    // @ignoreClone
+    @ignoreClone
     _onPostRenderIndex: number = -1;
-    // @ignoreClone
+    @ignoreClone
     _entityCacheIndex: number = -1;
 
     /**
      * Called when be enabled first time, only once.
      */
-    onAwake(): void {}
+    onAwake(): void {
+    }
 
     /**
      * Called when be enabled.
      */
-    onEnable(): void {}
+    onEnable(): void {
+    }
 
     /**
      * Called before the frame-level loop start for the first time, only once.
      */
-    onStart(): void {}
+    onStart(): void {
+    }
 
     /**
      * The main loop, called frame by frame.
      * @param deltaTime - The deltaTime when the script update.
      */
-    onUpdate(deltaTime: number): void {}
+    onUpdate(deltaTime: number): void {
+    }
 
     /**
      * Called after the onUpdate finished, called frame by frame.
      * @param deltaTime - The deltaTime when the script update.
      */
-    onLateUpdate(deltaTime: number): void {}
+    onLateUpdate(deltaTime: number): void {
+    }
 
     // /**
     //  * Called before camera rendering, called per camera.
@@ -86,43 +92,51 @@ export class Script extends Component {
     /**
      * Called when the pointer is down while over the Collider.
      */
-    onPointerDown(): void {}
+    onPointerDown(): void {
+    }
 
     /**
      * Called when the pointer is up while over the Collider.
      */
-    onPointerUp(): void {}
+    onPointerUp(): void {
+    }
 
     /**
      * Called when the pointer is down and up with the same collider.
      */
-    onPointerClick(): void {}
+    onPointerClick(): void {
+    }
 
     /**
      * Called when the pointer is enters the Collider.
      */
-    onPointerEnter(): void {}
+    onPointerEnter(): void {
+    }
 
     /**
      * Called when the pointer is no longer over the Collider.
      */
-    onPointerExit(): void {}
+    onPointerExit(): void {
+    }
 
     /**
      * Called when the pointer is down while over the Collider and is still holding down.
      * @remarks onPointerDrag is called every frame while the pointer is down.
      */
-    onPointerDrag(): void {}
+    onPointerDrag(): void {
+    }
 
     /**
      * Called when be disabled.
      */
-    onDisable(): void {}
+    onDisable(): void {
+    }
 
     /**
      * Called at the end of the destroyed frame.
      */
-    onDestroy(): void {}
+    onDestroy(): void {
+    }
 
     /**
      * @internal

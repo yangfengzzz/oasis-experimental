@@ -1,8 +1,8 @@
 import {MathUtil, Matrix, Matrix3x3, Quaternion, Vector3} from "@oasis-engine/math";
+import {deepClone, ignoreClone} from "./clone/CloneManager";
 import {Component} from "./Component";
 import {UpdateFlagManager} from "./UpdateFlagManager";
 import {UpdateFlag} from "./UpdateFlag";
-
 
 /**
  * Used to implement transformation related functions.
@@ -18,31 +18,31 @@ export class Transform extends Component {
     private static _tempMat42: Matrix = new Matrix();
     private static _tempMat43: Matrix = new Matrix();
 
-    // @deepClone
+    @deepClone
     private _position: Vector3 = new Vector3();
-    // @deepClone
+    @deepClone
     private _rotation: Vector3 = new Vector3();
-    // @deepClone
+    @deepClone
     private _rotationQuaternion: Quaternion = new Quaternion();
-    // @deepClone
+    @deepClone
     private _scale: Vector3 = new Vector3(1, 1, 1);
-    // @deepClone
+    @deepClone
     private _worldPosition: Vector3 = new Vector3();
-    // @deepClone
+    @deepClone
     private _worldRotation: Vector3 = new Vector3();
-    // @deepClone
+    @deepClone
     private _worldRotationQuaternion: Quaternion = new Quaternion();
-    // @deepClone
+    @deepClone
     private _lossyWorldScale: Vector3 = new Vector3(1, 1, 1);
-    // @deepClone
+    @deepClone
     private _localMatrix: Matrix = new Matrix();
-    // @deepClone
+    @deepClone
     private _worldMatrix: Matrix = new Matrix();
-    // @ignoreClone
+    @ignoreClone
     private _updateFlagManager: UpdateFlagManager = new UpdateFlagManager();
-    // @ignoreClone
+    @ignoreClone
     private _isParentDirty: boolean = true;
-    // @ignoreClone
+    @ignoreClone
     private _parentTransformCache: Transform = null;
 
     private _dirtyFlag: number = TransformFlag.WmWpWeWqWs;

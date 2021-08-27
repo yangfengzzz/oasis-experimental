@@ -3,6 +3,7 @@
     "module": "commonjs",
     "target": "es2015",
     "sourceMap": true,
+    "experimentalDecorators": true,
     "typeRoots": [
       "./node_modules/@webgpu/types",
       "./node_modules/@types"

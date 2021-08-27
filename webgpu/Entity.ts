@@ -1,14 +1,15 @@
 import {Matrix, Quaternion, Vector3} from "@oasis-engine/math";
 import {EngineObject} from "./EngineObject";
-import {Transform} from "./Transform";
+import {ComponentCloner} from "./clone/ComponentCloner";
 import {Component} from "./Component";
 import {Script} from "./Script";
-import {Layer} from "oasis-engine";
-import {Engine} from "./Engine";
-import {DisorderedArray} from "./DisorderedArray"
-import {UpdateFlag} from "./UpdateFlag";
 import {ComponentsDependencies} from "./ComponentsDependencies";
+import {Engine} from "./Engine";
+import {Layer} from "oasis-engine";
 import {Scene} from "./Scene";
+import {Transform} from "./Transform";
+import {UpdateFlag} from "./UpdateFlag";
+import {DisorderedArray} from "./DisorderedArray"
 
 /**
  * Entity, be used as components container.
@@ -328,7 +329,7 @@ export class Entity extends EngineObject {
             const sourceComp = components[i];
             if (!(sourceComp instanceof Transform)) {
                 const targetComp = cloneEntity.addComponent(<new (entity: Entity) => Component>sourceComp.constructor);
-                // ComponentCloner.cloneComponent(sourceComp, targetComp);
+                ComponentCloner.cloneComponent(sourceComp, targetComp);
             }
         }
 

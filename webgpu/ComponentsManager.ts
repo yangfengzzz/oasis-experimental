@@ -1,7 +1,7 @@
-import {Vector3} from "@oasis-engine/math";
-import {Script} from "./Script";
-import {Component} from "./Component";
 import {DisorderedArray} from "./DisorderedArray"
+import {Component} from "./Component";
+import {Script} from "./Script";
+import {Vector3} from "@oasis-engine/math";
 
 /**
  * The manager of the components.

@@ -1,4 +1,5 @@
 import {EngineObject} from "./EngineObject";
+import { assignmentClone, ignoreClone } from "./clone/CloneManager";
 import {Entity} from "./Entity";
 import {Scene} from "./Scene";
 
@@ -7,11 +8,15 @@ import {Scene} from "./Scene";
  */
 export abstract class Component extends EngineObject {
     /** @internal */
+    @ignoreClone
     _entity: Entity;
     /** @internal */
+    @ignoreClone
     _destroyed: boolean = false;
 
+    @assignmentClone
     private _enabled: boolean = true;
+    @ignoreClone
     private _awoken: boolean = false;
 
     /**
