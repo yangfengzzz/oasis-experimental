@@ -1,5 +1,3 @@
-import "@webgpu/types"
-
 // typed array parameters
 export type TypedArray =
     Int8Array
