@@ -1,11 +1,21 @@
 import {ComponentsManager} from "./ComponentsManager";
 import {TypedArray} from "./base/Constant"
+import {ResourceManager} from "./asset/ResourceManager";
 
 /**
  * Engine.
  */
 export class Engine {
     _componentsManager: ComponentsManager = new ComponentsManager();
+
+    private _resourceManager: ResourceManager = new ResourceManager(this);
+
+    /**
+     * Get the resource manager.
+     */
+    get resourceManager(): ResourceManager {
+        return this._resourceManager;
+    }
 
     public canvas: HTMLCanvasElement;
 

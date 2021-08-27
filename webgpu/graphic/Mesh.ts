@@ -1,5 +1,5 @@
 import {BoundingBox} from "@oasis-engine/math";
-import {EngineObject} from "../base/EngineObject";
+import {RefObject} from "../asset/RefObject";
 import {Engine} from "../Engine";
 import {BufferUtil} from "./BufferUtil";
 import {MeshTopology} from "./enums/MeshTopology";
@@ -13,7 +13,7 @@ import {UpdateFlagManager} from "../UpdateFlagManager";
 /**
  * Mesh.
  */
-export abstract class Mesh extends EngineObject {
+export abstract class Mesh extends RefObject {
     /** Name. */
     name: string;
     /** The bounding volume of the mesh. */

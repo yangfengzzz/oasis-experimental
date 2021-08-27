@@ -349,7 +349,7 @@ export class ModelMesh extends Mesh {
      * @internal
      */
     _onDestroy(): void {
-        // super.destroy();
+        super.destroy();
         // this.clearBlendShapes();
     }
 
