@@ -1,7 +1,15 @@
 import {Color, Vector2, Vector3, Vector4} from "@oasis-engine/math";
 import {Mesh} from "../graphic/Mesh";
+import {Buffer} from "../graphic/Buffer";
 import {Engine} from "../Engine";
-import {IndexFormat, VertexElement, VertexElementFormat} from "oasis-engine";
+import {IndexFormat} from "../graphic/enums/IndexFormat";
+import {VertexElementFormat} from "../graphic/enums/VertexElementFormat";
+import {VertexElement} from "../graphic/VertexElement";
+import {BufferUsage} from "../graphic/enums/BufferUsage";
+import {BufferBindFlag} from "../graphic/enums/BufferBindFlag";
+import {VertexBufferBinding} from "../graphic/VertexBufferBinding";
+import {IndexBufferBinding} from "../graphic/IndexBufferBinding";
+import {UpdateFlag} from "../UpdateFlag";
 
 /**
  * Mesh containing common vertex elements of the model.
@@ -11,7 +19,7 @@ export class ModelMesh extends Mesh {
     private _accessible: boolean = true;
     private _verticesFloat32: Float32Array | null = null;
     private _verticesUint8: Uint8Array | null = null;
-    private _indices: Uint32Array | null = null;
+    private _indices: Uint8Array | Uint16Array | Uint32Array | null = null;
     private _indicesFormat: IndexFormat = null;
     private _vertexSlotChanged: boolean = true;
     private _vertexChangeFlag: number = 0;
@@ -297,7 +305,7 @@ export class ModelMesh extends Mesh {
     /**
      * Get indices for the mesh.
      */
-    getIndices(): Uint32Array {
+    getIndices(): Uint8Array | Uint16Array | Uint32Array {
         return this._indices;
     }
 
@@ -310,7 +318,13 @@ export class ModelMesh extends Mesh {
             throw "Not allowed to access data while accessible is false.";
         }
 
-        this._updateVertexElements();
+        // Vertex element change.
+        if (this._vertexSlotChanged) {
+            const vertexElements = this._updateVertexElements();
+            this._setVertexElements(vertexElements);
+            this._vertexChangeFlag = ValueChanged.All;
+            this._vertexSlotChanged = false;
+        }
 
         // Vertex value change.
         const elementCount = this._elementCount;
@@ -322,12 +336,21 @@ export class ModelMesh extends Mesh {
         this._vertexChangeFlag = ValueChanged.All;
         this._updateVertices(vertices);
 
-        this.engine.createVertexIndexBuffer(vertices, this._indices);
+        this.engine.createVertexIndexBuffer(vertices, <Uint32Array>this._indices);
 
         if (noLongerAccessible) {
             this._accessible = false;
             this._releaseCache();
         }
+    }
+
+    /**
+     * @override
+     * @internal
+     */
+    _onDestroy(): void {
+        // super.destroy();
+        // this.clearBlendShapes();
     }
 
     private _updateVertexElements(): VertexElement[] {

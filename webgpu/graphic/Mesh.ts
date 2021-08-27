@@ -1,14 +1,14 @@
 import {BoundingBox} from "@oasis-engine/math";
 import {EngineObject} from "../base/EngineObject";
-import { Engine } from "../Engine";
-import { BufferUtil } from "./BufferUtil";
-import { MeshTopology } from "./enums/MeshTopology";
-import { IndexBufferBinding } from "./IndexBufferBinding";
-import { SubMesh } from "./SubMesh";
-import { VertexBufferBinding } from "./VertexBufferBinding";
-import { VertexElement } from "./VertexElement";
-import { UpdateFlag } from "../UpdateFlag";
-import { UpdateFlagManager } from "../UpdateFlagManager";
+import {Engine} from "../Engine";
+import {BufferUtil} from "./BufferUtil";
+import {MeshTopology} from "./enums/MeshTopology";
+import {IndexBufferBinding} from "./IndexBufferBinding";
+import {SubMesh} from "./SubMesh";
+import {VertexBufferBinding} from "./VertexBufferBinding";
+import {VertexElement} from "./VertexElement";
+import {UpdateFlag} from "../UpdateFlag";
+import {UpdateFlagManager} from "../UpdateFlagManager";
 
 /**
  * Mesh.
@@ -150,7 +150,7 @@ export abstract class Mesh extends EngineObject {
     }
 
     private _addVertexElement(element: VertexElement): void {
-        const { semantic } = element;
+        const {semantic} = element;
         this._vertexElementMap[semantic] = element;
         this._vertexElements.push(element);
         this._updateFlagManager.distribute();
