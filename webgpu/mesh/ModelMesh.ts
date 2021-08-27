@@ -336,7 +336,13 @@ export class ModelMesh extends Mesh {
         this._vertexChangeFlag = ValueChanged.All;
         this._updateVertices(vertices);
 
-        this.engine.createVertexIndexBuffer(vertices, <Uint32Array>this._indices);
+        let vertexBuffer = new Buffer(this.engine, vertices, GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST);
+        vertexBuffer.setData(vertices);
+        this.engine.renderPassEncoder.setVertexBuffer(0, vertexBuffer._nativeBuffer);
+
+        let indexBuffer = new Buffer(this.engine, <Uint32Array>this._indices, GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST);
+        indexBuffer.setData(<Uint32Array>this._indices);
+        this.engine.renderPassEncoder.setIndexBuffer(indexBuffer._nativeBuffer, "uint32");
 
         if (noLongerAccessible) {
             this._accessible = false;

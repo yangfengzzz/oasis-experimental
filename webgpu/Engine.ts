@@ -1,6 +1,7 @@
 import {ComponentsManager} from "./ComponentsManager";
 import {TypedArray} from "./base/Constant"
 import {ResourceManager} from "./asset/ResourceManager";
+import {Buffer} from "./graphic/Buffer";
 
 /**
  * Engine.
@@ -247,16 +248,6 @@ export class Engine {
 
         return gpuBuffer;
 
-    }
-
-    public createVertexIndexBuffer(vxArray: Float32Array, idxArray: Uint32Array) {
-        let vertexBuffer = this._CreateGPUBuffer(vxArray, GPUBufferUsage.VERTEX);
-
-        this.renderPassEncoder.setVertexBuffer(0, vertexBuffer);
-
-        let indexBuffer = this._CreateGPUBuffer(idxArray, GPUBufferUsage.INDEX);
-
-        this.renderPassEncoder.setIndexBuffer(indexBuffer, "uint32");
     }
 
     public createUniformBuffer(mxArray: Float32Array) {
