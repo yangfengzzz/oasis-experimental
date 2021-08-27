@@ -1,8 +1,8 @@
 import {BoundingBox} from "@oasis-engine/math";
 import {SubMesh} from "./SubMesh";
 import {MeshTopology} from "oasis-engine";
-import {EngineObject} from "./EngineObject";
-import {Engine} from "./Engine";
+import {EngineObject} from "../EngineObject";
+import {Engine} from "../Engine";
 
 /**
  * Mesh.

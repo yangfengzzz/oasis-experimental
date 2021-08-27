@@ -1,6 +1,6 @@
 import {Vector2, Vector3} from "@oasis-engine/math";
 import {ModelMesh} from "./ModelMesh";
-import {Engine} from "./Engine";
+import {Engine} from "../Engine";
 
 /**
  * Used to generate common primitive meshes.

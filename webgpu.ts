@@ -2,7 +2,7 @@ import {Matrix, Vector3} from "@oasis-engine/math";
 import vxCode from './shader/vertex.wgsl';
 import fxCode from './shader/fragment.wgsl'
 import {Engine} from './webgpu/Engine';
-import {PrimitiveMesh} from "./webgpu/PrimitiveMesh";
+import {PrimitiveMesh} from "./webgpu/mesh/PrimitiveMesh";
 
 const triangleMVMatrix = new Matrix;
 const squareMVMatrix = new Matrix();

@@ -1,7 +1,7 @@
-import {Mesh} from "./Mesh";
 import {Color, Vector2, Vector3, Vector4} from "@oasis-engine/math";
+import {Mesh} from "../graphic/Mesh";
+import {Engine} from "../Engine";
 import {IndexFormat, VertexElement, VertexElementFormat} from "oasis-engine";
-import {Engine} from "./Engine";
 
 /**
  * Mesh containing common vertex elements of the model.
