@@ -1,8 +1,14 @@
 import {BoundingBox} from "@oasis-engine/math";
-import {SubMesh} from "./SubMesh";
-import {MeshTopology} from "oasis-engine";
 import {EngineObject} from "../base/EngineObject";
-import {Engine} from "../Engine";
+import { Engine } from "../Engine";
+import { BufferUtil } from "./BufferUtil";
+import { MeshTopology } from "./enums/MeshTopology";
+import { IndexBufferBinding } from "./IndexBufferBinding";
+import { SubMesh } from "./SubMesh";
+import { VertexBufferBinding } from "./VertexBufferBinding";
+import { VertexElement } from "./VertexElement";
+import { UpdateFlag } from "../UpdateFlag";
+import { UpdateFlagManager } from "../UpdateFlagManager";
 
 /**
  * Mesh.
@@ -13,7 +19,21 @@ export abstract class Mesh extends EngineObject {
     /** The bounding volume of the mesh. */
     readonly bounds: BoundingBox = new BoundingBox();
 
+    _vertexElementMap: Record<string, VertexElement> = {};
+    _glIndexType: number;
+    _glIndexByteCount: number;
+
+    /** @internal */
+    _instanceCount: number = 0;
+    /** @internal */
+    _vertexBufferBindings: VertexBufferBinding[] = [];
+    /** @internal */
+    _indexBufferBinding: IndexBufferBinding = null;
+    /** @internal */
+    _vertexElements: VertexElement[] = [];
+
     private _subMeshes: SubMesh[] = [];
+    private _updateFlagManager: UpdateFlagManager = new UpdateFlagManager();
 
     /**
      * First sub-mesh. Rendered using the first material.
@@ -84,5 +104,55 @@ export abstract class Mesh extends EngineObject {
      */
     clearSubMesh(): void {
         this._subMeshes.length = 0;
+    }
+
+    /**
+     * Register update flag, update flag will be true if the vertex element changes.
+     * @returns Update flag
+     */
+    registerUpdateFlag(): UpdateFlag {
+        return this._updateFlagManager.register();
+    }
+
+    protected _setVertexElements(elements: VertexElement[]): void {
+        this._clearVertexElements();
+        for (let i = 0, n = elements.length; i < n; i++) {
+            this._addVertexElement(elements[i]);
+        }
+    }
+
+    protected _setVertexBufferBinding(index: number, binding: VertexBufferBinding): void {
+        // if (this._getRefCount() > 0) {
+        //     const lastBinding = this._vertexBufferBindings[index];
+        //     lastBinding && lastBinding._buffer._addRefCount(-1);
+        //     binding._buffer._addRefCount(1);
+        // }
+        this._vertexBufferBindings[index] = binding;
+    }
+
+    protected _setIndexBufferBinding(binding: IndexBufferBinding | null): void {
+        if (binding) {
+            this._indexBufferBinding = binding;
+            this._glIndexType = BufferUtil._getGLIndexType(binding.format);
+            this._glIndexByteCount = BufferUtil._getGLIndexByteCount(binding.format);
+        } else {
+            this._indexBufferBinding = null;
+            this._glIndexType = undefined;
+        }
+    }
+
+    private _clearVertexElements(): void {
+        this._vertexElements.length = 0;
+        const vertexElementMap = this._vertexElementMap;
+        for (const k in vertexElementMap) {
+            delete vertexElementMap[k];
+        }
+    }
+
+    private _addVertexElement(element: VertexElement): void {
+        const { semantic } = element;
+        this._vertexElementMap[semantic] = element;
+        this._vertexElements.push(element);
+        this._updateFlagManager.distribute();
     }
 }

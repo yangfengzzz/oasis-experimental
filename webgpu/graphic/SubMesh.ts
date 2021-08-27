@@ -1,4 +1,4 @@
-import {MeshTopology} from "oasis-engine";
+import {MeshTopology} from "./enums/MeshTopology";
 
 /**
  * Sub-mesh, mainly contains drawing information.
