@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es5",
+    "target": "es2015",
     "sourceMap": true,
     "typeRoots": [
       "./node_modules/@webgpu/types",
@@ -9,7 +9,7 @@
     ],
     "lib": [
       "dom",
-      "es5",
+      "es2015",
       "scripthost",
       "es2015.collection"
     ]
