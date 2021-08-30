@@ -120,8 +120,8 @@ export abstract class Mesh extends RefObject {
     /**
      * @internal
      */
-    _draw(shaderProgram: any, subMesh: SubMesh): void {
-        this._platformPrimitive.draw(shaderProgram, subMesh);
+    _draw(renderPassEncoder: GPURenderPassEncoder, shaderProgram: any, subMesh: SubMesh): void {
+        this._platformPrimitive.draw(renderPassEncoder, shaderProgram, subMesh);
     }
 
     /**

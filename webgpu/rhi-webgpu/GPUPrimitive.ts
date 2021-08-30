@@ -17,7 +17,10 @@ export class GPUPrimitive implements IPlatformPrimitive {
     /**
      * Draw the primitive.
      */
-    draw(shaderProgram: any, subMesh: SubMesh): void {
+    draw(renderPassEncoder: GPURenderPassEncoder, shaderProgram: any, subMesh: SubMesh): void {
+        renderPassEncoder.setVertexBuffer(0, this._primitive._vertexBufferBindings[0]._buffer._nativeBuffer);
+        renderPassEncoder.setIndexBuffer(this._primitive._indexBufferBinding._buffer._nativeBuffer, "uint32");
+        renderPassEncoder.drawIndexed(subMesh.count, 1, 0, 0, 0);
     }
 
     destroy() {

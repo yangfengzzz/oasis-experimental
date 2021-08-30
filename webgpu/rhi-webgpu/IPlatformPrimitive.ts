@@ -4,10 +4,11 @@
 export interface IPlatformPrimitive {
     /**
      * Draw primitive.
+     * @param renderPassEncoder - Encoder
      * @param tech - Shader
      * @param subPrimitive - Sub primitive
      */
-    draw(tech: any, subPrimitive: any): void;
+    draw(renderPassEncoder: GPURenderPassEncoder, tech: any, subPrimitive: any): void;
 
     /**
      * Destroy.

@@ -16,12 +16,12 @@ let main = async () => {
 
     let engine = new Engine();
 
-    engine.CreateCanvas(document.body).then(({width, height}) => {
-        return engine.InitWebGPU(width, height);
+    engine._hardwareRenderer.CreateCanvas(document.body).then(({width, height}) => {
+        return engine._hardwareRenderer.InitWebGPU(width, height);
     }).then(({colorAttachmentView, depthStencilAttachmentView}) => {
-        engine.InitRenderPass(backgroundColor, colorAttachmentView, depthStencilAttachmentView)
+        engine._hardwareRenderer.InitRenderPass(backgroundColor, colorAttachmentView, depthStencilAttachmentView)
 
-        engine.InitPipelineWitMultiBuffers(vxCode, fxCode);
+        engine._hardwareRenderer.InitPipelineWitMultiBuffers(vxCode, fxCode);
 
         let lastTime = 0, rTri = 0, rSquare = 0;
         let animate = () => {
@@ -37,9 +37,9 @@ let main = async () => {
         engine.RunRenderLoop(() => {
             animate();
 
-            engine.InitRenderPass(backgroundColor, colorAttachmentView, depthStencilAttachmentView);
+            engine._hardwareRenderer.InitRenderPass(backgroundColor, colorAttachmentView, depthStencilAttachmentView);
 
-            engine.renderPassEncoder.setPipeline(engine.renderPipeline);
+            engine._hardwareRenderer.renderPassEncoder.setPipeline(engine._hardwareRenderer.renderPipeline);
 
             triangleMVMatrix.identity().translate(new Vector3(-1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(0, 1, 0), rTri));
             squareMVMatrix.identity().translate(new Vector3(1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(1, 0, 0), rSquare));
@@ -64,14 +64,16 @@ let main = async () => {
             let squareUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
 
             const box = PrimitiveMesh.createCuboid(engine, 1, 1, 1, false);
-            engine.createUniformBuffer(triangleUniformBufferView);
-            engine.DrawIndexed(box.getIndices().length);
+            engine._hardwareRenderer.createUniformBuffer(engine, triangleUniformBufferView);
+            // engine._hardwareRenderer.drawPrimitive(box, box.subMesh, null);
+
+            engine._hardwareRenderer.DrawIndexed(box.getIndices().length);
 
             const sphere = PrimitiveMesh.createSphere(engine, 1, 50, false);
-            engine.createUniformBuffer(squareUniformBufferView);
-            engine.DrawIndexed(sphere.getIndices().length);
+            engine._hardwareRenderer.createUniformBuffer(engine, squareUniformBufferView);
+            engine._hardwareRenderer.DrawIndexed(sphere.getIndices().length);
 
-            engine.Present();
+            engine._hardwareRenderer.Present();
         })
     });
 

@@ -346,7 +346,7 @@ export class ModelMesh extends Mesh {
             newVertexBuffer.setData(vertices);
             this._setVertexBufferBinding(0, new VertexBufferBinding(newVertexBuffer, elementCount * 4));
 
-            this.engine.renderPassEncoder.setVertexBuffer(0, newVertexBuffer._nativeBuffer);
+            this.engine._hardwareRenderer.renderPassEncoder.setVertexBuffer(0, newVertexBuffer._nativeBuffer);
         }
 
         const indexBuffer = this._indexBufferBinding?._buffer;
@@ -357,7 +357,7 @@ export class ModelMesh extends Mesh {
                 newIndexBuffer.setData(<Uint32Array>this._indices);
                 this._setIndexBufferBinding(new IndexBufferBinding(newIndexBuffer, this._indicesFormat));
 
-                this.engine.renderPassEncoder.setIndexBuffer(newIndexBuffer._nativeBuffer, "uint32");
+                this.engine._hardwareRenderer.renderPassEncoder.setIndexBuffer(newIndexBuffer._nativeBuffer, "uint32");
             }
         }
 

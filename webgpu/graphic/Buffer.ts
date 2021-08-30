@@ -39,14 +39,14 @@ export class Buffer extends RefObject {
         super(engine);
         if (typeof byteLengthOrData === "number") {
             this._byteLength = byteLengthOrData;
-            this._nativeBuffer = engine.device.createBuffer({
+            this._nativeBuffer = engine._hardwareRenderer.device.createBuffer({
                 size: this._byteLength,
                 usage: bufferUsage,
                 mappedAtCreation: true
             });
         } else {
             this._byteLength = byteLengthOrData.byteLength;
-            this._nativeBuffer = engine.device.createBuffer({
+            this._nativeBuffer = engine._hardwareRenderer.device.createBuffer({
                 size: this._byteLength,
                 usage: bufferUsage,
                 mappedAtCreation: true
