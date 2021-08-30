@@ -63,15 +63,13 @@ let main = async () => {
             squareMVMatrix.toArray(mvBuffer);
             let squareUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
 
-            const box = PrimitiveMesh.createCuboid(engine, 1, 1, 1, false);
+            const box = PrimitiveMesh.createCuboid(engine, 1);
             engine._hardwareRenderer.createUniformBuffer(engine, triangleUniformBufferView);
-            // engine._hardwareRenderer.drawPrimitive(box, box.subMesh, null);
+            engine._hardwareRenderer.drawPrimitive(box, box.subMesh, null);
 
-            engine._hardwareRenderer.DrawIndexed(box.getIndices().length);
-
-            const sphere = PrimitiveMesh.createSphere(engine, 1, 50, false);
+            const sphere = PrimitiveMesh.createSphere(engine, 1, 50);
             engine._hardwareRenderer.createUniformBuffer(engine, squareUniformBufferView);
-            engine._hardwareRenderer.DrawIndexed(sphere.getIndices().length);
+            engine._hardwareRenderer.drawPrimitive(sphere, sphere.subMesh, null);
 
             engine._hardwareRenderer.Present();
         })

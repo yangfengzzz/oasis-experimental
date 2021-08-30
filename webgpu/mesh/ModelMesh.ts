@@ -5,11 +5,8 @@ import {Engine} from "../Engine";
 import {IndexFormat} from "../graphic/enums/IndexFormat";
 import {VertexElementFormat} from "../graphic/enums/VertexElementFormat";
 import {VertexElement} from "../graphic/VertexElement";
-import {BufferUsage} from "../graphic/enums/BufferUsage";
-import {BufferBindFlag} from "../graphic/enums/BufferBindFlag";
 import {VertexBufferBinding} from "../graphic/VertexBufferBinding";
 import {IndexBufferBinding} from "../graphic/IndexBufferBinding";
-import {UpdateFlag} from "../UpdateFlag";
 
 /**
  * Mesh containing common vertex elements of the model.
@@ -345,8 +342,6 @@ export class ModelMesh extends Mesh {
             const newVertexBuffer = new Buffer(this.engine, vertices, GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST);
             newVertexBuffer.setData(vertices);
             this._setVertexBufferBinding(0, new VertexBufferBinding(newVertexBuffer, elementCount * 4));
-
-            this.engine._hardwareRenderer.renderPassEncoder.setVertexBuffer(0, newVertexBuffer._nativeBuffer);
         }
 
         const indexBuffer = this._indexBufferBinding?._buffer;
@@ -356,8 +351,6 @@ export class ModelMesh extends Mesh {
                 let newIndexBuffer = new Buffer(this.engine, <Uint32Array>this._indices, GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST);
                 newIndexBuffer.setData(<Uint32Array>this._indices);
                 this._setIndexBufferBinding(new IndexBufferBinding(newIndexBuffer, this._indicesFormat));
-
-                this.engine._hardwareRenderer.renderPassEncoder.setIndexBuffer(newIndexBuffer._nativeBuffer, "uint32");
             }
         }
 
