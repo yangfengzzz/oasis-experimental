@@ -5,6 +5,7 @@ import {IPlatformPrimitive} from "./IPlatformPrimitive";
 import {GPUPrimitive} from "./GPUPrimitive";
 import {Buffer} from "../graphic/Buffer";
 import {Engine} from "../Engine";
+import {ShaderProgram} from "../shader/ShaderProgram";
 
 /**
  * WebGPU renderer.
@@ -25,8 +26,6 @@ export class WebGPURenderer implements IHardwareRenderer {
     public renderPassEncoder: GPURenderPassEncoder;
 
     public uniformGroupLayout: GPUBindGroupLayout;
-
-    public renderPipeline: GPURenderPipeline;
 
     private _clearColor: GPUColorDict;
 
@@ -110,7 +109,7 @@ export class WebGPURenderer implements IHardwareRenderer {
         this.renderPassEncoder.setViewport(0, 0, this.canvas.width, this.canvas.height, 0, 1);
     }
 
-    public InitPipelineWitMultiBuffers(vxCode: string, fxCode: string) {
+    createBindGroupLayout() {
         this.uniformGroupLayout = this.device.createBindGroupLayout({
             entries: [
                 {
@@ -122,81 +121,6 @@ export class WebGPURenderer implements IHardwareRenderer {
                 }
             ]
         });
-
-        let layout: GPUPipelineLayout = this.device.createPipelineLayout({
-            bindGroupLayouts: [this.uniformGroupLayout]
-        });
-
-        let vxModule: GPUShaderModule = this.device.createShaderModule({
-            code: vxCode
-        });
-
-        let fxModule: GPUShaderModule = this.device.createShaderModule({
-            code: fxCode
-        });
-
-        this.renderPipeline = this.device.createRenderPipeline({
-            layout: layout,
-            vertex: {
-                buffers: [
-                    {
-                        arrayStride: 4 * 8,
-                        attributes: [
-                            // position
-                            {
-                                shaderLocation: 0,
-                                offset: 0,
-                                format: 'float32x3'
-                            },
-
-                            // normal
-                            {
-                                shaderLocation: 1,
-                                offset: 4 * 3,
-                                format: 'float32x3'
-                            },
-
-                            // uv
-                            {
-                                shaderLocation: 2,
-                                offset: 4 * 6,
-                                format: 'float32x2'
-                            }
-                        ],
-                        stepMode: 'vertex'
-                    },
-                ],
-                module: vxModule,
-                entryPoint: 'main'
-            },
-
-            fragment: {
-                module: fxModule,
-                entryPoint: 'main',
-                targets: [
-                    {
-                        format: this.format
-                    }
-                ]
-            },
-
-            primitive: {
-                topology: 'triangle-list'
-            },
-
-            depthStencil: {
-                depthWriteEnabled: true,
-                depthCompare: 'less',
-                format: 'depth24plus-stencil8'
-            },
-
-            multisample: {
-                count: 4
-            }
-        });
-
-        this.renderPassEncoder.setPipeline(this.renderPipeline);
-
     }
 
     public createUniformBuffer(engine: Engine, mxArray: Float32Array) {
@@ -216,14 +140,6 @@ export class WebGPURenderer implements IHardwareRenderer {
         return {uniformBuffer};
     }
 
-    public DrawIndexed(indexCount: number) {
-        this.renderPassEncoder.drawIndexed(indexCount, 1, 0, 0, 0);
-    }
-
-    public Draw(vertexCount: number) {
-        this.renderPassEncoder.draw(vertexCount, 1, 0, 0);
-    }
-
     public Present() {
         this.renderPassEncoder.endPass();
         this.device.queue.submit([this.commandEncoder.finish()]);
@@ -234,10 +150,8 @@ export class WebGPURenderer implements IHardwareRenderer {
         return new GPUPrimitive(this, primitive);
     }
 
-    drawPrimitive(primitive: Mesh, subPrimitive: SubMesh, shaderProgram: any) {
-        // todo: VAO not support morph animation
+    drawPrimitive(primitive: Mesh, subPrimitive: SubMesh, shaderProgram: ShaderProgram) {
         if (primitive) {
-            //@ts-ignore
             primitive._draw(this.renderPassEncoder, shaderProgram, subPrimitive);
         } else {
             Logger.error("draw primitive failed.");

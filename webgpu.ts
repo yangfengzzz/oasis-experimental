@@ -3,6 +3,7 @@ import vxCode from './shader/vertex.wgsl';
 import fxCode from './shader/fragment.wgsl'
 import {PrimitiveMesh} from "./webgpu/mesh/PrimitiveMesh";
 import {WebGPUEngine} from "./webgpu/rhi-webgpu/WebGPUEngine";
+import {ShaderProgram} from "./webgpu/shader/ShaderProgram";
 
 const triangleMVMatrix = new Matrix;
 const squareMVMatrix = new Matrix();
@@ -26,17 +27,9 @@ const animate = () => {
 const engine = new WebGPUEngine("canvas");
 engine.canvas.resizeByClientSize();
 engine.init().then(({colorAttachmentView, depthStencilAttachmentView}) => {
-    engine._hardwareRenderer.InitRenderPass(backgroundColor, colorAttachmentView, depthStencilAttachmentView)
-
-    engine._hardwareRenderer.InitPipelineWitMultiBuffers(vxCode, fxCode);
-
+    const shaderProgram = new ShaderProgram(engine, vxCode, fxCode);
     engine.RunRenderLoop(() => {
         animate();
-
-        engine._hardwareRenderer.InitRenderPass(backgroundColor, colorAttachmentView, depthStencilAttachmentView);
-
-        engine._hardwareRenderer.renderPassEncoder.setPipeline(engine._hardwareRenderer.renderPipeline);
-
         triangleMVMatrix.identity().translate(new Vector3(-1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(0, 1, 0), rTri));
         squareMVMatrix.identity().translate(new Vector3(1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(1, 0, 0), rSquare));
 
@@ -52,20 +45,25 @@ engine.init().then(({colorAttachmentView, depthStencilAttachmentView}) => {
             0.0, 0.0, 0.0, 0.0,
             0.0, 0.0, 0.0, 0.0,
             0.0, 0.0, 0.0, 0.0];
-        triangleMVMatrix.toArray(mvBuffer);
 
+        triangleMVMatrix.toArray(mvBuffer);
         let triangleUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
 
         squareMVMatrix.toArray(mvBuffer);
         let squareUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
 
-        const box = PrimitiveMesh.createCuboid(engine, 1);
-        engine._hardwareRenderer.createUniformBuffer(engine, triangleUniformBufferView);
-        engine._hardwareRenderer.drawPrimitive(box, box.subMesh, null);
+        //--------------------------------------------------------------------------------------------------------------
+        engine._hardwareRenderer.InitRenderPass(backgroundColor, colorAttachmentView, depthStencilAttachmentView);
 
-        const sphere = PrimitiveMesh.createSphere(engine, 1, 50);
+        engine._hardwareRenderer.createBindGroupLayout();
+
+        engine._hardwareRenderer.createUniformBuffer(engine, triangleUniformBufferView);
+        const box = PrimitiveMesh.createCuboid(engine, 1);
+        engine._hardwareRenderer.drawPrimitive(box, box.subMesh, shaderProgram);
+
         engine._hardwareRenderer.createUniformBuffer(engine, squareUniformBufferView);
-        engine._hardwareRenderer.drawPrimitive(sphere, sphere.subMesh, null);
+        const sphere = PrimitiveMesh.createSphere(engine, 1, 50);
+        engine._hardwareRenderer.drawPrimitive(sphere, sphere.subMesh, shaderProgram);
 
         engine._hardwareRenderer.Present();
     })
