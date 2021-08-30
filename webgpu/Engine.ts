@@ -1,6 +1,7 @@
 import {ComponentsManager} from "./ComponentsManager";
 import {ResourceManager} from "./asset/ResourceManager";
 import {WebGPURenderer} from "./rhi-webgpu/WebGPURenderer";
+import {Canvas} from "oasis-engine";
 
 /**
  * Engine.
@@ -8,6 +9,8 @@ import {WebGPURenderer} from "./rhi-webgpu/WebGPURenderer";
 export class Engine {
     _componentsManager: ComponentsManager = new ComponentsManager();
     _hardwareRenderer: WebGPURenderer;
+
+    protected _canvas: Canvas;
     private _resourceManager: ResourceManager = new ResourceManager(this);
 
     /**
@@ -17,8 +20,13 @@ export class Engine {
         return this._resourceManager;
     }
 
-    constructor() {
-        this._hardwareRenderer = new WebGPURenderer();
+    constructor(canvas: Canvas, hardwareRenderer: WebGPURenderer) {
+        this._canvas = canvas;
+        this._hardwareRenderer = hardwareRenderer;
+    }
+
+    init() {
+        return this._hardwareRenderer.init(this._canvas);
     }
 
     public RunRenderLoop(fn: Function) {

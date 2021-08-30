@@ -1,4 +1,4 @@
-import {IHardwareRenderer, Logger} from "oasis-engine";
+import {Canvas, IHardwareRenderer, Logger, WebCanvas} from "oasis-engine";
 import {Mesh} from "../graphic/Mesh";
 import {SubMesh} from "../graphic/SubMesh";
 import {IPlatformPrimitive} from "./IPlatformPrimitive";
@@ -10,7 +10,7 @@ import {Engine} from "../Engine";
  * WebGPU renderer.
  */
 export class WebGPURenderer implements IHardwareRenderer {
-    public canvas: HTMLCanvasElement;
+    public canvas: Canvas;
 
     public adapter: GPUAdapter;
 
@@ -28,42 +28,23 @@ export class WebGPURenderer implements IHardwareRenderer {
 
     public renderPipeline: GPURenderPipeline;
 
-    public devicePixelWidth: number;
-
-    public devicePixelHeight: number;
-
     private _clearColor: GPUColorDict;
 
-    public CreateCanvas(rootElement: HTMLElement) {
-        let width = rootElement.clientWidth;
-        let height = rootElement.clientHeight;
-
-        this.devicePixelWidth = width * window.devicePixelRatio;
-        this.devicePixelHeight = height * window.devicePixelRatio;
-
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = this.devicePixelWidth;
-        this.canvas.height = this.devicePixelHeight;
-        this.canvas.style.width = '100%';
-        this.canvas.style.height = '100%';
-
-        rootElement.appendChild(this.canvas);
-
-        // @ts-ignore
-        return Promise.resolve({
-            width: this.devicePixelWidth,
-            height: this.devicePixelHeight
-        });
+    init(canvas: Canvas) {
+        this.canvas = canvas;
+        return this.InitWebGPU(<WebCanvas>canvas);
     }
 
-    public async InitWebGPU(width: number, height: number) {
+    public async InitWebGPU(canvas: WebCanvas) {
         this.adapter = await navigator.gpu.requestAdapter({
             powerPreference: 'high-performance'
         });
 
         this.device = await this.adapter.requestDevice();
 
-        this.context = <unknown>this.canvas.getContext('webgpu') as GPUCanvasContext;
+        this.context = canvas._webCanvas.getContext('webgpu') as GPUCanvasContext;
+        const width = this.canvas.width;
+        const height = this.canvas.height;
 
         this.format = this.context.getPreferredFormat(this.adapter);
 
@@ -126,7 +107,7 @@ export class WebGPURenderer implements IHardwareRenderer {
             this._clearColor = clearColor;
         }
 
-        this.renderPassEncoder.setViewport(0, 0, this.devicePixelWidth, this.devicePixelHeight, 0, 1);
+        this.renderPassEncoder.setViewport(0, 0, this.canvas.width, this.canvas.height, 0, 1);
     }
 
     public InitPipelineWitMultiBuffers(vxCode: string, fxCode: string) {
