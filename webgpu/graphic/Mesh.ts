@@ -9,6 +9,7 @@ import {VertexBufferBinding} from "./VertexBufferBinding";
 import {VertexElement} from "./VertexElement";
 import {UpdateFlag} from "../UpdateFlag";
 import {UpdateFlagManager} from "../UpdateFlagManager";
+import {IPlatformPrimitive} from "../rhi-webgpu/IPlatformPrimitive";
 
 /**
  * Mesh.
@@ -22,6 +23,7 @@ export abstract class Mesh extends RefObject {
     _vertexElementMap: Record<string, VertexElement> = {};
     _glIndexType: number;
     _glIndexByteCount: number;
+    _platformPrimitive: IPlatformPrimitive;
 
     /** @internal */
     _instanceCount: number = 0;
@@ -54,9 +56,10 @@ export abstract class Mesh extends RefObject {
      * @param engine - Engine
      * @param name - Mesh name
      */
-    constructor(engine: Engine, name?: string) {
+    protected constructor(engine: Engine, name?: string) {
         super(engine);
         this.name = name;
+        this._platformPrimitive = this._engine._hardwareRenderer.createPlatformPrimitive(this);
     }
 
     /**
@@ -114,6 +117,36 @@ export abstract class Mesh extends RefObject {
         return this._updateFlagManager.register();
     }
 
+    /**
+     * @internal
+     */
+    _draw(shaderProgram: any, subMesh: SubMesh): void {
+        this._platformPrimitive.draw(shaderProgram, subMesh);
+    }
+
+    /**
+     * @override
+     */
+    _addRefCount(value: number): void {
+        super._addRefCount(value);
+        const vertexBufferBindings = this._vertexBufferBindings;
+        for (let i = 0, n = vertexBufferBindings.length; i < n; i++) {
+            vertexBufferBindings[i]._buffer._addRefCount(value);
+        }
+    }
+
+    /**
+     * @override
+     * Destroy.
+     */
+    _onDestroy(): void {
+        this._vertexBufferBindings = null;
+        this._indexBufferBinding = null;
+        this._vertexElements = null;
+        this._vertexElementMap = null;
+        this._platformPrimitive.destroy();
+    }
+
     protected _setVertexElements(elements: VertexElement[]): void {
         this._clearVertexElements();
         for (let i = 0, n = elements.length; i < n; i++) {
@@ -122,11 +155,11 @@ export abstract class Mesh extends RefObject {
     }
 
     protected _setVertexBufferBinding(index: number, binding: VertexBufferBinding): void {
-        // if (this._getRefCount() > 0) {
-        //     const lastBinding = this._vertexBufferBindings[index];
-        //     lastBinding && lastBinding._buffer._addRefCount(-1);
-        //     binding._buffer._addRefCount(1);
-        // }
+        if (this._getRefCount() > 0) {
+            const lastBinding = this._vertexBufferBindings[index];
+            lastBinding && lastBinding._buffer._addRefCount(-1);
+            binding._buffer._addRefCount(1);
+        }
         this._vertexBufferBindings[index] = binding;
     }
 

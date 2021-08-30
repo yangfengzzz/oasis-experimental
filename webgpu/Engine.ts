@@ -1,14 +1,15 @@
 import {ComponentsManager} from "./ComponentsManager";
-import {TypedArray} from "./base/Constant"
 import {ResourceManager} from "./asset/ResourceManager";
 import {Buffer} from "./graphic/Buffer";
+import {IHardwareRenderer} from "oasis-engine";
+import {WebGPURenderer} from "./rhi-webgpu/WebGPURenderer";
 
 /**
  * Engine.
  */
 export class Engine {
     _componentsManager: ComponentsManager = new ComponentsManager();
-
+    _hardwareRenderer: IHardwareRenderer;
     private _resourceManager: ResourceManager = new ResourceManager(this);
 
     /**
@@ -18,6 +19,11 @@ export class Engine {
         return this._resourceManager;
     }
 
+    constructor() {
+        this._hardwareRenderer = new WebGPURenderer();
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
     public canvas: HTMLCanvasElement;
 
     public adapter: GPUAdapter;

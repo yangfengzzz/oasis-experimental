@@ -342,18 +342,22 @@ export class ModelMesh extends Mesh {
             this._vertexChangeFlag = ValueChanged.All;
             this._updateVertices(vertices);
 
-            const vertexBuffer = new Buffer(this.engine, vertices, GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST);
-            vertexBuffer.setData(vertices);
-            this.engine.renderPassEncoder.setVertexBuffer(0, vertexBuffer._nativeBuffer);
+            const newVertexBuffer = new Buffer(this.engine, vertices, GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST);
+            newVertexBuffer.setData(vertices);
+            this._setVertexBufferBinding(0, new VertexBufferBinding(newVertexBuffer, elementCount * 4));
+
+            this.engine.renderPassEncoder.setVertexBuffer(0, newVertexBuffer._nativeBuffer);
         }
 
         const indexBuffer = this._indexBufferBinding?._buffer;
         if (_indices) {
             if (!indexBuffer || _indices.byteLength != indexBuffer.byteLength) {
                 // indexBuffer?.destroy();
-                let indexBuffer = new Buffer(this.engine, <Uint32Array>this._indices, GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST);
-                indexBuffer.setData(<Uint32Array>this._indices);
-                this.engine.renderPassEncoder.setIndexBuffer(indexBuffer._nativeBuffer, "uint32");
+                let newIndexBuffer = new Buffer(this.engine, <Uint32Array>this._indices, GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST);
+                newIndexBuffer.setData(<Uint32Array>this._indices);
+                this._setIndexBufferBinding(new IndexBufferBinding(newIndexBuffer, this._indicesFormat));
+
+                this.engine.renderPassEncoder.setIndexBuffer(newIndexBuffer._nativeBuffer, "uint32");
             }
         }
 
