@@ -29,9 +29,16 @@ export class WebGPURenderer implements IHardwareRenderer {
 
     private _clearColor: GPUColorDict;
 
+    public colorAttachmentView: GPUTextureView;
+
+    public depthStencilAttachmentView: GPUTextureView;
+
     init(canvas: Canvas) {
         this.canvas = canvas;
-        return this.InitWebGPU(<WebCanvas>canvas);
+        return this.InitWebGPU(<WebCanvas>canvas).then(({colorAttachmentView, depthStencilAttachmentView}) => {
+            this.colorAttachmentView = colorAttachmentView;
+            this.depthStencilAttachmentView = depthStencilAttachmentView;
+        });
     }
 
     public async InitWebGPU(canvas: WebCanvas) {
@@ -81,18 +88,18 @@ export class WebGPURenderer implements IHardwareRenderer {
         return Promise.resolve({colorAttachmentView, depthStencilAttachmentView});
     }
 
-    public InitRenderPass(clearColor: GPUColorDict, colorAttachmentView: GPUTextureView, depthStencilAttachmentView: GPUTextureView) {
+    public InitRenderPass(clearColor: GPUColorDict) {
         this.commandEncoder = this.device.createCommandEncoder();
         let renderPassDescriptor: GPURenderPassDescriptor = {
             colorAttachments: [{
-                view: colorAttachmentView,
+                view: this.colorAttachmentView,
                 resolveTarget: this.context.getCurrentTexture().createView(),
                 loadValue: clearColor,
                 storeOp: 'store'
             }],
 
             depthStencilAttachment: {
-                view: depthStencilAttachmentView,
+                view: this.depthStencilAttachmentView,
                 depthLoadValue: 1.0,
                 depthStoreOp: 'store',
                 stencilLoadValue: 0,

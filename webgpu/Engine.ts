@@ -1,7 +1,8 @@
+import {Canvas} from "oasis-engine";
 import {ComponentsManager} from "./ComponentsManager";
 import {ResourceManager} from "./asset/ResourceManager";
 import {WebGPURenderer} from "./rhi-webgpu/WebGPURenderer";
-import {Canvas} from "oasis-engine";
+import {SceneManager} from "./SceneManager";
 
 /**
  * Engine.
@@ -12,12 +13,27 @@ export class Engine {
 
     protected _canvas: Canvas;
     private _resourceManager: ResourceManager = new ResourceManager(this);
+    private _sceneManager: SceneManager = new SceneManager(this);
+
+    /**
+     * The canvas to use for rendering.
+     */
+    get canvas(): Canvas {
+        return this._canvas;
+    }
 
     /**
      * Get the resource manager.
      */
     get resourceManager(): ResourceManager {
         return this._resourceManager;
+    }
+
+    /**
+     * Get the scene manager.
+     */
+    get sceneManager(): SceneManager {
+        return this._sceneManager;
     }
 
     constructor(canvas: Canvas, hardwareRenderer: WebGPURenderer) {

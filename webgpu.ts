@@ -26,7 +26,9 @@ const animate = () => {
 //----------------------------------------------------------------------------------------------------------------------
 const engine = new WebGPUEngine("canvas");
 engine.canvas.resizeByClientSize();
-engine.init().then(({colorAttachmentView, depthStencilAttachmentView}) => {
+engine.init().then(() => {
+    const scene = engine.sceneManager.activeScene;
+
     const shaderProgram = new ShaderProgram(engine, vxCode, fxCode);
     engine.RunRenderLoop(() => {
         animate();
@@ -53,7 +55,7 @@ engine.init().then(({colorAttachmentView, depthStencilAttachmentView}) => {
         let squareUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
 
         //--------------------------------------------------------------------------------------------------------------
-        engine._hardwareRenderer.InitRenderPass(backgroundColor, colorAttachmentView, depthStencilAttachmentView);
+        engine._hardwareRenderer.InitRenderPass(backgroundColor);
 
         engine._hardwareRenderer.createBindGroupLayout();
 

@@ -1,5 +1,6 @@
 import {Scene} from "./Scene";
 import {Engine} from "./Engine";
+import {AssetPromise} from "oasis-engine";
 
 /**
  * Scene manager.
@@ -34,17 +35,17 @@ export class SceneManager {
      * @param destroyOldScene - whether to destroy old scene information
      * @returns scene promise
      */
-    // loadScene(url: string, destroyOldScene: boolean = true): AssetPromise<Scene> {
-    //     const scenePromise = this.engine.resourceManager.load<Scene>(url);
-    //     scenePromise.then((scene: Scene) => {
-    //         const oldScene: Scene = this._activeScene;
-    //         this.activeScene = scene;
-    //         if (oldScene && destroyOldScene) {
-    //             oldScene.destroy();
-    //         }
-    //     });
-    //     return scenePromise;
-    // }
+    loadScene(url: string, destroyOldScene: boolean = true): AssetPromise<Scene> {
+        const scenePromise = this.engine.resourceManager.load<Scene>(url);
+        scenePromise.then((scene: Scene) => {
+            const oldScene: Scene = this._activeScene;
+            this.activeScene = scene;
+            if (oldScene && destroyOldScene) {
+                oldScene.destroy();
+            }
+        });
+        return scenePromise;
+    }
 
     /**
      * Merge the source scene into the target scene.
