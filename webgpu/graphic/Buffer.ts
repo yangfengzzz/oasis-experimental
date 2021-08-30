@@ -11,6 +11,13 @@ export class Buffer extends RefObject {
     private _byteLength: number;
 
     /**
+     * Byte length.
+     */
+    get byteLength(): number {
+        return this._byteLength;
+    }
+
+    /**
      * Create Buffer.
      * @param engine - Engine
      * @param byteLength - Byte length

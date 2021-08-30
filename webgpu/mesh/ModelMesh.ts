@@ -318,6 +318,8 @@ export class ModelMesh extends Mesh {
             throw "Not allowed to access data while accessible is false.";
         }
 
+        const {_indices} = this;
+
         // Vertex element change.
         if (this._vertexSlotChanged) {
             const vertexElements = this._updateVertexElements();
@@ -327,22 +329,33 @@ export class ModelMesh extends Mesh {
         }
 
         // Vertex value change.
+        const vertexBufferBindings = this._vertexBufferBindings;
         const elementCount = this._elementCount;
+        const vertexBuffer = vertexBufferBindings[0]?._buffer;
         const vertexFloatCount = elementCount * this._vertexCount;
-        const vertices = new Float32Array(vertexFloatCount);
-        this._verticesFloat32 = vertices;
-        this._verticesUint8 = new Uint8Array(vertices.buffer);
+        if (!vertexBuffer || this._verticesFloat32.length !== vertexFloatCount) {
+            // vertexBuffer?.destroy();
+            const vertices = new Float32Array(vertexFloatCount);
+            this._verticesFloat32 = vertices;
+            this._verticesUint8 = new Uint8Array(vertices.buffer);
 
-        this._vertexChangeFlag = ValueChanged.All;
-        this._updateVertices(vertices);
+            this._vertexChangeFlag = ValueChanged.All;
+            this._updateVertices(vertices);
 
-        let vertexBuffer = new Buffer(this.engine, vertices, GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST);
-        vertexBuffer.setData(vertices);
-        this.engine.renderPassEncoder.setVertexBuffer(0, vertexBuffer._nativeBuffer);
+            const vertexBuffer = new Buffer(this.engine, vertices, GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST);
+            vertexBuffer.setData(vertices);
+            this.engine.renderPassEncoder.setVertexBuffer(0, vertexBuffer._nativeBuffer);
+        }
 
-        let indexBuffer = new Buffer(this.engine, <Uint32Array>this._indices, GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST);
-        indexBuffer.setData(<Uint32Array>this._indices);
-        this.engine.renderPassEncoder.setIndexBuffer(indexBuffer._nativeBuffer, "uint32");
+        const indexBuffer = this._indexBufferBinding?._buffer;
+        if (_indices) {
+            if (!indexBuffer || _indices.byteLength != indexBuffer.byteLength) {
+                // indexBuffer?.destroy();
+                let indexBuffer = new Buffer(this.engine, <Uint32Array>this._indices, GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST);
+                indexBuffer.setData(<Uint32Array>this._indices);
+                this.engine.renderPassEncoder.setIndexBuffer(indexBuffer._nativeBuffer, "uint32");
+            }
+        }
 
         if (noLongerAccessible) {
             this._accessible = false;
