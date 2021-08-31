@@ -2,6 +2,8 @@ import { Vector2, Vector3 } from "@oasis-engine/math";
 import {EngineObject} from "./base/EngineObject";
 import {Entity} from "./Entity";
 import {Engine} from "./Engine";
+import {Camera} from "./Camera";
+import {Logger} from "oasis-engine";
 
 /**
  * Scene.
@@ -21,7 +23,7 @@ export class Scene extends EngineObject {
     // readonly shaderData: ShaderData = new ShaderData(ShaderDataGroup.Scene);
 
     /** @internal */
-    // _activeCameras: Camera[] = [];
+    _activeCameras: Camera[] = [];
     /** @internal */
     _isActiveInEngine: boolean = false;
 
@@ -203,24 +205,24 @@ export class Scene extends EngineObject {
     /**
      * @internal
      */
-    // _attachRenderCamera(camera: Camera): void {
-    //     const index = this._activeCameras.indexOf(camera);
-    //     if (index === -1) {
-    //         this._activeCameras.push(camera);
-    //     } else {
-    //         Logger.warn("Camera already attached.");
-    //     }
-    // }
-    //
-    // /**
-    //  * @internal
-    //  */
-    // _detachRenderCamera(camera: Camera): void {
-    //     const index = this._activeCameras.indexOf(camera);
-    //     if (index !== -1) {
-    //         this._activeCameras.splice(index, 1);
-    //     }
-    // }
+    _attachRenderCamera(camera: Camera): void {
+        const index = this._activeCameras.indexOf(camera);
+        if (index === -1) {
+            this._activeCameras.push(camera);
+        } else {
+            Logger.warn("Camera already attached.");
+        }
+    }
+
+    /**
+     * @internal
+     */
+    _detachRenderCamera(camera: Camera): void {
+        const index = this._activeCameras.indexOf(camera);
+        if (index !== -1) {
+            this._activeCameras.splice(index, 1);
+        }
+    }
 
     /**
      * @internal
