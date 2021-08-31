@@ -3,7 +3,6 @@ import {Mesh} from "../graphic/Mesh";
 import {Buffer} from "../graphic/Buffer";
 import {Engine} from "../Engine";
 import {IndexFormat} from "../graphic/enums/IndexFormat";
-import {VertexElementFormat} from "../graphic/enums/VertexElementFormat";
 import {VertexElement} from "../graphic/VertexElement";
 import {VertexBufferBinding} from "../graphic/VertexBufferBinding";
 import {IndexBufferBinding} from "../graphic/IndexBufferBinding";
@@ -377,57 +376,57 @@ export class ModelMesh extends Mesh {
         let offset = 12;
         let elementCount = 3;
         if (this._normals) {
-            vertexElements.push(new VertexElement("NORMAL", offset, VertexElementFormat.Vector3, 0));
+            vertexElements.push(new VertexElement("NORMAL", offset, 'float32x3', 0));
             offset += 12;
             elementCount += 3;
         }
         if (this._colors) {
-            vertexElements.push(new VertexElement("COLOR_0", offset, VertexElementFormat.Vector4, 0));
+            vertexElements.push(new VertexElement("COLOR_0", offset, 'float32x4', 0));
             offset += 16;
             elementCount += 4;
         }
         if (this._tangents) {
-            vertexElements.push(new VertexElement("TANGENT", offset, VertexElementFormat.Vector4, 0));
+            vertexElements.push(new VertexElement("TANGENT", offset, 'float32x4', 0));
             offset += 16;
             elementCount += 4;
         }
         if (this._uv) {
-            vertexElements.push(new VertexElement("TEXCOORD_0", offset, VertexElementFormat.Vector2, 0));
+            vertexElements.push(new VertexElement("TEXCOORD_0", offset, 'float32x2', 0));
             offset += 8;
             elementCount += 2;
         }
         if (this._uv1) {
-            vertexElements.push(new VertexElement("TEXCOORD_1", offset, VertexElementFormat.Vector2, 0));
+            vertexElements.push(new VertexElement("TEXCOORD_1", offset,'float32x2', 0));
             offset += 8;
             elementCount += 2;
         }
         if (this._uv2) {
-            vertexElements.push(new VertexElement("TEXCOORD_2", offset, VertexElementFormat.Vector2, 0));
+            vertexElements.push(new VertexElement("TEXCOORD_2", offset, 'float32x2', 0));
             offset += 8;
             elementCount += 2;
         }
         if (this._uv3) {
-            vertexElements.push(new VertexElement("TEXCOORD_3", offset, VertexElementFormat.Vector2, 0));
+            vertexElements.push(new VertexElement("TEXCOORD_3", offset, 'float32x2', 0));
             offset += 8;
             elementCount += 2;
         }
         if (this._uv4) {
-            vertexElements.push(new VertexElement("TEXCOORD_4", offset, VertexElementFormat.Vector2, 0));
+            vertexElements.push(new VertexElement("TEXCOORD_4", offset, 'float32x2', 0));
             offset += 8;
             elementCount += 2;
         }
         if (this._uv5) {
-            vertexElements.push(new VertexElement("TEXCOORD_5", offset, VertexElementFormat.Vector2, 0));
+            vertexElements.push(new VertexElement("TEXCOORD_5", offset, 'float32x2', 0));
             offset += 8;
             elementCount += 2;
         }
         if (this._uv6) {
-            vertexElements.push(new VertexElement("TEXCOORD_6", offset, VertexElementFormat.Vector2, 0));
+            vertexElements.push(new VertexElement("TEXCOORD_6", offset, 'float32x2', 0));
             offset += 8;
             elementCount += 2;
         }
         if (this._uv7) {
-            vertexElements.push(new VertexElement("TEXCOORD_7", offset, VertexElementFormat.Vector2, 0));
+            vertexElements.push(new VertexElement("TEXCOORD_7", offset, 'float32x2', 0));
             offset += 8;
             elementCount += 2;
         }
@@ -627,7 +626,7 @@ export class ModelMesh extends Mesh {
     }
 }
 
-const POSITION_VERTEX_ELEMENT = new VertexElement("POSITION", 0, VertexElementFormat.Vector3, 0);
+const POSITION_VERTEX_ELEMENT = new VertexElement("POSITION", 0, 'float32x3', 0);
 
 enum ValueChanged {
     Position = 0x1,

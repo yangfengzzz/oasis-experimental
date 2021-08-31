@@ -1,7 +1,6 @@
 import {BoundingBox} from "@oasis-engine/math";
 import {RefObject} from "../asset/RefObject";
 import {Engine} from "../Engine";
-import {BufferUtil} from "./BufferUtil";
 import {MeshTopology} from "./enums/MeshTopology";
 import {IndexBufferBinding} from "./IndexBufferBinding";
 import {SubMesh} from "./SubMesh";
@@ -21,8 +20,6 @@ export abstract class Mesh extends RefObject {
     readonly bounds: BoundingBox = new BoundingBox();
 
     _vertexElementMap: Record<string, VertexElement> = {};
-    _glIndexType: number;
-    _glIndexByteCount: number;
     _platformPrimitive: IPlatformPrimitive;
 
     /** @internal */
@@ -166,11 +163,8 @@ export abstract class Mesh extends RefObject {
     protected _setIndexBufferBinding(binding: IndexBufferBinding | null): void {
         if (binding) {
             this._indexBufferBinding = binding;
-            this._glIndexType = BufferUtil._getGLIndexType(binding.format);
-            this._glIndexByteCount = BufferUtil._getGLIndexByteCount(binding.format);
         } else {
             this._indexBufferBinding = null;
-            this._glIndexType = undefined;
         }
     }
 

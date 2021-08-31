@@ -13,6 +13,7 @@ export class GPUPrimitive implements IPlatformPrimitive {
     private _renderer: WebGPURenderer;
 
     public renderPipeline: GPURenderPipeline;
+    public descriptor: GPURenderPipelineDescriptor;
 
     constructor(rhi: WebGPURenderer, primitive: Mesh) {
         this._renderer = rhi;
@@ -27,7 +28,7 @@ export class GPUPrimitive implements IPlatformPrimitive {
         renderPassEncoder.setPipeline(this.renderPipeline);
 
         renderPassEncoder.setVertexBuffer(0, this._primitive._vertexBufferBindings[0]._buffer._nativeBuffer);
-        renderPassEncoder.setIndexBuffer(this._primitive._indexBufferBinding._buffer._nativeBuffer, "uint32");
+        renderPassEncoder.setIndexBuffer(this._primitive._indexBufferBinding.buffer._nativeBuffer, "uint32");
         renderPassEncoder.drawIndexed(subMesh.count, 1, subMesh.start, 0, 0);
     }
 
@@ -38,37 +39,9 @@ export class GPUPrimitive implements IPlatformPrimitive {
             bindGroupLayouts: [this._renderer.uniformGroupLayout]
         });
 
-        this.renderPipeline = device.createRenderPipeline({
+        this.descriptor = {
             layout: layout,
             vertex: {
-                buffers: [
-                    {
-                        arrayStride: 4 * 8,
-                        attributes: [
-                            // position
-                            {
-                                shaderLocation: 0,
-                                offset: 0,
-                                format: 'float32x3'
-                            },
-
-                            // normal
-                            {
-                                shaderLocation: 1,
-                                offset: 4 * 3,
-                                format: 'float32x3'
-                            },
-
-                            // uv
-                            {
-                                shaderLocation: 2,
-                                offset: 4 * 6,
-                                format: 'float32x2'
-                            }
-                        ],
-                        stepMode: 'vertex'
-                    },
-                ],
                 module: shaderProgram.vertexShader,
                 entryPoint: 'main'
             },
@@ -96,7 +69,32 @@ export class GPUPrimitive implements IPlatformPrimitive {
             multisample: {
                 count: 4
             }
-        });
+        }
+
+        this.bindVertexAttrib(shaderProgram);
+        this.renderPipeline = device.createRenderPipeline(this.descriptor);
+    }
+
+    bindVertexAttrib(shaderProgram: ShaderProgram) {
+        const primitive = this._primitive;
+        const attributes = primitive._vertexElements;
+        const attrs: GPUVertexAttribute[] = [];
+        for (let i = 0; i < attributes.length; i++) {
+            const attr: GPUVertexAttribute = {
+                shaderLocation: i,
+                offset: attributes[i].offset,
+                format: attributes[i].format
+            }
+            attrs.push(attr);
+        }
+
+        this.descriptor.vertex.buffers = [
+            {
+                arrayStride: 4 * 8,
+                attributes: attrs,
+                stepMode: 'vertex'
+            },
+        ];
     }
 
     destroy() {
