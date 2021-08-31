@@ -90,7 +90,7 @@ export class GPUPrimitive implements IPlatformPrimitive {
 
         this.descriptor.vertex.buffers = [
             {
-                arrayStride: 4 * 8,
+                arrayStride: this._primitive._vertexBufferBindings[0].stride,
                 attributes: attrs,
                 stepMode: 'vertex'
             },
