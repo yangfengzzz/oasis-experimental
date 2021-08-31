@@ -216,6 +216,17 @@ export class Camera extends Component {
     }
 
     /**
+     * RenderTarget. After setting, it will be rendered to the renderTarget. If it is empty, it will be rendered to the main canvas.
+     */
+    // get renderTarget(): RenderTarget | null {
+    //     return this._renderTarget;
+    // }
+    //
+    // set renderTarget(value: RenderTarget | null) {
+    //     this._renderTarget = value;
+    // }
+
+    /**
      * Create the Camera component.
      * @param entity - Entity
      */
@@ -362,6 +373,13 @@ export class Camera extends Component {
         const viewportPoint = MathTemp.tempVec2;
         this.screenToViewportPoint(point, viewportPoint);
         return this.viewportPointToRay(viewportPoint, out);
+    }
+
+    /**
+     * Manually call the rendering of the camera.
+     */
+    render(): void {
+        this._renderPipeline.render();
     }
 
     /**
