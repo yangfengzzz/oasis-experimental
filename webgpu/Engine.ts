@@ -104,6 +104,8 @@ export class Engine {
     constructor(canvas: Canvas, hardwareRenderer: WebGPURenderer) {
         this._canvas = canvas;
         this._hardwareRenderer = hardwareRenderer;
+
+        this._sceneManager.activeScene = new Scene(this, "DefaultScene");
     }
 
     init() {
@@ -159,12 +161,6 @@ export class Engine {
         }
 
         this._componentsManager.callComponentDestroy();
-    }
-
-    public RunRenderLoop(fn: Function) {
-        fn();
-
-        requestAnimationFrame(() => this.RunRenderLoop(fn));
     }
 
     /**

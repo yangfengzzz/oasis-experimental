@@ -153,7 +153,11 @@ export class ComponentsManager {
     }
 
     callRender(camera: Camera): void {
-
+        const elements = this._renderers._elements;
+        for (let i = this._renderers.length - 1; i >= 0; --i) {
+            const element = elements[i];
+            element._render(camera);
+        }
     }
 
     callComponentDestroy(): void {
