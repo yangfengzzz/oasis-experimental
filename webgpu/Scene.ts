@@ -11,7 +11,7 @@ import {Logger} from "oasis-engine";
 export class Scene extends EngineObject {
     // static sceneFeatureManager = new FeatureManager<SceneFeature>();
 
-    // private static _resolutionProperty = Shader.getPropertyByName("u_resolution");
+    // private static _resolutionP roperty = Shader.getPropertyByName("u_resolution");
 
     /** Scene name. */
     name: string;

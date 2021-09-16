@@ -125,26 +125,38 @@ export class WebGPURenderer implements IHardwareRenderer {
                     buffer: {
                         type: 'uniform'
                     }
+                },
+                {
+                    binding: 1,
+                    visibility: GPUShaderStage.VERTEX,
+                    buffer: {
+                        type: 'uniform'
+                    }
                 }
             ]
         });
     }
 
-    public createUniformBuffer(engine: Engine, mxArray: Float32Array) {
-        let uniformBuffer = new Buffer(engine, mxArray, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
-        uniformBuffer.setData(mxArray);
+    public createUniformBuffer(engine: Engine, pArray: Float32Array, mvArray: Float32Array) {
+        let pBuffer = new Buffer(engine, pArray, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
+        pBuffer.setData(pArray);
+        let mvBuffer = new Buffer(engine, mvArray, GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST);
+        mvBuffer.setData(mvArray);
 
         let uniformBindGroup = this.device.createBindGroup({
             layout: this.uniformGroupLayout,
-            entries: [{
-                binding: 0,
-                resource: {buffer: uniformBuffer._nativeBuffer}
-            }]
+            entries: [
+                {
+                    binding: 0,
+                    resource: {buffer: pBuffer._nativeBuffer}
+                },
+                {
+                    binding: 1,
+                    resource: {buffer: mvBuffer._nativeBuffer}
+                }]
         });
 
         this.renderPassEncoder.setBindGroup(0, uniformBindGroup);
-
-        return {uniformBuffer};
     }
 
     public Present() {

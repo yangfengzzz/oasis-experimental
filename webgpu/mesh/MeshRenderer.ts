@@ -80,35 +80,16 @@ export class MeshRenderer extends Renderer implements ICustomClone {
         triangleMVMatrix.identity().translate(new Vector3(-1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(0, 1, 0), rTri));
         squareMVMatrix.identity().translate(new Vector3(1.5, 0.0, -7.0)).multiply(new Matrix().rotateAxisAngle(new Vector3(1, 0, 0), rSquare));
 
-        let pBuffer: number[] = [
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0];
-        pMatrix.toArray(pBuffer);
-
-        let mvBuffer: number[] = [
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0];
-
-        triangleMVMatrix.toArray(mvBuffer);
-        let triangleUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
-
-        squareMVMatrix.toArray(mvBuffer);
-        let squareUniformBufferView = new Float32Array(pBuffer.concat(mvBuffer));
-
         //--------------------------------------------------------------------------------------------------------------
         this.engine._hardwareRenderer.InitRenderPass(backgroundColor);
 
         this.engine._hardwareRenderer.createBindGroupLayout();
 
-        this.engine._hardwareRenderer.createUniformBuffer(this.engine, triangleUniformBufferView);
+        this.engine._hardwareRenderer.createUniformBuffer(this.engine, pMatrix.elements, triangleMVMatrix.elements);
         const box = PrimitiveMesh.createCuboid(this.engine, 1);
         this.engine._hardwareRenderer.drawPrimitive(box, box.subMesh, this.shaderProgram);
 
-        this.engine._hardwareRenderer.createUniformBuffer(this.engine, squareUniformBufferView);
+        this.engine._hardwareRenderer.createUniformBuffer(this.engine,  pMatrix.elements, squareMVMatrix.elements);
         const sphere = PrimitiveMesh.createSphere(this.engine, 1, 50);
         this.engine._hardwareRenderer.drawPrimitive(sphere, sphere.subMesh, this.shaderProgram);
 

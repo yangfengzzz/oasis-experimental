@@ -1,10 +1,16 @@
 export default
-`[[block]]struct Uniforms {
-  [[size(64)]]uPMatrix: mat4x4<f32>;
-  [[size(64)]]uMVMatrix: mat4x4<f32>;
+`[[block]]struct uPMatrixUniforms {
+  [[size(64)]]m: mat4x4<f32>;
 };
+
+[[block]]struct uMVMatrixUniforms {
+  [[size(64)]]m: mat4x4<f32>;
+};
+
 [[group(0), binding(0)]]
-var<uniform> uniforms: Uniforms;
+var<uniform> uPMatrix: uPMatrixUniforms;
+[[group(0), binding(1)]]
+var<uniform> uMVMatrix: uMVMatrixUniforms;
 
 struct VertexInput {
     [[location(0)]] aVertexPosition: vec3<f32>;
@@ -20,7 +26,7 @@ struct Output {
 [[stage(vertex)]]
 fn main(vertexInput: VertexInput) -> Output {
   var output: Output;
-  output.Position = uniforms.uPMatrix * uniforms.uMVMatrix * vec4<f32>(vertexInput.aVertexPosition, 1.0);
+  output.Position = uPMatrix.m * uMVMatrix.m * vec4<f32>(vertexInput.aVertexPosition, 1.0);
   output.vColor = vertexInput.aVertexPosition;
   return output;
 }`;

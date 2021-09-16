@@ -178,7 +178,6 @@ export class Engine {
 
         if (cameras.length > 0) {
             // Sort on priority
-            //@ts-ignore
             cameras.sort((camera1, camera2) => camera1.priority - camera2.priority);
             for (let i = 0, l = cameras.length; i < l; i++) {
                 const camera = cameras[i];
