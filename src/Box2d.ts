@@ -36,8 +36,6 @@ light.transform.position = new Vector3(0, 5, 0);
 const p = light.addComponent(PointLight);
 p.intensity = 0.3;
 
-addPlane(new Vector3(30, 0.1, 30), new Vector3, new Quaternion);
-
 //----------------------------------------------------------------------------------------------------------------------
 const timeStep = 1.0 / 60.0;
 const iterations = 10;
@@ -64,10 +62,14 @@ const pan_y = 8.0;
 
 const world = new World(gravity, iterations);
 
-InitDemo(0);
+const bodyPairs = InitDemo(0);
 
 const update = () => {
     world.Step(timeStep);
+    bodyPairs.forEach((value) => {
+        value[1].transform.setPosition(value[0].position.x, value[0].position.y, 0);
+    })
+
     engine.update();
     requestAnimationFrame(update)
 }
@@ -75,29 +77,35 @@ const update = () => {
 update()
 
 //----------------------------------------------------------------------------------------------------------------------
-function InitDemo(index: number) {
+function InitDemo(index: number): [Body, Entity][] {
     world.Clear();
     numBodies = 0;
     numJoints = 0;
     bomb = null;
 
     demoIndex = index;
-    Demo1(bodies, joints);
+    return Demo1(bodies, joints);
 }
 
 // Single box
-function Demo1(bodies: Body[], joints: Joint[]) {
-    let b = bodies[numBodies];
-    b.Set(new Vec2(100.0, 20.0), Number.MAX_VALUE);
-    b.position.Set(0.0, -0.5 * b.width.y);
-    world.AddBody(b);
+function Demo1(bodies: Body[], joints: Joint[]): [Body, Entity][] {
+    const b1 = bodies[numBodies];
+    b1.Set(new Vec2(100.0, 20.0), Number.MAX_VALUE);
+    b1.position.Set(0.0, -0.5 * b1.width.y);
+    world.AddBody(b1);
+    const entity1 = addPlane(new Vector3(100.0, 20, 0.1), new Vector3(b1.position.x, b1.position.y, 0), new Quaternion());
+
     ++numBodies;
 
-    b = bodies[numBodies];
-    b.Set(new Vec2(1.0, 1.0), 200.0);
-    b.position.Set(0.0, 4.0);
-    world.AddBody(b);
+    const b2 = bodies[numBodies];
+    b2.Set(new Vec2(1.0, 1.0), 200.0);
+    b2.position.Set(0.0, 4.0);
+    world.AddBody(b2);
+    const entity2 = addPlane(new Vector3(1.0, 1.0, 0.1), new Vector3(b2.position.x, b2.position.y, 0), new Quaternion());
+
     ++numBodies;
+
+    return [[b1, entity1], [b2, entity2]];
 }
 
 //----------------------------------------------------------------------------------------------------------------------
