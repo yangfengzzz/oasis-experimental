@@ -23,10 +23,8 @@ class ClipVertex {
     fp: FeaturePair;
 
     constructor() {
-        this.fp.inEdge1 = 0;
-        this.fp.inEdge2 = 0;
-        this.fp.outEdge1 = 0;
-        this.fp.outEdge2 = 0;
+        this.v = new Vec2();
+        this.fp = new FeaturePair();
     }
 }
 
@@ -127,16 +125,16 @@ function ComputeIncidentEdge(c: ClipVertex[], h: Vec2, pos: Vec2, Rot: Mat22, no
     c[1].v = Vec2.Add(pos, Mat22.Mul(Rot, c[1].v));
 }
 
-export function Collide(contacts: Contact[], body1: Body, body2: Body): number {
+export function Collide(contacts: Contact[], bodyA: Body, bodyB: Body): number {
     // Setup
-    const hA = Vec2.Mul(0.5, this.bodyA.width);
-    const hB = Vec2.Mul(0.5, this.bodyB.width);
+    const hA = Vec2.Mul(0.5, bodyA.width);
+    const hB = Vec2.Mul(0.5, bodyB.width);
 
-    const posA = this.bodyA.position;
-    const posB = this.bodyB.position;
+    const posA = bodyA.position;
+    const posB = bodyB.position;
 
-    const RotA = new Mat22(this.bodyA.rotation);
-    const RotB = new Mat22(this.bodyB.rotation);
+    const RotA = new Mat22(bodyA.rotation);
+    const RotB = new Mat22(bodyB.rotation);
 
     const RotAT = RotA.Transpose();
     const RotBT = RotB.Transpose();
