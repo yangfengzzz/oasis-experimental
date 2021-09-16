@@ -34,7 +34,7 @@ export class Body {
         this.invI = 0.0;
     }
 
-    Set(w: Vec2, m: number) {
+    Set(w: Vec2, m: number, isFinite: Boolean = true) {
         this.position.Set(0.0, 0.0);
         this.rotation = 0.0;
         this.velocity.Set(0.0, 0.0);
@@ -46,7 +46,7 @@ export class Body {
         this.width = w;
         this.mass = m;
 
-        if (this.mass < Number.MAX_VALUE) {
+        if (isFinite) {
             this.invMass = 1.0 / this.mass;
             this.I = (this.mass * (this.width.x * this.width.x + this.width.y * this.width.y)) / 12.0;
             this.invI = 1.0 / this.I;

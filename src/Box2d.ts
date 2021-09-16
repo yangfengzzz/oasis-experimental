@@ -8,7 +8,6 @@ import {
     Vector3,
     WebGLEngine
 } from "oasis-engine";
-import {OrbitControl} from "@oasis-engine/controls";
 import {Vec2} from "./box2d/Vec2";
 import {World} from "./box2d/World";
 import {Joint} from "./box2d/Joint";
@@ -22,10 +21,7 @@ const rootEntity = scene.createRootEntity();
 // init camera
 const cameraEntity = rootEntity.createChild("camera");
 cameraEntity.addComponent(Camera);
-const pos = cameraEntity.transform.position;
-pos.setValue(0, 10, 0);
-cameraEntity.transform.position = pos;
-cameraEntity.addComponent(OrbitControl);
+cameraEntity.transform.setPosition(0, 5, 40);
 
 // init light
 scene.ambientLight.diffuseSolidColor.setValue(1, 1, 1, 1);
@@ -66,9 +62,9 @@ const bodyPairs = InitDemo(0);
 
 const update = () => {
     world.Step(timeStep);
-    bodyPairs.forEach((value) => {
-        value[1].transform.setPosition(value[0].position.x, value[0].position.y, 0);
-    })
+    // bodyPairs.forEach((value) => {
+    //     value[1].transform.setPosition(value[0].position.x, value[0].position.y, 0);
+    // })
 
     engine.update();
     requestAnimationFrame(update)
@@ -93,15 +89,15 @@ function Demo1(bodies: Body[], joints: Joint[]): [Body, Entity][] {
     b1.Set(new Vec2(100.0, 20.0), Number.MAX_VALUE);
     b1.position.Set(0.0, -0.5 * b1.width.y);
     world.AddBody(b1);
-    const entity1 = addPlane(new Vector3(100.0, 20, 0.1), new Vector3(b1.position.x, b1.position.y, 0), new Quaternion());
+    const entity1 = addPlane(new Vector3(100.0, 20, 0.0), new Vector3(b1.position.x, b1.position.y, 0), new Quaternion());
 
     ++numBodies;
 
     const b2 = bodies[numBodies];
-    b2.Set(new Vec2(1.0, 1.0), 200.0);
+    b2.Set(new Vec2(1.0, 1.0), 200.0, false);
     b2.position.Set(0.0, 4.0);
     world.AddBody(b2);
-    const entity2 = addPlane(new Vector3(1.0, 1.0, 0.1), new Vector3(b2.position.x, b2.position.y, 0), new Quaternion());
+    const entity2 = addPlane(new Vector3(1.0, 1.0, 0.0), new Vector3(b2.position.x, b2.position.y, 0), new Quaternion());
 
     ++numBodies;
 
